@@ -10,6 +10,7 @@ import { convertMinutes } from "../../utils/index";
 import { baseURL } from "../../api/api";
 import axios from "axios";
 import Loader from "../Loader";
+import { toast } from "sonner";
 
 const Report = () => {
   const [startDate, setStartDate] = useState("");
@@ -32,6 +33,9 @@ const Report = () => {
   };
 
   const handleGenerateReport = () => {
+    if(!startDate || !endDate){
+      return toast.error("please fill dates")
+    }
     const unixStartDate = moment(startDate).unix();
     const unixEndDate = moment(endDate).unix();
     setIsLoading(true);

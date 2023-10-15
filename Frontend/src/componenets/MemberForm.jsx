@@ -10,6 +10,7 @@ import { z } from "zod";
 import { baseURL, useRegisterMutation } from "../api/api";
 import "./css/style.css";
 import { toast } from "sonner";
+import {useNavigate} from "react-router-dom"
 import {
   educationInfoValidation,
   familyInfoValidation,
@@ -20,6 +21,7 @@ import {
 
 const MemberForm = () => {
   const [register, response] = useRegisterMutation();
+const navigate =  useNavigate()
 
   const {
     register: pregister,
@@ -112,6 +114,7 @@ const MemberForm = () => {
         console.log(res);
         if (res?.data?.message) {
           toast.success(res?.data?.message);
+          navigate("/directory")
         } else if (res?.error?.data?.error) {
           toast.error(res?.error?.data?.error);
         }

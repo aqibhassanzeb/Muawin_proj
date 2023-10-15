@@ -117,10 +117,10 @@ const Sidenav = () => {
                 </ul>
               </li>
               <li className="nav-item">
-                <a href="/reports" className="nav-link">
+                <Link to="/reports" className="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
                   <p>Reports and Analytics</p>
-                </a>
+                </Link>
               </li>
               <li className="nav-item has-treeview">
                 <a href="#" className="nav-link">
