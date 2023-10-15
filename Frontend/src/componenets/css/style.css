@@ -1,0 +1,144 @@
+
+.logo-image {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 0px;
+}
+
+.c-body {
+    margin-top: -50px;
+    padding-top: 0px;
+}
+
+#cap {
+    padding-bottom: 5px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .user-table th,
+  .user-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .user-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  
+  .user-table td select {
+    width: 100%;
+    padding: 5px;
+  }
+  
+  .user-table td label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .user-table td label input[type='checkbox'] {
+    margin-right: 5px;
+  }
+  
+  .user-table td button {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .user-table td button:hover {
+    background-color: #45a049;
+  }
+  
+  .heading {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  label {
+    font-weight: bold;
+  }
+  
+  input[type='date'] {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    appearance: none;
+    background-color: #fff;
+  }
+
+ .validation-error{
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+ font-weight: 100;
+ }
+
+ .flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ }
+
+ .react-calendar {
+  background-color: #28a745 !important;
+  width: 100% !important;
+  border: none !important;
+ }
+
+ .react-calendar__tile--active { 
+  background-color: #5fc577 !important;
+ }
+
+ .react-calendar__month-view__days__day--weekend{
+  color: black !important;
+ }
+ .react-calendar button:enabled:hover {
+  cursor: pointer;
+  background-color: #5fc577;
+}
+
+.react-calendar .test-color {
+  outline: 2px solid red;
+}
