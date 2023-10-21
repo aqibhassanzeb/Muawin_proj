@@ -25,12 +25,27 @@ export const eventsForCalender = async (req, res) => {
   }
 };
 
-export const getUsers = async (req, res) => {
+export const getMembers = async (req, res) => {
   try {
-    const users = await User.find({ is_active: true }).sort({ createdAt: -1 });
+    const users = await User.find({
+      is_active: true,
+      role: { $ne: "admin" },
+    }).sort({ createdAt: -1 });
     res.status(200).json(users);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
+  }
+};
+
+export const updateMember = async (req, res) => {
+  const { _id } = req.params;
+
+  try {
+    await User.findByIdAndUpdate({ _id }, req.body);
+    res.status(200).json({ message: "updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "something went wrong!" });
   }
 };

@@ -1,19 +1,13 @@
-import React, { useState } from "react";
-import EventsCalendar from "../EventsCalendar";
+import React from "react";
 import { Link } from "react-router-dom";
 import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
-import {
-  useAddTodoMutation,
-  useCalendarEventsQuery,
-  useGetTodosQuery,
-  useUpdateTodoMutation,
-} from "../../api/api";
 import { Chart } from "react-google-charts";
+import Todos from "../Todos";
+import EventsCalendar from "../EventsCalendar";
+import { useCalendarEventsQuery } from "../../api/api";
 import { useSelector } from "react-redux";
-import moment from "moment";
-import Loader from "../Loader";
 
-export const data = [
+const data = [
   ["Country", "Visitors"],
   ["Germany", 1],
   ["United States", 2],
@@ -25,34 +19,12 @@ export const data = [
 ];
 
 const Header = () => {
-  const user = useSelector((state) => state.authReducer.activeUser);
-
   const { data: events, isLoading: eventsLoading } = useCalendarEventsQuery();
-  const { data: todos } = useGetTodosQuery(user._id);
-  const [addTodo, todoResponse] = useAddTodoMutation();
-  const [updateTodo, updateResponse] = useUpdateTodoMutation();
-
-  const [todoText, setTodoText] = useState("");
-
-  function handleAddTodo() {
-    if (todoText.length > 0) {
-      addTodo({ text: todoText }).then(() => setTodoText(""));
-    }
-  }
-
-  console.log(todos);
-
-  const toggleComplete = (id, value) => {
-    console.log(id, value);
-    updateTodo({ id, data: { isCompleted: value } });
-    // const updatedTodos = [...todos];
-    // updatedTodos[index].completed = !updatedTodos[index].completed;
-    // setTodos(updatedTodos);
-  };
+  const { open } = useSelector((state) => state.appState);
 
   return (
     <div>
-      <div className="content-wrapper">
+      <div style={{ marginLeft: open ? 243 : 0 }}>
         {/* Content Header (Page header) */}
         <div className="content-header">
           <div className="container-fluid">
@@ -469,116 +441,7 @@ const Header = () => {
                 </div> */}
                 {/*/.direct-chat */}
                 {/* TO DO List */}
-                <div className="card">
-                  <div className="card-header">
-                    <h3 className="card-title">
-                      <i className="ion ion-clipboard mr-1" />
-                      To Do List
-                    </h3>
-                    <div className="card-tools">
-                      <ul className="pagination pagination-sm">
-                        <li className="page-item">
-                          <a href="#" className="page-link">
-                            «
-                          </a>
-                        </li>
-                        <li className="page-item">
-                          <a href="#" className="page-link">
-                            1
-                          </a>
-                        </li>
-                        <li className="page-item">
-                          <a href="#" className="page-link">
-                            2
-                          </a>
-                        </li>
-                        <li className="page-item">
-                          <a href="#" className="page-link">
-                            3
-                          </a>
-                        </li>
-                        <li className="page-item">
-                          <a href="#" className="page-link">
-                            »
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  {/* /.card-header */}
-                  <div className="card-body">
-                    <ul className="todo-list" data-widget="todo-list">
-                      {todos?.todos?.map((todo) => (
-                        <li key={todo._id}>
-                          {/* drag handle */}
-                          <span className="">
-                            <i className="fas fa-ellipsis-v" />
-                            <i className="fas fa-ellipsis-v" />
-                          </span>
-                          {/* checkbox */}
-                          <div className=" d-inline ml-2">
-                            <input
-                              type="checkbox"
-                              // defaultChecked={todo.isCompleted}
-                              checked={todo.isCompleted}
-                              onChange={(e) =>
-                                toggleComplete(todo._id, e.target.checked)
-                              }
-                            />
-                            <label htmlFor="todoCheck1" />
-                          </div>
-                          {/* todo text */}
-                          <span
-                            className="text"
-                            style={{
-                              textDecoration:
-                                todo.isCompleted && "line-through",
-                            }}
-                          >
-                            {todo.text}
-                          </span>
-                          {/* Emphasis label */}
-                          <small className="badge badge-danger">
-                            <i className="far fa-clock" />{" "}
-                            {moment(todo.createdAt).fromNow()}
-                          </small>
-                          {/* General tools such as edit or delete*/}
-                          <div className="tools">
-                            <i className="fas fa-edit" />
-                            <i className="fas fa-trash-o" />
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  {/* /.card-body */}
-                  <div style={{ padding: "0px 20px 40px 20px" }}>
-                    <div className="d-flex" style={{ gap: 10 }}>
-                      <input
-                        type="text"
-                        placeholder="Write Something ..."
-                        className="form-control"
-                        style={{ width: "77%" }}
-                        value={todoText}
-                        onChange={(e) => setTodoText(e.target.value)}
-                      />
-
-                      {todoResponse.isLoading ? (
-                        <div className="ml-3 mt-3">
-                          <Loader size={25} />
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          className="btn btn-primary float-right "
-                          onClick={handleAddTodo}
-                        >
-                          <i className="fas fa-plus" /> Add Todo
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <Todos />
                 {/* /.card */}
               </section>
               {/* /.Left col */}
@@ -727,63 +590,7 @@ const Header = () => {
                 </div> */}
                 {/* /.card */}
                 {/* Calendar */}
-                <div className="card bg-gradient-success">
-                  <div className="card-header border-0">
-                    <h3 className="card-title">
-                      <i className="far fa-calendar-alt mr-1" />
-                      Events Calendar
-                    </h3>
-                    {/* tools card */}
-                    <div className="card-tools">
-                      {/* button with a dropdown */}
-                      <div className="btn-group">
-                        <button
-                          type="button"
-                          className="btn btn-success btn-sm dropdown-toggle"
-                          data-toggle="dropdown"
-                          data-offset={-52}
-                        >
-                          <i className="fas fa-bars" />
-                        </button>
-                        <div className="dropdown-menu" role="menu">
-                          <Link to="/addevent" className="dropdown-item">
-                            Add new event
-                          </Link>
-                          <Link to="/eventdirectory" className="dropdown-item">
-                            Clear events
-                          </Link>
-                          {/* <div className="dropdown-divider" />
-                          <a href="#" className="dropdown-item">
-                            View calendar
-                          </a> */}
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        className="btn btn-success btn-sm"
-                        data-card-widget="collapse"
-                      >
-                        <i className="fas fa-minus" />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-success btn-sm"
-                        data-card-widget="remove"
-                      >
-                        <i className="fas fa-times" />
-                      </button>
-                    </div>
-                    {/* /. tools */}
-                  </div>
-                  {/* /.card-header */}
-                  <div className="card-body pt-0">
-                    {/*The calendar */}
-                    <EventsCalendar events={events} />
-
-                    {/* <div id="calendar" style={{ width: "100%" }} /> */}
-                  </div>
-                  {/* /.card-body */}
-                </div>
+                <EventsCalendar events={events} />
                 {/* /.card */}
               </section>
               {/* right col */}

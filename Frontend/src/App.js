@@ -26,6 +26,8 @@ import { Toaster } from "sonner";
 import VerifyOTP from "./componenets/pages/verifyotp";
 import ResetPassword from "./componenets/pages/reset_password";
 import UnderConstruction from "./componenets/pages/underconstruction";
+import MemberDetails from "./componenets/pages/member_details";
+import UpdateMember from "./componenets/pages/updatemember";
 
 function App() {
   return (
@@ -54,6 +56,8 @@ function App() {
           <Route path="/membermanagement" element={<MemberManagement />} />
           <Route path="/lock" element={<Lockscreen />} />
           <Route path="/directory" element={<MemberDirectory />} />
+          <Route path="/memberdetails" element={<MemberDetails />} />
+          <Route path="/updatemember" element={<UpdateMember />} />
           <Route path="/addevent" element={<Addevent />} />
           <Route path="/updateevent" element={<Updateevent />} />
           <Route path="/eventdetails" element={<Eventdetails />} />

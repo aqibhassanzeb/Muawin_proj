@@ -231,7 +231,7 @@ export const familyInfoValidation = z.object({
 
 export const educationInfoValidation = z.object({
   educationLevel: z.string().min(1, { message: "Education level is required" }),
-  institue: z.string().min(1, { message: "Institute name is required" }),
+  institute: z.string().min(1, { message: "Institute name is required" }),
   major: z.string().min(1, { message: "Major is required" }),
   graduationYear: z
     .string()
@@ -247,14 +247,14 @@ export const educationInfoValidation = z.object({
 export const professionalInfoValidation = z.object({
   jobTitle: z.string().min(1, { message: "Job Title is required" }),
   industry: z.string().min(1, { message: "Industry name is required" }),
-  responsibilites: z
+  responsibilities: z
     .string()
     .min(1, { message: "Job Responsibilites is required" }),
   skills: z.string().min(1, { message: "Skills are required" }),
   references: z.string().min(1, { message: "Reference are required" }),
   company: z.string().min(1, { message: "Organization Name is required" }),
   licenses: z.string().min(1, { message: "Licenses is required" }),
-  posititions: z.string().min(1, { message: "Organization Name is required" }),
+  positions: z.string().min(1, { message: "Organization Name is required" }),
   workHistory: z.string().min(1, { message: "Work History is required" }),
   workExperience: z
     .string()

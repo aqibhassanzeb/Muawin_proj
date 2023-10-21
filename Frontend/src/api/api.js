@@ -137,8 +137,18 @@ export const api = createApi({
       query: () => "/users",
       providesTags: ["User"],
     }),
+    updateMember: build.mutation({
+      query: (param) => {
+        return {
+          url: `/users/${param.id}`,
+          method: "PUT",
+          body: param.data,
+        };
+      },
+      invalidatesTags: ["User"],
+    }),
     getTodos: build.query({
-      query: (id) => `/todos/${id}`,
+      query: (page) => `/todos?page=${page}`,
       providesTags: ["Todo"],
     }),
     addTodo: build.mutation({
@@ -152,11 +162,20 @@ export const api = createApi({
       invalidatesTags: ["Todo"],
     }),
     updateTodo: build.mutation({
-      query: (param) => {
+      query: (params) => {
         return {
-          url: `/todos/${param.id}`,
+          url: `/todos/${params.id}`,
           method: "PUT",
-          body: param.data,
+          body: params.data,
+        };
+      },
+      invalidatesTags: ["Todo"],
+    }),
+    deleteTodo: build.mutation({
+      query: (params) => {
+        return {
+          url: `/todos/${params}`,
+          method: "DELETE",
         };
       },
       invalidatesTags: ["Todo"],
@@ -193,6 +212,8 @@ export const {
   useAddTodoMutation,
   useGetTodosQuery,
   useUpdateTodoMutation,
+  useDeleteTodoMutation,
+  useUpdateMemberMutation,
 } = api;
 
 export function uploadImage(file) {

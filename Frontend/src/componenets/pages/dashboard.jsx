@@ -1,14 +1,14 @@
 import React from "react";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
 import Header from "../common/header";
 import Footer from "../common/footer";
+import PersistentDrawerLeft from "../common/sidenav";
 
 const Dashboard = () => {
   return (
     <div>
       <Navbar />
-      <Sidenav />
+      <PersistentDrawerLeft />
       <Header />
       <Footer />
     </div>

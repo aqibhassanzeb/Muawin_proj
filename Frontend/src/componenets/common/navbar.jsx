@@ -1,9 +1,13 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../redux/reducers/auth";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import { handleDrawerOpen } from "../../redux/reducers/appStateSlice";
 
 const Navbar = () => {
+  const { open } = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const navigagte = useNavigate();
   function handleLogout() {
@@ -12,21 +16,28 @@ const Navbar = () => {
   }
   return (
     <div>
-      <nav className="main-header navbar navbar-expand navbar-white navbar-light">
+      <nav
+        className="navbar navbar-expand navbar-white navbar-light"
+        style={{
+          padding: "6px 20px",
+          borderBottom: "1px solid #ededed",
+        }}
+      >
         {/* Left navbar links */}
         <ul className="navbar-nav">
           <li className="nav-item">
-            <a
-              className="nav-link"
-              data-widget="pushmenu"
-              href="#"
-              role="button"
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => dispatch(handleDrawerOpen())}
+              edge="start"
+              sx={{ mr: 2, ...(open && { display: "none" }) }}
             >
-              <i className="fas fa-bars" />
-            </a>
+              <MenuIcon />
+            </IconButton>
           </li>
 
-          <li className="nav-item d-none d-sm-inline-block">
+          {/* <li className="nav-item d-none d-sm-inline-block">
             <a href="/dashboard" className="nav-link">
               {" "}
               Home{" "}
@@ -38,13 +49,13 @@ const Navbar = () => {
               {" "}
               Contact{" "}
             </a>
-          </li>
+          </li> */}
         </ul>
 
         {/* Right navbar links */}
         <ul className="navbar-nav ml-auto">
           {/* Navbar Search */}
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <a
               className="nav-link"
               data-widget="navbar-search"
@@ -77,17 +88,16 @@ const Navbar = () => {
                 </div>
               </form>
             </div>
-          </li>
+          </li> */}
 
           {/* Messages Dropdown Menu */}
-          <li className="nav-item dropdown">
+          {/* <li className="nav-item dropdown">
             <a className="nav-link" data-toggle="dropdown" href="#">
               <i className="far fa-comments" />
               <span className="badge badge-danger navbar-badge">3</span>
             </a>
             <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <a href="#" className="dropdown-item">
-                {/* Message Start */}
                 <div className="media">
                   <img
                     src="dist/img/user1-128x128.jpg"
@@ -107,11 +117,9 @@ const Navbar = () => {
                     </p>
                   </div>
                 </div>
-                {/* Message End */}
               </a>
               <div className="dropdown-divider" />
               <a href="#" className="dropdown-item">
-                {/* Message Start */}
                 <div className="media">
                   <img
                     src="dist/img/user8-128x128.jpg"
@@ -131,11 +139,9 @@ const Navbar = () => {
                     </p>
                   </div>
                 </div>
-                {/* Message End */}
               </a>
               <div className="dropdown-divider" />
               <a href="#" className="dropdown-item">
-                {/* Message Start */}
                 <div className="media">
                   <img
                     src="dist/img/user3-128x128.jpg"
@@ -155,7 +161,6 @@ const Navbar = () => {
                     </p>
                   </div>
                 </div>
-                {/* Message End */}
               </a>
 
               <div className="dropdown-divider" />
@@ -164,10 +169,10 @@ const Navbar = () => {
                 See All Messages{" "}
               </a>
             </div>
-          </li>
+          </li> */}
 
           {/* Notifications Dropdown Menu */}
-          <li className="nav-item dropdown">
+          {/* <li className="nav-item dropdown">
             <a className="nav-link" data-toggle="dropdown" href="#">
               <i className="far fa-bell" />
               <span className="badge badge-warning navbar-badge">15</span>
@@ -197,7 +202,7 @@ const Navbar = () => {
                 See All Notifications
               </a>
             </div>
-          </li>
+          </li> */}
 
           <li className="nav-item">
             <a

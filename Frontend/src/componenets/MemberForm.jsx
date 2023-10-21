@@ -791,11 +791,11 @@ const MemberForm = () => {
                             type="text"
                             className="form-control"
                             style={{ width: "100%" }}
-                            {...eregister("institue")}
+                            {...eregister("institute")}
                           />
-                          {eerrors.institue && (
+                          {eerrors.institute && (
                             <p className="validation-error">
-                              {eerrors.institue?.message}
+                              {eerrors.institute?.message}
                             </p>
                           )}
                         </div>
@@ -910,11 +910,11 @@ const MemberForm = () => {
                             className="form-control"
                             style={{ width: "100%" }}
                             rows="2"
-                            {...prregister("responsibilites")}
+                            {...prregister("responsibilities")}
                           />
-                          {prerrors.responsibilites && (
+                          {prerrors.responsibilities && (
                             <p className="validation-error">
-                              {prerrors.responsibilites?.message}
+                              {prerrors.responsibilities?.message}
                             </p>
                           )}
                         </div>
@@ -1005,11 +1005,11 @@ const MemberForm = () => {
                             type="text"
                             className="form-control"
                             style={{ width: "100%" }}
-                            {...prregister("posititions")}
+                            {...prregister("positions")}
                           />
-                          {prerrors.posititions && (
+                          {prerrors.positions && (
                             <p className="validation-error">
-                              {prerrors.posititions?.message}
+                              {prerrors.positions?.message}
                             </p>
                           )}
                         </div>

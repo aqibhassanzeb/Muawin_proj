@@ -19,39 +19,38 @@ export const getCities = async (req, res) => {
 
 export const createTodo = async (req, res) => {
   try {
-    const { text } = req.body;
-    let todo = await Todo.findOne({ created_by: req.user._id });
-
-    if (!todo) {
-      todo = new Todo({
-        todos: {
-          text,
-          createdAt: new Date().toISOString(),
-          isCompleted: false,
-        },
-        created_by: req.user._id,
-      });
-    } else {
-      todo.todos.push({
-        text,
-        isCompleted: false,
-        createdAt: new Date().toISOString(),
-      });
+    const todo_create = new Todo({
+      text: req.body.text,
+      isCompleted: false,
+      created_by: req.user?._id,
+    });
+    let todo = await todo_create.save();
+    if (todo) {
+      res.status(200).json({ message: "todo created successfully" });
     }
-    const savedTodo = await todo.save();
-    res.status(201).json(savedTodo);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.log(error);
+    res.status(400).json({ error: error.message });
   }
 };
 
 export const getTodos = async (req, res) => {
-  let { id } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const skip_index = (page - 1) * limit;
   try {
-    const response = await Todo.findOne({ created_by: id });
+    const response = await Todo.find({ created_by: req.user._id })
+      .sort({
+        createdAt: -1,
+      })
+      .skip(skip_index)
+      .limit(limit);
+    const count = await Todo.countDocuments({ created_by: req.user._id });
+    const total_pages = Math.ceil(count / limit);
 
-    res.status(200).json(response);
+    res
+      .status(200)
+      .json({ todos: response, count, per_page: limit, pages: total_pages });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -59,21 +58,21 @@ export const getTodos = async (req, res) => {
 };
 
 export const updateTodo = async (req, res) => {
-  const { _id } = req.param;
-  const { isCompleted } = req.body;
-
+  const { _id } = req.params;
   try {
-    const todos = await Todo.findOne({ created_by: req.user._id });
-    const todoIndex = todos.todos.findIndex((todo) => todo._id === _id);
-    console.log(todoIndex);
-    if (todoIndex === -1) {
-      return res.status(404).json({ error: "todo not found" });
-    }
-    todos[todoIndex].isCompleted = isCompleted;
-    await todos.save();
+    await Todo.findByIdAndUpdate({ _id }, req.body);
     res.status(200).json({ message: "updated successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: "something went wrong!" });
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const deleteTodo = async (req, res) => {
+  const { _id } = req.params;
+  try {
+    await Todo.findByIdAndDelete({ _id });
+    res.status(200).json({ message: "delete successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
