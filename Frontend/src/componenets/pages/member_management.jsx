@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Footer from "../common/footer";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
+
 import { Link } from "react-router-dom";
 import States from "../../constants/States.json";
 import { useLazyGetCitiesQuery } from "../../api/api";
@@ -11,9 +11,9 @@ const MemberManagement = () => {
   return (
     <div className="wrapper">
       <Navbar />
-      <Sidenav />
+      {/* <Sidenav /> */}
 
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
@@ -26,7 +26,7 @@ const MemberManagement = () => {
                   <li className="breadcrumb-item">
                     <Link to="/dashboard">Home</Link>
                   </li>
-                  <li className="breadcrumb-item active">Add Member</li>
+                  <li className="breadcrumb-item ">Add Member</li>
                 </ol>
               </div>
             </div>

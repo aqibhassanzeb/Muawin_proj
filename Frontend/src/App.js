@@ -28,6 +28,7 @@ import ResetPassword from "./componenets/pages/reset_password";
 import UnderConstruction from "./componenets/pages/underconstruction";
 import MemberDetails from "./componenets/pages/member_details";
 import UpdateMember from "./componenets/pages/updatemember";
+import SideBar from "./componenets/Sidebar/SideBar";
 
 function App() {
   return (
@@ -45,29 +46,31 @@ function App() {
       />
       <BrowserRouter>
         <Routes>
+          <Route element={<SideBar />}>
+            <Route path="/membermanagement" element={<MemberManagement />} />
+            <Route path="/directory" element={<MemberDirectory />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/lock" element={<Lockscreen />} />
+            <Route path="/memberdetails" element={<MemberDetails />} />
+            <Route path="/updatemember" element={<UpdateMember />} />
+            <Route path="/addevent" element={<Addevent />} />
+            <Route path="/updateevent" element={<Updateevent />} />
+            <Route path="/eventdetails" element={<Eventdetails />} />
+            <Route path="/eventdirectory" element={<Eventdirectory />} />
+            <Route path="/compose" element={<Compose />} />
+            <Route path="/read" element={<Read />} />
+            <Route path="/inbox" element={<Inbox />} />
+            <Route path="/donations" element={<Donations />} />
+            <Route path="/literature" element={<Literature />} />
+            <Route path="/config" element={<Configuration />} />
+          </Route>
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/forgot" element={<ForgotPassword />} />
           <Route path="/recover" element={<RecoverPassword />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/membermanagement" element={<MemberManagement />} />
-          <Route path="/lock" element={<Lockscreen />} />
-          <Route path="/directory" element={<MemberDirectory />} />
-          <Route path="/memberdetails" element={<MemberDetails />} />
-          <Route path="/updatemember" element={<UpdateMember />} />
-          <Route path="/addevent" element={<Addevent />} />
-          <Route path="/updateevent" element={<Updateevent />} />
-          <Route path="/eventdetails" element={<Eventdetails />} />
-          <Route path="/eventdirectory" element={<Eventdirectory />} />
-          <Route path="/compose" element={<Compose />} />
-          <Route path="/read" element={<Read />} />
-          <Route path="/inbox" element={<Inbox />} />
-          <Route path="/donations" element={<Donations />} />
-          <Route path="/literature" element={<Literature />} />
-          <Route path="/config" element={<Configuration />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/reset-password" element={<ResetPassword />} />

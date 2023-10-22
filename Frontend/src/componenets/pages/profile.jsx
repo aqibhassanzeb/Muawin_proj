@@ -1,18 +1,15 @@
 import React from "react";
-import Sidenav from "../common/sidenav";
+
 import Footer from "../common/footer";
 import Navbar from "../common/navbar";
 
 const Profile = () => {
   return (
     <div className="wrapper">
-      {/* Navbar */}
       <Navbar />
-      {/* /.navbar */}
-      {/* Main Sidebar Container */}
-      <Sidenav />
+
       {/* Content Wrapper. Contains page content */}
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
@@ -25,7 +22,7 @@ const Profile = () => {
                   <li className="breadcrumb-item">
                     <a href="#">Home</a>
                   </li>
-                  <li className="breadcrumb-item active">User Profile</li>
+                  <li className="breadcrumb-item ">User Profile</li>
                 </ol>
               </div>
             </div>
@@ -43,13 +40,11 @@ const Profile = () => {
                     <div className="text-center">
                       <img
                         className="profile-user-img img-fluid img-circle"
-                        src="../../dist/img/user4-128x128.png"
+                        src="dist/img/user.png"
                         alt="User profile picture"
                       />
                     </div>
-                    <h3 className="profile-username text-center">
-                      Abdul Sami
-                    </h3>
+                    <h3 className="profile-username text-center">Admin</h3>
                     <p className="text-muted text-center">Software Engineer</p>
                     <ul className="list-group list-group-unbordered mb-3">
                       <li className="list-group-item">
@@ -140,7 +135,11 @@ const Profile = () => {
                   {/* /.card-header */}
                   <div className="card-body">
                     <div className="tab-content">
-                      <div className="active tab-pane" id="activity">
+                      <div
+                        className="active tab-pane"
+                        id="activity"
+                        style={{ backgroundColor: "white" }}
+                      >
                         {/* Post */}
                         <div className="post">
                           <div className="user-block">
@@ -319,7 +318,11 @@ const Profile = () => {
                         {/* /.post */}
                       </div>
                       {/* /.tab-pane */}
-                      <div className="tab-pane" id="timeline">
+                      <div
+                        className="tab-pane"
+                        id="timeline"
+                        style={{ backgroundColor: "white" }}
+                      >
                         {/* The timeline */}
                         <div className="timeline timeline-inverse">
                           {/* timeline time label */}

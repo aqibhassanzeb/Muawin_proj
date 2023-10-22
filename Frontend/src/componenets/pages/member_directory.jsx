@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
+
 import Footer from "../common/footer";
 import { useGetAllUsersQuery, useUpdateMemberMutation } from "../../api/api";
 import moment from "moment";
@@ -32,8 +32,8 @@ const Member_directory = () => {
         {/* Navbar */}
         <Navbar />
         {/* /.navbar */}
-        <Sidenav />
-        <div className="content-wrapper">
+        {/* <Sidenav /> */}
+        <div style={{ padding: "0 20px", minHeight: "83vh" }}>
           {/* Content Header (Page header) */}
           <section className="content-header">
             <div className="container-fluid">
@@ -46,7 +46,7 @@ const Member_directory = () => {
                     <li className="breadcrumb-item">
                       <a href="/dashboard">Home</a>
                     </li>
-                    <li className="breadcrumb-item active">Member Directory</li>
+                    <li className="breadcrumb-item ">Member Directory</li>
                   </ol>
                 </div>
               </div>

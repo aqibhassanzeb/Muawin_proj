@@ -1,7 +1,7 @@
 import React from "react";
 import "../css/style.css";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
+
 import Footer from "../common/footer";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -67,11 +67,8 @@ const Addevent = () => {
 
   return (
     <div className="wrapper">
-      {/* Navbar */}
       <Navbar />
-      {/* /.navbar */}
-      <Sidenav />
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
@@ -84,7 +81,7 @@ const Addevent = () => {
                   <li className="breadcrumb-item">
                     <Link to="/dashboard">Home</Link>
                   </li>
-                  <li className="breadcrumb-item active">Event Add</li>
+                  <li className="breadcrumb-item">Event Add</li>
                 </ol>
               </div>
             </div>

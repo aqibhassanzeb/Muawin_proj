@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
+
 import Footer from "../common/footer";
 import { Link, useNavigate } from "react-router-dom";
 import { useAllEventsQuery, useUpdateEventMutation } from "../../api/api";
@@ -29,11 +29,8 @@ const Eventdirectory = () => {
   return (
     <>
       <div className="wrapper">
-        {/* Navbar */}
         <Navbar />
-        {/* /.navbar */}
-        <Sidenav />
-        <div className="content-wrapper">
+        <div style={{ padding: "0 20px", minHeight: "83vh" }}>
           {/* Content Header (Page header) */}
           <section className="content-header">
             <div className="container-fluid">
@@ -46,7 +43,7 @@ const Eventdirectory = () => {
                     <li className="breadcrumb-item">
                       <Link to="/dashboard">Home</Link>
                     </li>
-                    <li className="breadcrumb-item active">Events</li>
+                    <li className="breadcrumb-item ">Events</li>
                   </ol>
                 </div>
               </div>
@@ -123,9 +120,11 @@ const Eventdirectory = () => {
                               row.status === "success"
                                 ? "badge-success"
                                 : row.status === "in-progress"
-                                ? "badge-secondary"
+                                ? "badge-primary"
                                 : row.status === "canceled"
                                 ? "badge-danger"
+                                : row.status === "upcoming"
+                                ? "badge-warning"
                                 : ""
                             }`}
                             style={{ padding: "5px 10px" }}
@@ -180,13 +179,13 @@ const Eventdirectory = () => {
           </section>
           {/* /.content */}
         </div>
+        <DeleteDialogue
+          open={openDeleteDialogue}
+          onClose={() => setOpenDeleteDialogue(false)}
+          onConfirm={() => handleDelete(selectedId)}
+        />
         <Footer />
       </div>
-      <DeleteDialogue
-        open={openDeleteDialogue}
-        onClose={() => setOpenDeleteDialogue(false)}
-        onConfirm={() => handleDelete(selectedId)}
-      />
     </>
   );
 };

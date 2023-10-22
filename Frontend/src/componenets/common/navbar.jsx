@@ -4,10 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../redux/reducers/auth";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { handleDrawerOpen } from "../../redux/reducers/appStateSlice";
 
 const Navbar = () => {
-  const { open } = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const navigagte = useNavigate();
   function handleLogout() {
@@ -25,7 +23,7 @@ const Navbar = () => {
       >
         {/* Left navbar links */}
         <ul className="navbar-nav">
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -35,7 +33,7 @@ const Navbar = () => {
             >
               <MenuIcon />
             </IconButton>
-          </li>
+          </li> */}
 
           {/* <li className="nav-item d-none d-sm-inline-block">
             <a href="/dashboard" className="nav-link">

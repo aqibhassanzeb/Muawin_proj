@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../css/style.css";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
+
 import Footer from "../common/footer";
 import moment from "moment";
 import jsPDF from "jspdf";
@@ -100,11 +100,8 @@ const Report = () => {
 
   return (
     <div className="wrapper">
-      {/* Navbar */}
       <Navbar />
-      {/* /.navbar */}
-      <Sidenav />
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px", minHeight: "84vh" }}>
         <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
@@ -116,7 +113,7 @@ const Report = () => {
                   <li className="breadcrumb-item">
                     <a href="/dashboard">Home</a>
                   </li>
-                  <li className="breadcrumb-item active">Reports</li>
+                  <li className="breadcrumb-item ">Reports</li>
                 </ol>
               </div>
             </div>

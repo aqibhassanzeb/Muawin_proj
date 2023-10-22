@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../css/style.css";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
+
 import Footer from "../common/footer";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -47,11 +47,8 @@ const Updateevent = () => {
   console.log(data);
   return (
     <div className="wrapper">
-      {/* Navbar */}
       <Navbar />
-      {/* /.navbar */}
-      <Sidenav />
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
@@ -64,7 +61,7 @@ const Updateevent = () => {
                   <li className="breadcrumb-item">
                     <a href="/dashboard">Home</a>
                   </li>
-                  <li className="breadcrumb-item active">Edit Event</li>
+                  <li className="breadcrumb-item ">Edit Event</li>
                 </ol>
               </div>
             </div>

@@ -7,6 +7,7 @@ export const ACCEPTED_ATTACHMENT_TYPES = [
   "image/png",
   "image/jpg",
 ];
+
 const headers = new Headers();
 headers.append(
   "X-CSCAPI-KEY",
@@ -18,3 +19,66 @@ export const requestOptions = {
   headers: headers,
   redirect: "follow",
 };
+
+export const routes = [
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    icon: <i className="nav-icon fas fa-tachometer-alt" />,
+  },
+  {
+    path: "/",
+    name: "Member Management",
+    icon: <i className="nav-icon far fa-image" />,
+    subRoutes: [
+      {
+        path: "/membermanagement",
+        name: "Add Member ",
+        icon: <i className="far fa-circle nav-icon" />,
+      },
+      {
+        path: "/directory",
+        name: "Member Directory",
+        icon: <i className="far fa-circle nav-icon" />,
+      },
+    ],
+  },
+  {
+    path: "/events",
+    name: "Program & Circulation",
+    icon: <i className="nav-icon fas fa-columns" />,
+    exact: true,
+    subRoutes: [
+      {
+        path: "/addevent",
+        name: "Add Event ",
+        icon: <i className="far fa-circle nav-icon" />,
+      },
+      {
+        path: "/eventdirectory",
+        name: "Events Directory",
+        icon: <i className="far fa-circle nav-icon" />,
+      },
+    ],
+  },
+  {
+    path: "/reports",
+    name: "Reports and Analytics",
+    icon: <i class="nav-icon fas fa-edit"></i>,
+  },
+  {
+    path: "/donations",
+    name: "Donations",
+    icon: <i class="nav-icon fas fa-tree"></i>,
+  },
+  {
+    path: "/literature",
+    name: "Literature",
+    icon: <i class="nav-icon fas fa-file"></i>,
+  },
+  {
+    path: "/config",
+    name: "Configuration",
+    icon: <i class="nav-icon far fa-plus-square"></i>,
+  },
+];

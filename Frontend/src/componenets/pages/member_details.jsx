@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
+
 import Footer from "../common/footer";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -17,11 +17,8 @@ const MemberDetails = () => {
 
   return (
     <div className="wrapper">
-      {/* Navbar */}
       <Navbar />
-      {/* /.navbar */}
-      <Sidenav />
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
@@ -34,7 +31,7 @@ const MemberDetails = () => {
                   <li className="breadcrumb-item">
                     <Link to="/dashboard">Home</Link>
                   </li>
-                  <li className="breadcrumb-item active">Member Details</li>
+                  <li className="breadcrumb-item ">Member Details</li>
                 </ol>
               </div>
             </div>

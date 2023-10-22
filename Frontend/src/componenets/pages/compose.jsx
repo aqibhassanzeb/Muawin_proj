@@ -1,16 +1,12 @@
 import React from "react";
 import Footer from "../common/footer";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
 
 const Compose = () => {
   return (
     <div className="wrapper">
-      {/* Navbar */}
       <Navbar />
-      {/* /.navbar */}
-      <Sidenav />
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
@@ -23,7 +19,7 @@ const Compose = () => {
                   <li className="breadcrumb-item">
                     <a href="/dashboard">Home</a>
                   </li>
-                  <li className="breadcrumb-item active">Compose</li>
+                  <li className="breadcrumb-item ">Compose</li>
                 </ol>
               </div>
             </div>
@@ -35,10 +31,7 @@ const Compose = () => {
           <div className="container-fluid">
             <div className="row">
               <div className="col-md-3">
-                <a
-                  href="/inbox"
-                  className="btn btn-primary btn-block mb-3"
-                >
+                <a href="/inbox" className="btn btn-primary btn-block mb-3">
                   Back to Inbox
                 </a>
                 <div className="card">

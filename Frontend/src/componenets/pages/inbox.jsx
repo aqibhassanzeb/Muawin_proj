@@ -1,16 +1,12 @@
 import React from "react";
 import Footer from "../common/footer";
 import Navbar from "../common/navbar";
-import Sidenav from "../common/sidenav";
 
 const Inbox = () => {
   return (
     <div className="wrapper">
-      {/* Navbar */}
       <Navbar />
-      {/* /.navbar */}
-      <Sidenav />
-      <div className="content-wrapper">
+      <div style={{ padding: "0 20px" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
@@ -23,7 +19,7 @@ const Inbox = () => {
                   <li className="breadcrumb-item">
                     <a href="/dashboard">Home</a>
                   </li>
-                  <li className="breadcrumb-item active">Inbox</li>
+                  <li className="breadcrumb-item ">Inbox</li>
                 </ol>
               </div>
             </div>
@@ -207,8 +203,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment" />
                           <td className="mailbox-date">5 mins ago</td>
@@ -229,8 +225,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -253,8 +249,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -277,8 +273,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment" />
                           <td className="mailbox-date">15 hours ago</td>
@@ -299,8 +295,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -323,8 +319,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -347,8 +343,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -371,8 +367,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment" />
                           <td className="mailbox-date">2 days ago</td>
@@ -393,8 +389,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment" />
                           <td className="mailbox-date">2 days ago</td>
@@ -419,8 +415,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment" />
                           <td className="mailbox-date">2 days ago</td>
@@ -445,8 +441,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -473,8 +469,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment" />
                           <td className="mailbox-date">12 days ago</td>
@@ -499,8 +495,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -527,8 +523,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />
@@ -555,8 +551,8 @@ const Inbox = () => {
                             <a href="/read">Abdul Sami</a>
                           </td>
                           <td className="mailbox-subject">
-                            <b>Resolve Issue</b> - Trying to find a
-                            solution to this problem...
+                            <b>Resolve Issue</b> - Trying to find a solution to
+                            this problem...
                           </td>
                           <td className="mailbox-attachment">
                             <i className="fas fa-paperclip" />

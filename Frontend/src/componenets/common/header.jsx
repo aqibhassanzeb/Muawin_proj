@@ -5,7 +5,6 @@ import { Chart } from "react-google-charts";
 import Todos from "../Todos";
 import EventsCalendar from "../EventsCalendar";
 import { useCalendarEventsQuery } from "../../api/api";
-import { useSelector } from "react-redux";
 
 const data = [
   ["Country", "Visitors"],
@@ -20,11 +19,10 @@ const data = [
 
 const Header = () => {
   const { data: events, isLoading: eventsLoading } = useCalendarEventsQuery();
-  const { open } = useSelector((state) => state.appState);
 
   return (
     <div>
-      <div style={{ marginLeft: open ? 243 : 0 }}>
+      <div>
         {/* Content Header (Page header) */}
         <div className="content-header">
           <div className="container-fluid">
@@ -38,7 +36,7 @@ const Header = () => {
                   <li className="breadcrumb-item">
                     <Link to="/dashboard">Home</Link>
                   </li>
-                  <li className="breadcrumb-item active">Dashboard</li>
+                  <li className="breadcrumb-item">Dashboard</li>
                 </ol>
               </div>
               {/* /.col */}
@@ -168,7 +166,11 @@ const Header = () => {
                       <div
                         className="chart tab-pane active"
                         id="revenue-chart"
-                        style={{ position: "relative", height: 300 }}
+                        style={{
+                          position: "relative",
+                          height: 300,
+                          backgroundColor: "white",
+                        }}
                       >
                         <canvas
                           id="revenue-chart-canvas"

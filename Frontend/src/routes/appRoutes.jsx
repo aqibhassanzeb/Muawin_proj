@@ -2,11 +2,6 @@ import UnderConstruction from "../componenets/pages/underconstruction";
 
 const appRoutes = [
   {
-    index: true,
-    element: <UnderConstruction />,
-    state: "home",
-  },
-  {
     path: "/member",
     element: <UnderConstruction />,
     state: "member",
@@ -15,11 +10,6 @@ const appRoutes = [
       icon: <i className="nav-icon far fa-image" />,
     },
     child: [
-      {
-        index: true,
-        element: <UnderConstruction />,
-        state: "member",
-      },
       {
         path: "/membermanagement",
         element: <UnderConstruction />,
@@ -32,7 +22,7 @@ const appRoutes = [
       {
         path: "/directory",
         element: <UnderConstruction />,
-        state: "dashboard.directory",
+        state: "member.directory",
         sidebarProps: {
           displayText: "Member Directory",
           icon: <i class="far fa-circle nav-icon"></i>,

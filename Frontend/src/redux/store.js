@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import authReducer from "./reducers/auth";
-import appStateSlice from "./reducers/appStateSlice";
 import { api } from "../api/api";
 import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
@@ -15,7 +14,6 @@ const persistConfig = {
   // blacklist: [api.reducerPath, globalReducer],
 };
 const reducer = combineReducers({
-  appState: appStateSlice,
   authReducer,
   [api.reducerPath]: api.reducer,
 });
