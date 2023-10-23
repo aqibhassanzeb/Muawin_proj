@@ -498,7 +498,7 @@ const Header = () => {
                       width="100%"
                       height="200px"
                       data={data}
-                      style={{ backgroundColor: "#047dff" }}
+                      style={{ backgroundColor: "white" }}
                     />
                   </div>
                   {/* /.card-body*/}

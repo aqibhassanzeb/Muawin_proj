@@ -10,6 +10,7 @@ import { z } from "zod";
 import { baseURL, useRegisterMutation } from "../api/api";
 import "./css/style.css";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import {
   educationInfoValidation,
   familyInfoValidation,
@@ -20,11 +21,14 @@ import {
 
 const MemberForm = () => {
   const [register, response] = useRegisterMutation();
+  const navigate = useNavigate();
 
   const {
+    getValues: pgetValues,
     register: pregister,
     handleSubmit: phandleSubmit,
     setValue: psetValue,
+    setError: psetError,
     formState: { errors: perrors },
   } = useForm({
     mode: "onSubmit",
@@ -73,11 +77,13 @@ const MemberForm = () => {
   const [cities, setCities] = useState([]);
 
   function onCountryChange(e) {
+    psetError("nationality", "");
     setCountry(e.target.value);
     psetValue("nationality", e.target.value);
   }
 
   function onProvinceChange(e) {
+    psetError("province", "");
     psetValue("province", e.target.value);
     fetch(`${baseURL}/cities/${country}/${e.target.value}`)
       .then((response) => response.json())
@@ -112,14 +118,13 @@ const MemberForm = () => {
         console.log(res);
         if (res?.data?.message) {
           toast.success(res?.data?.message);
+          navigate("/directory");
         } else if (res?.error?.data?.error) {
           toast.error(res?.error?.data?.error);
         }
       })
       .catch((err) => toast.error(err.message));
   }
-
-  console.log(eerrors);
 
   return (
     <>
@@ -177,8 +182,12 @@ const MemberForm = () => {
                             <span style={{ color: "red" }}>*</span>
                           </label>
                           <Datetime
+                            value={pgetValues("dob")}
                             timeFormat={false}
-                            onChange={(data) => psetValue("dob", data._d)}
+                            onChange={(data) => {
+                              psetError("dob", "");
+                              psetValue("dob", data._d);
+                            }}
                           />
                           {perrors.dob && (
                             <p className="validation-error">
@@ -210,6 +219,7 @@ const MemberForm = () => {
                             <span style={{ color: "red" }}>*</span>
                           </label>
                           <select
+                            value={pgetValues("province")}
                             name="province"
                             className="form-control"
                             style={{ width: "100%" }}
@@ -354,7 +364,7 @@ const MemberForm = () => {
                             Gender <span style={{ color: "red" }}>*</span>
                           </label>
                           <select
-                            name="country"
+                            name="gender\"
                             className="form-control"
                             style={{ width: "100%" }}
                             {...pregister("gender")}
@@ -377,6 +387,7 @@ const MemberForm = () => {
                             Nationality <span style={{ color: "red" }}>*</span>
                           </label>
                           <select
+                            value={country}
                             name="country"
                             className="form-control"
                             style={{ width: "100%" }}

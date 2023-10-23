@@ -146,7 +146,7 @@ export const personalInfoValidation = z.object({
   address: z.string().min(1, { message: "Address is required" }),
   blood: z.string().min(1, { message: "Blood type is required" }),
   city: z.string().min(1, { message: "City is required" }),
-  dob: z.string(),
+  dob: z.date(),
   email: z.string().email().min(1, { message: "Email is required" }),
   firstName: z
     .string()

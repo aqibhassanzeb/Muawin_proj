@@ -1,26 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/style.css";
 import Navbar from "../common/navbar";
-
+import Countries from "../../constants/Countries.json";
+import States from "../../constants/States.json";
 import Footer from "../common/footer";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
-import { useUpdateEventMutation } from "../../api/api";
+import { baseURL, useUpdateMemberMutation } from "../../api/api";
 import Loader from "../Loader";
 import { toast } from "sonner";
+import { deepEqual } from "../../utils";
 
 const UpdateMember = () => {
-  const [update, updateResp] = useUpdateEventMutation();
+  const [update, updateResp] = useUpdateMemberMutation();
 
   const { state } = useLocation();
-  console.log(state.user);
   const initialValues = {
     firstName: state.user.firstName,
     lastName: state.user.lastName,
     address: state.user.address,
     blood: state.user.blood,
     city: state.user.city,
-    dob: state.user.dob,
+    dob: state.user.dob.split("T")[0],
     email: state.user.email,
     gender: state.user.gender,
     height: state.user.height,
@@ -64,22 +65,39 @@ const UpdateMember = () => {
   };
 
   const [data, setData] = useState(initialValues);
+  const [cities, setCities] = useState([]);
+  const [hasChanged, setHasChanged] = useState(false);
 
   const onChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  function handleUpdate() {
-    toast.success("Under Construction");
-    // update({ id: state.event._id, data: { ...data, files: [...files] } }).then(
-    //   (res) => {
-    //     if (res?.data?.message) {
-    //       toast.success("Event Updated Successfully!");
-    //     }
-    //   }
-    // );
-  }
+  useEffect(() => {
+    function getCities() {
+      fetch(`${baseURL}/cities/${data.nationality}/${data.province}`)
+        .then((response) => response.json())
+        .then((result) => setCities(result))
+        .catch((error) => console.log("error", error));
+    }
+    getCities();
+  }, [data.province]);
 
+  useEffect(() => {
+    // Compare the current data with the initial values or any other reference point
+    const dataHasChanged = !deepEqual(data, initialValues);
+    setHasChanged(dataHasChanged);
+  }, [data, initialValues]);
+
+  console.log(hasChanged);
+
+  function handleUpdate() {
+    update({ id: state.user._id, data }).then((res) => {
+      if (res?.data?.message) {
+        toast.success("Member Updated Successfully!");
+      }
+    });
+  }
+  console.log(data);
   return (
     <div className="wrapper">
       <Navbar />
@@ -149,7 +167,7 @@ const UpdateMember = () => {
                     <label htmlFor="dob">Date Of Birth :</label>
                     <input
                       name="dob"
-                      type="text"
+                      type="date"
                       id="dob"
                       className="form-control"
                       value={data?.dob}
@@ -157,15 +175,22 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="gender">Gender</label>
-                    <input
+                    <label>Gender</label>
+                    <select
                       name="gender"
-                      type="text"
                       id="gender"
                       className="form-control"
-                      value={data?.gender}
+                      style={{ width: "100%" }}
+                      value={data.gender}
                       onChange={onChange}
-                    />
+                    >
+                      <option value="" selected defaultValue disabled>
+                        {" "}
+                      </option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="phone">Contact</label>
@@ -190,38 +215,60 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="email">Nationality</label>
-                    <input
+                    <label>Nationality</label>
+                    <select
                       name="nationality"
-                      type="text"
                       id="nationality"
+                      value={data.nationality}
+                      name="nationality"
                       className="form-control"
-                      value={data?.nationality}
+                      style={{ width: "100%" }}
                       onChange={onChange}
-                    />
+                    >
+                      <option selected="selected" disabled>
+                        {" "}
+                      </option>
+                      {Countries.map((country) => (
+                        <option>{country.name}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="province">Province / State</label>
-                    <input
+                    <label>Province / State </label>
+                    <select
+                      value={data.province}
                       name="province"
-                      type="text"
                       id="province"
                       className="form-control"
-                      value={data?.province}
+                      style={{ width: "100%" }}
                       onChange={onChange}
-                    />
+                    >
+                      <option selected disabled value={null}></option>
+                      {States.map((state) => {
+                        if (state.country_name === data.nationality) {
+                          return <option>{state.name}</option>;
+                        }
+                      })}
+                    </select>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="city">City</label>
-                    <input
+                    <label>City</label>
+                    <select
                       name="city"
-                      type="text"
                       id="city"
                       className="form-control"
-                      value={data?.city}
+                      style={{ width: "100%" }}
+                      value={data.city}
                       onChange={onChange}
-                    />
+                    >
+                      <option value="" selected defaultValue disabled>
+                        {" "}
+                      </option>
+                      {cities.map((city) => (
+                        <option>{city.name}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="zip">ZIP</label>
@@ -246,15 +293,27 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="blood">Blood Group</label>
-                    <input
+                    <label>Blood Group</label>
+                    <select
                       name="blood"
-                      type="text"
                       id="blood"
                       className="form-control"
-                      value={data?.blood}
+                      style={{ width: "100%" }}
+                      value={data.blood}
                       onChange={onChange}
-                    />
+                    >
+                      <option value="" selected defaultValue disabled>
+                        {" "}
+                      </option>
+                      <option value="a+">A+</option>
+                      <option value="a-">A-</option>
+                      <option value="b+">B+</option>
+                      <option value="b-">B-</option>
+                      <option value="ab+">AB+</option>
+                      <option value="ab-">AB-</option>
+                      <option value="o+">O+</option>
+                      <option value="o-">O-</option>
+                    </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="religion">Religion</label>
@@ -290,15 +349,23 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="maritalStatus">Marital Status</label>
-                    <input
+                    <label>Marital Status</label>
+                    <select
                       name="maritalStatus"
-                      type="text"
                       id="maritalStatus"
                       className="form-control"
-                      value={data?.maritalStatus}
+                      style={{ width: "100%" }}
+                      value={data.maritalStatus}
                       onChange={onChange}
-                    />
+                    >
+                      <option value="" selected defaultValue disabled>
+                        {" "}
+                      </option>
+                      <option value="single">Single</option>
+                      <option value="married">Married</option>
+                      <option value="divorced">Divorced</option>
+                      <option value="widowed">Widowed</option>
+                    </select>
                   </div>
                   <div className="form-group">
                     <label htmlFor="medicalCondition">Medical Condition</label>
@@ -346,10 +413,24 @@ const UpdateMember = () => {
                       Father's Full Name <span style={{ color: "red" }}>*</span>
                     </label>
                     <input
+                      name="fatherName"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
                       value={data?.fatherName}
+                      onChange={onChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      Mother's Full Name <span style={{ color: "red" }}>*</span>
+                    </label>
+                    <input
+                      name="motherName"
+                      type="text"
+                      className="form-control"
+                      style={{ width: "100%" }}
+                      value={data?.motherName}
                       onChange={onChange}
                     />
                   </div>
@@ -362,6 +443,7 @@ const UpdateMember = () => {
                       </span>
                     </label>
                     <input
+                      name="spouseName"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -373,6 +455,7 @@ const UpdateMember = () => {
                   <div className="form-group">
                     <label>Siblings' Names and Ages</label>
                     <textarea
+                      name="siblings"
                       className="form-control"
                       style={{ width: "100%" }}
                       rows="4"
@@ -383,24 +466,12 @@ const UpdateMember = () => {
 
                   <div className="form-group">
                     <label>
-                      Mother's Full Name <span style={{ color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      style={{ width: "100%" }}
-                      value={data?.motherName}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>
                       Number of Dependents{" "}
                       <span style={{ color: "red" }}>*</span>
                     </label>
                     <input
-                      type="text"
+                      name="dependents"
+                      type="number"
                       className="form-control"
                       style={{ width: "100%" }}
                       value={data?.dependents}
@@ -414,10 +485,11 @@ const UpdateMember = () => {
                       <span style={{ color: "red" }}>*</span>
                     </label>
                     <input
+                      name="familyContact"
                       type="tel"
                       className="form-control"
                       style={{ width: "100%" }}
-                      value={data?.dependents}
+                      value={data?.familyContact}
                       onChange={onChange}
                     />
                   </div>
@@ -528,18 +600,6 @@ const UpdateMember = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="references">Work-related References</label>
-                    <textarea
-                      name="references"
-                      type="text"
-                      id="references"
-                      className="form-control"
-                      value={data?.references}
-                      onChange={onChange}
-                      rows={2}
-                    />
-                  </div>
-                  <div className="form-group">
                     <label htmlFor="positions">
                       Previous Employers and Positions :
                     </label>
@@ -621,6 +681,7 @@ const UpdateMember = () => {
                       <span style={{ color: "red" }}>*</span>
                     </label>
                     <input
+                      name="major"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -632,6 +693,7 @@ const UpdateMember = () => {
                   <div className="form-group">
                     <label>GPA or Academic Achievements</label>
                     <textarea
+                      name="gpa"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -643,6 +705,7 @@ const UpdateMember = () => {
                   <div className="form-group">
                     <label>Academic Honors/Awards</label>
                     <textarea
+                      name="awards"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -651,11 +714,9 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Name of School / College / University{" "}
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Name of School / College / University </label>
                     <input
+                      name="institute"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -667,6 +728,7 @@ const UpdateMember = () => {
                   <div className="form-group">
                     <label>Graduation Year</label>
                     <input
+                      name="graduationYear"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -678,6 +740,7 @@ const UpdateMember = () => {
                   <div className="form-group">
                     <label>Certifications or Degrees Earned </label>
                     <textarea
+                      name="certificates"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -708,6 +771,7 @@ const UpdateMember = () => {
                       Interests/Hobbies <span style={{ color: "red" }}>*</span>
                     </label>
                     <textarea
+                      name="interests"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -722,6 +786,7 @@ const UpdateMember = () => {
                       <span style={{ color: "red" }}> *</span>
                     </label>
                     <textarea
+                      name="socialMediaProfiles"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -737,6 +802,7 @@ const UpdateMember = () => {
                       </span>
                     </label>
                     <textarea
+                      name="militaryServices"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -749,6 +815,7 @@ const UpdateMember = () => {
                       Languages Spoken <span style={{ color: "red" }}>*</span>
                     </label>
                     <textarea
+                      name="languages"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -761,6 +828,7 @@ const UpdateMember = () => {
                       Volunteer Work <span style={{ color: "red" }}>*</span>
                     </label>
                     <textarea
+                      name="volunteerWork"
                       type="text"
                       className="form-control"
                       style={{ width: "100%" }}
@@ -785,6 +853,7 @@ const UpdateMember = () => {
                 </div>
               ) : (
                 <button
+                  disabled={!hasChanged}
                   onClick={handleUpdate}
                   type="button"
                   className="btn btn-success float-right"

@@ -33,3 +33,27 @@ export function isActive(lastActiveDate) {
   const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
   return daysDifference >= 30;
 }
+
+export function deepEqual(objA, objB) {
+  if (objA === objB) return true;
+
+  if (
+    typeof objA !== "object" ||
+    typeof objB !== "object" ||
+    objA === null ||
+    objB === null
+  )
+    return false;
+
+  const keysA = Object.keys(objA);
+  const keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) return false;
+
+  for (let key of keysA) {
+    if (!objB.hasOwnProperty(key) || !deepEqual(objA[key], objB[key]))
+      return false;
+  }
+
+  return true;
+}
