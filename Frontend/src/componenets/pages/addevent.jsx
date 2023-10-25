@@ -71,6 +71,7 @@ const Addevent = () => {
 
   return (
     <div className="wrapper">
+      
       {/* Navbar */}
       <Navbar />
       {/* /.navbar */}
