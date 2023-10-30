@@ -11,8 +11,7 @@ import { uploadFiles, useAddEventMutation } from "../../api/api";
 import ProgressLoader from "../ProgressLoader";
 import { toast } from "sonner";
 import { eventValidationSchema, validateFiles } from "../../utils/validations";
-import Datetime from "react-datetime";
-import moment from "moment";
+import {useNavigate} from "react-router-dom"
 import { convertToUnix } from "../../utils";
 
 const Addevent = () => {
@@ -33,6 +32,8 @@ const Addevent = () => {
 
   const [files, setFiles] = useState([]);
   const [progress, setProgress] = useState(0);
+
+  const navigate =  useNavigate()
 
   async function onSubmit(data) {
     const isValid = await validateFiles(files, setError);
@@ -58,6 +59,7 @@ const Addevent = () => {
             setValue("status", "");
             if (res?.data?.message) {
               toast.success("Event Added Successfully");
+              navigate("/eventdirectory")
             }
           });
         })

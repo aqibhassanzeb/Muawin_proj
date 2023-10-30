@@ -10,7 +10,7 @@ import { z } from "zod";
 import { baseURL, useRegisterMutation } from "../api/api";
 import "./css/style.css";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom"
 import {
   educationInfoValidation,
   familyInfoValidation,
