@@ -10,8 +10,12 @@ import { convertMinutes } from "../../utils/index";
 import { baseURL } from "../../api/api";
 import axios from "axios";
 import Loader from "../Loader";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const Report = () => {
+  const user = useSelector((state) => state.authReducer.activeUser);
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reportFormat, setReportFormat] = useState("pdf");
@@ -32,17 +36,32 @@ const Report = () => {
   };
 
   const handleGenerateReport = () => {
+    if (!startDate || !endDate) {
+      toast.error("Please Select Start & End Date");
+      return;
+    }
     const unixStartDate = moment(startDate).unix();
     const unixEndDate = moment(endDate).unix();
     setIsLoading(true);
     axios
       .get(`${baseURL}/event/pdf`, {
-        params: { startDate: unixStartDate, endDate: unixEndDate },
+        params: {
+          startDate: unixStartDate,
+          endDate: unixEndDate,
+          userId:
+            user.role === "admin"
+              ? null
+              : user.role === "rukan"
+              ? user._id
+              : user.created_by,
+        },
       })
       .then((response) => {
         setIsLoading(false);
         const data = response.data;
-        if (reportFormat === "pdf") {
+        if (data.length === 0) {
+          return toast.error("No Events Found");
+        } else if (reportFormat === "pdf") {
           const report = new jsPDF("portrait", "pt", "a4");
           const image = new Image();
           image.src = "dist/img/Muawin-Logo.png";

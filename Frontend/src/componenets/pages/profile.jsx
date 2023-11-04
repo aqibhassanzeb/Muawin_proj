@@ -2,8 +2,11 @@ import React from "react";
 
 import Footer from "../common/footer";
 import Navbar from "../common/navbar";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
+  const user = useSelector((state) => state.authReducer.activeUser);
+
   return (
     <div className="wrapper">
       <Navbar />
@@ -44,8 +47,10 @@ const Profile = () => {
                         alt="User profile picture"
                       />
                     </div>
-                    <h3 className="profile-username text-center">Admin</h3>
-                    <p className="text-muted text-center">Software Engineer</p>
+                    <h3 className="profile-username text-center">
+                      {user?.firstName} {user?.lastName}
+                    </h3>
+                    <p className="text-muted text-center">{user?.jobTitle}</p>
                     <ul className="list-group list-group-unbordered mb-3">
                       <li className="list-group-item">
                         <b>Followers</b> <a className="float-right">1,322</a>
@@ -75,33 +80,26 @@ const Profile = () => {
                       <i className="fas fa-book mr-1" /> Education
                     </strong>
                     <p className="text-muted">
-                      B.S. in Computer Science from the University of Tennessee
-                      at Knoxville
+                      <span style={{ textTransform: "uppercase" }}>
+                        {user?.educationLevel}
+                      </span>{" "}
+                      in {user?.major} from {user?.institute}
                     </p>
                     <hr />
                     <strong>
                       <i className="fas fa-map-marker-alt mr-1" /> Location
                     </strong>
-                    <p className="text-muted">Malibu, California</p>
+                    <p className="text-muted">{user?.address}</p>
                     <hr />
                     <strong>
                       <i className="fas fa-pencil-alt mr-1" /> Skills
                     </strong>
-                    <p className="text-muted">
-                      <span className="tag tag-danger">UI Design</span>
-                      <span className="tag tag-success">Coding</span>
-                      <span className="tag tag-info">Javascript</span>
-                      <span className="tag tag-warning">PHP</span>
-                      <span className="tag tag-primary">Node.js</span>
-                    </p>
+                    <p className="text-muted">{user?.skills}</p>
                     <hr />
                     <strong>
                       <i className="far fa-file-alt mr-1" /> Notes
                     </strong>
-                    <p className="text-muted">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Etiam fermentum enim neque.
-                    </p>
+                    <p className="text-muted">{user?.notes}</p>
                   </div>
                   {/* /.card-body */}
                 </div>

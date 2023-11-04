@@ -18,10 +18,12 @@ import {
   professionalInfoValidation,
   otherInfoValidation,
 } from "../utils/validations";
+import { useSelector } from "react-redux";
 
 const MemberForm = () => {
   const [register, response] = useRegisterMutation();
   const navigate = useNavigate();
+  const user = useSelector((state) => state.authReducer.activeUser);
 
   const {
     getValues: pgetValues,
@@ -113,7 +115,12 @@ const MemberForm = () => {
   }
 
   function onOtherSubmit(data) {
-    register({ ...formData, ...data, role: "member" })
+    register({
+      ...formData,
+      ...data,
+      created_by: user._id,
+      role: user.role === "rukan" ? "muawin" : data.role,
+    })
       .then((res) => {
         console.log(res);
         if (res?.data?.message) {
@@ -1190,6 +1197,33 @@ const MemberForm = () => {
                             </p>
                           )}
                         </div>
+                        {user.role === "rukan" ? null : (
+                          <div className="form-group">
+                            <label>
+                              Member Role{" "}
+                              <span style={{ color: "red" }}>*</span>
+                            </label>
+                            <select
+                              name="blood"
+                              className="form-control"
+                              style={{ width: "100%" }}
+                              {...oregister("role")}
+                            >
+                              <option value="" selected defaultValue disabled>
+                                {" "}
+                              </option>
+                              <option value="rukan">Rukan</option>
+                              <option value="muawin">Muawin</option>
+                              <option value="donor">Donor</option>
+                              <option value="director">Director</option>
+                            </select>
+                            {oerrors.role && (
+                              <p className="validation-error">
+                                {oerrors.role?.message}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <hr />

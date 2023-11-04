@@ -12,9 +12,11 @@ import { validateFiles } from "../../utils/validations";
 import ProgressLoader from "../ProgressLoader";
 import moment from "moment";
 import { convertMinutes } from "../../utils";
+import { useSelector } from "react-redux";
 
 const Eventdetails = () => {
   const [update, updateResp] = useUpdateEventMutation();
+  const user = useSelector((state) => state.authReducer.activeUser);
 
   const { state } = useLocation();
   const [stateFiles, setStateFiles] = useState(state?.event?.files);
@@ -215,34 +217,36 @@ const Eventdetails = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="form-group">
-                        <div className="btn btn-sm btn-primary btn-file">
-                          <i className="fas fa-paperclip" /> Add Files
-                          <input
-                            type="file"
-                            name="attachment"
-                            onChange={(e) => {
-                              setFiles(e.target.files);
+                      user.role !== "muawin" && (
+                        <div className="form-group">
+                          <div className="btn btn-sm btn-primary btn-file">
+                            <i className="fas fa-paperclip" /> Add Files
+                            <input
+                              type="file"
+                              name="attachment"
+                              onChange={(e) => {
+                                setFiles(e.target.files);
+                              }}
+                              multiple
+                            />
+                          </div>
+                          <p
+                            style={{
+                              display: "inline",
+                              marginLeft: 5,
+                              fontSize: 12,
                             }}
-                            multiple
-                          />
-                        </div>
-                        <p
-                          style={{
-                            display: "inline",
-                            marginLeft: 5,
-                            fontSize: 12,
-                          }}
-                          className="help-block"
-                        >
-                          Max. 10 MB
-                        </p>
-                        {error.attachment && (
-                          <p className="validation-error">
-                            {error.attachment?.message}
+                            className="help-block"
+                          >
+                            Max. 10 MB
                           </p>
-                        )}
-                      </div>
+                          {error.attachment && (
+                            <p className="validation-error">
+                              {error.attachment?.message}
+                            </p>
+                          )}
+                        </div>
+                      )
                     )}
                     {/* <button className="btn btn-sm btn-primary">
                       Add Files

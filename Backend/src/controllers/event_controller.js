@@ -43,7 +43,18 @@ export const updateEvent = async (req, res) => {
 };
 
 export const generateEvents = async (req, res) => {
-  const { startDate, endDate } = req.query;
+  const { startDate, endDate, userId } = req.query;
+
+  const filter = {
+    is_active: true,
+    date: {
+      $gte: Number(startDate),
+      $lte: Number(endDate) + 86400,
+    },
+  };
+  if (userId) {
+    filter.created_by = userId;
+  }
 
   try {
     if (!startDate || !endDate) {
@@ -53,7 +64,26 @@ export const generateEvents = async (req, res) => {
     }
     const endOfDay = new Date(endDate);
     endOfDay.setHours(23, 59, 59, 999);
+    const events = await Event.find(filter);
+    res.json(events);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const generateUserPDF = async (req, res) => {
+  const { userId, startDate, endDate } = req.query;
+  try {
+    if (!startDate || !endDate) {
+      return res
+        .status(400)
+        .json({ error: "Start date and end date are required." });
+    }
+    const endOfDay = new Date(endDate);
+    endOfDay.setHours(23, 59, 59, 999);
     const events = await Event.find({
+      is_active: true,
+      created_by: userId,
       date: {
         $gte: Number(startDate),
         $lte: Number(endDate) + 86400,
