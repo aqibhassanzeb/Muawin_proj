@@ -54,14 +54,10 @@ const Login = () => {
 
   useEffect(() => {
     if (response?.isSuccess && response?.data?.message) {
-      if (response?.data?.user.role === "member") {
-        navigate("/under-construction");
-      } else {
-        dispatch(setActiveUser(response?.data?.user));
-        dispatch(setToken(response?.data?.token));
-        toast.success("Login Successful");
-        navigate("/dashboard");
-      }
+      dispatch(setActiveUser(response?.data?.user));
+      dispatch(setToken(response?.data?.token));
+      toast.success("Login Successful");
+      navigate("/dashboard");
     }
   }, [response?.isSuccess]);
 

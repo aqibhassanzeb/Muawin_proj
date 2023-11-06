@@ -9,7 +9,7 @@ import {
 } from "../controllers/admin_controller.js";
 
 routes.get("/events", getEvents);
-routes.get("/events/calendar", eventsForCalender);
+routes.get("/events/calendar", protect, eventsForCalender);
 routes.get("/users", getMembers);
 routes.put("/users/:_id", updateMember);
 

@@ -1,13 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { BiSearch } from "react-icons/bi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarMenu from "./SidebarMenu";
 import { Outlet } from "react-router-dom";
 import { Divider } from "@mui/material";
 import { useSelector } from "react-redux";
-import { routes } from "../../constants";
+// import { routes } from "../../constants";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 const SideBar = () => {
@@ -51,6 +51,98 @@ const SideBar = () => {
       },
     },
   };
+
+  const initialRoutes = [
+    {
+      path: "/dashboard",
+      name: "Dashboard",
+      icon: <i className="nav-icon fas fa-tachometer-alt" />,
+    },
+    {
+      path: "/users",
+      name: user?.role === "rukan" ? "Muawin Management" : "Member Management",
+      icon: <i className="nav-icon far fa-image" />,
+      subRoutes: [
+        {
+          path: "/membermanagement",
+          name: user?.role === "rukan" ? "Add Muawin" : "Add Member",
+          icon: <i className="far fa-circle nav-icon" />,
+        },
+        {
+          path: "/directory",
+          name:
+            user?.role === "rukan" ? "Muawin's Directory" : "Member Directory",
+          icon: <i className="far fa-circle nav-icon" />,
+        },
+      ],
+    },
+    {
+      path: "/events",
+      name: "Program & Circulation",
+      icon: <i className="nav-icon fas fa-columns" />,
+      exact: true,
+      subRoutes: [
+        {
+          path: "/addevent",
+          name: "Add Event ",
+          icon: <i className="far fa-circle nav-icon" />,
+        },
+        {
+          path: "/eventdirectory",
+          name: "Events Directory",
+          icon: <i className="far fa-circle nav-icon" />,
+        },
+      ],
+    },
+    {
+      path: "/reports",
+      name: "Reports and Analytics",
+      icon: <i class="nav-icon fas fa-edit"></i>,
+    },
+    {
+      path: "/donations",
+      name: "Donations",
+      icon: <i class="nav-icon fas fa-tree"></i>,
+    },
+    {
+      path: "/literature",
+      name: "Literature",
+      icon: <i class="nav-icon fas fa-file"></i>,
+    },
+  ];
+
+  const [routes, setRoutes] = useState(initialRoutes);
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      setRoutes((prev) => [
+        ...prev,
+        {
+          path: "/config",
+          name: "Configuration",
+          icon: <i class="nav-icon far fa-plus-square"></i>,
+        },
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user?.role === "muawin") {
+      const updatedRoutes = initialRoutes.filter((route) => {
+        if (route.path === "/users") {
+          return false;
+        } else if (route.path === "/events") {
+          route.subRoutes = route.subRoutes.filter(
+            (subRoute) => subRoute.path !== "/addevent"
+          );
+        }
+        return true;
+      });
+      setRoutes(updatedRoutes);
+    }
+  }, []);
+
+  console.log(routes);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);

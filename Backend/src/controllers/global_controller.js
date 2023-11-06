@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { Todo } from "../models/todo.js";
+import { User } from "../models/user.js";
+import { Event } from "../models/event.js";
 
 export const getCities = async (req, res) => {
   let { country, state } = req.params;
@@ -57,6 +59,19 @@ export const getTodos = async (req, res) => {
   }
 };
 
+export const getTodosCount = async (req, res) => {
+  try {
+    const count = await Todo.countDocuments({
+      created_by: req.user._id,
+      isCompleted: false,
+    });
+    res.status(200).json(count);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export const updateTodo = async (req, res) => {
   const { _id } = req.params;
   try {
@@ -73,6 +88,54 @@ export const deleteTodo = async (req, res) => {
     await Todo.findByIdAndDelete({ _id });
     res.status(200).json({ message: "delete successfully" });
   } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const getMuawins = async (req, res) => {
+  try {
+    const users = await User.find({
+      is_active: true,
+      created_by: req.params._id,
+    }).sort({ createdAt: -1 });
+    res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const getUserEvents = async (req, res) => {
+  const { role } = req.user;
+  try {
+    const events = await Event.find({
+      is_active: true,
+      created_by: role === "rukan" ? req.user._id : req.user.created_by,
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(events);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const getUserCount = async (req, res) => {
+  const { role } = req.user;
+  const filter = {
+    is_active: true,
+  };
+  if (role === "rukan") {
+    filter.created_by = req.user._id;
+  }
+  try {
+    const users = await User.countDocuments(filter).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };

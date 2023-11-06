@@ -4,7 +4,12 @@ import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded
 import { Chart } from "react-google-charts";
 import Todos from "../Todos";
 import EventsCalendar from "../EventsCalendar";
-import { useCalendarEventsQuery } from "../../api/api";
+import {
+  useCalendarEventsQuery,
+  useGetAllUsersCountQuery,
+  useGetTodosCountQuery,
+} from "../../api/api";
+import { useSelector } from "react-redux";
 
 const data = [
   ["Country", "Visitors"],
@@ -18,7 +23,13 @@ const data = [
 ];
 
 const Header = () => {
+  const user = useSelector((state) => state.authReducer.activeUser);
+
   const { data: events, isLoading: eventsLoading } = useCalendarEventsQuery();
+  const { data: userCount, isLoading: userCountLoading } =
+    useGetAllUsersCountQuery();
+  const { data: todoCount, isLoading: todoCountLoading } =
+    useGetTodosCountQuery();
 
   return (
     <div>
@@ -51,21 +62,31 @@ const Header = () => {
           <div className="container-fluid">
             {/* Small boxes (Stat box) */}
             <div className="row">
-              <div className="col-lg-3 col-6">
-                {/* small box */}
-                <div className="small-box bg-info">
-                  <div className="inner">
-                    <h3>150</h3>
-                    <p>Total User</p>
+              {user?.role !== "muawin" && (
+                <div className="col-lg-3 col-6">
+                  {/* small box */}
+                  <div className="small-box bg-info">
+                    <div className="inner">
+                      <h3>
+                        {userCountLoading ? (
+                          <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                        ) : (
+                          userCount
+                        )}
+                      </h3>
+                      <p>
+                        Total {user?.role === "admin" ? "Users" : "Muawin's"}
+                      </p>
+                    </div>
+                    <div className="icon">
+                      <i className="ion ion-person-add" />
+                    </div>
+                    <Link to="/directory" className="small-box-footer">
+                      More info <i className="fas fa-arrow-circle-right" />
+                    </Link>
                   </div>
-                  <div className="icon">
-                    <i className="ion ion-bag" />
-                  </div>
-                  <a href="/directory" className="small-box-footer">
-                    More info <i className="fas fa-arrow-circle-right" />
-                  </a>
                 </div>
-              </div>
+              )}
               {/* ./col */}
               <div className="col-lg-3 col-6">
                 {/* small box */}
@@ -79,9 +100,9 @@ const Header = () => {
                   <div className="icon">
                     <i className="ion ion-stats-bars" />
                   </div>
-                  <a href="/reports" className="small-box-footer">
+                  <Link to="/reports" className="small-box-footer">
                     More info <i className="fas fa-arrow-circle-right" />
-                  </a>
+                  </Link>
                 </div>
               </div>
               {/* ./col */}
@@ -89,14 +110,20 @@ const Header = () => {
                 {/* small box */}
                 <div className="small-box bg-warning">
                   <div className="inner">
-                    <h3>44</h3>
-                    <p>User Registrations</p>
+                    <h3>
+                      {todoCountLoading ? (
+                        <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                      ) : (
+                        todoCount
+                      )}
+                    </h3>
+                    <p>Incomplete Tasks</p>
                   </div>
                   <div className="icon">
-                    <i className="ion ion-person-add" />
+                    <i className="fas fa-tasks"></i>
                   </div>
-                  <a href="/membermanagement" className="small-box-footer">
-                    More info <i className="fas fa-arrow-circle-right" />
+                  <a className="small-box-footer">
+                    <i className="fas fa-arrow-circle-down" />
                   </a>
                 </div>
               </div>
@@ -130,69 +157,71 @@ const Header = () => {
               {/* Left col */}
               <section className="col-lg-7 connectedSortable">
                 {/* Custom tabs (Charts with tabs)*/}
-                <div className="card">
-                  <div className="card-header">
-                    <h3 className="card-title">
-                      <i className="fas fa-chart-pie mr-1" />
-                      Demographics
-                    </h3>
-                    <div className="card-tools">
-                      <ul className="nav nav-pills ml-auto">
-                        <li className="nav-item">
-                          <a
-                            className="nav-link active"
-                            href="#revenue-chart"
-                            data-toggle="tab"
-                          >
-                            Area
-                          </a>
-                        </li>
-                        <li className="nav-item">
-                          <a
-                            className="nav-link"
-                            href="#sales-chart"
-                            data-toggle="tab"
-                          >
-                            Donut
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  {/* /.card-header */}
-                  <div className="card-body">
-                    <div className="tab-content p-0">
-                      {/* Morris chart - Sales */}
-                      <div
-                        className="chart tab-pane active"
-                        id="revenue-chart"
-                        style={{
-                          position: "relative",
-                          height: 300,
-                          backgroundColor: "white",
-                        }}
-                      >
-                        <canvas
-                          id="revenue-chart-canvas"
-                          height={300}
-                          style={{ height: 300 }}
-                        />
-                      </div>
-                      <div
-                        className="chart tab-pane"
-                        id="sales-chart"
-                        style={{ position: "relative", height: 300 }}
-                      >
-                        <canvas
-                          id="sales-chart-canvas"
-                          height={300}
-                          style={{ height: 300 }}
-                        />
+                {user?.role === "admin" && (
+                  <div className="card">
+                    <div className="card-header">
+                      <h3 className="card-title">
+                        <i className="fas fa-chart-pie mr-1" />
+                        Demographics
+                      </h3>
+                      <div className="card-tools">
+                        <ul className="nav nav-pills ml-auto">
+                          <li className="nav-item">
+                            <a
+                              className="nav-link active"
+                              href="#revenue-chart"
+                              data-toggle="tab"
+                            >
+                              Area
+                            </a>
+                          </li>
+                          <li className="nav-item">
+                            <a
+                              className="nav-link"
+                              href="#sales-chart"
+                              data-toggle="tab"
+                            >
+                              Donut
+                            </a>
+                          </li>
+                        </ul>
                       </div>
                     </div>
+                    {/* /.card-header */}
+                    <div className="card-body">
+                      <div className="tab-content p-0">
+                        {/* Morris chart - Sales */}
+                        <div
+                          className="chart tab-pane active"
+                          id="revenue-chart"
+                          style={{
+                            position: "relative",
+                            height: 300,
+                            backgroundColor: "white",
+                          }}
+                        >
+                          <canvas
+                            id="revenue-chart-canvas"
+                            height={300}
+                            style={{ height: 300 }}
+                          />
+                        </div>
+                        <div
+                          className="chart tab-pane"
+                          id="sales-chart"
+                          style={{ position: "relative", height: 300 }}
+                        >
+                          <canvas
+                            id="sales-chart-canvas"
+                            height={300}
+                            style={{ height: 300 }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    {/* /.card-body */}
                   </div>
-                  {/* /.card-body */}
-                </div>
+                )}
                 {/* /.card */}
                 {/* DIRECT CHAT */}
                 {/* <div className="card direct-chat direct-chat-primary">
@@ -450,79 +479,81 @@ const Header = () => {
               {/* right col (We are only adding the ID to make the widgets sortable)*/}
               <section className="col-lg-5 connectedSortable">
                 {/* Map card */}
-                <div className="card ">
-                  <div className="card-header border-0">
-                    <h3 className="card-title">
-                      <i className="fas fa-map-marker-alt mr-1" />
-                      Visitors
-                    </h3>
-                    {/* card tools */}
-                    <div className="card-tools">
-                      {/* <button
+                {user?.role === "admin" && (
+                  <div className="card ">
+                    <div className="card-header border-0">
+                      <h3 className="card-title">
+                        <i className="fas fa-map-marker-alt mr-1" />
+                        Visitors
+                      </h3>
+                      {/* card tools */}
+                      <div className="card-tools">
+                        {/* <button
                         type="button"
                         className="btn btn-primary btn-sm daterange"
                         title="Date range"
                       >
                         <i className="far fa-calendar-alt" />
                       </button> */}
-                      <button
-                        type="button"
-                        className="btn btn-primary btn-sm"
-                        data-card-widget="collapse"
-                        title="Collapse"
-                      >
-                        <i className="fas fa-minus" />
-                      </button>
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm"
+                          data-card-widget="collapse"
+                          title="Collapse"
+                        >
+                          <i className="fas fa-minus" />
+                        </button>
+                      </div>
+                      {/* /.card-tools */}
                     </div>
-                    {/* /.card-tools */}
-                  </div>
-                  <div className="card-body">
-                    {/* <div
+                    <div className="card-body">
+                      {/* <div
                       id="world-map"
                       style={{ height: 250, width: "100%" }}
                     /> */}
-                    <Chart
-                      chartEvents={[
-                        {
-                          eventName: "select",
-                          callback: ({ chartWrapper }) => {
-                            const chart = chartWrapper.getChart();
-                            const selection = chart.getSelection();
-                            if (selection.length === 0) return;
-                            const region = data[selection[0].row + 1];
-                            console.log("Selected : " + region);
+                      <Chart
+                        chartEvents={[
+                          {
+                            eventName: "select",
+                            callback: ({ chartWrapper }) => {
+                              const chart = chartWrapper.getChart();
+                              const selection = chart.getSelection();
+                              if (selection.length === 0) return;
+                              const region = data[selection[0].row + 1];
+                              console.log("Selected : " + region);
+                            },
                           },
-                        },
-                      ]}
-                      chartType="GeoChart"
-                      width="100%"
-                      height="200px"
-                      data={data}
-                      style={{ backgroundColor: "white" }}
-                    />
-                  </div>
-                  {/* /.card-body*/}
-                  <div className="card-footer ">
-                    <div className="row">
-                      <div className="col-4 text-center">
-                        <div id="sparkline-1" />
-                        <div className="">
-                          Today Visitors{" "}
-                          <span style={{ fontWeight: 600 }}>2</span>
+                        ]}
+                        chartType="GeoChart"
+                        width="100%"
+                        height="200px"
+                        data={data}
+                        style={{ backgroundColor: "white" }}
+                      />
+                    </div>
+                    {/* /.card-body*/}
+                    <div className="card-footer ">
+                      <div className="row">
+                        <div className="col-4 text-center">
+                          <div id="sparkline-1" />
+                          <div className="">
+                            Today Visitors{" "}
+                            <span style={{ fontWeight: 600 }}>2</span>
+                          </div>
                         </div>
-                      </div>
-                      {/* ./col */}
-                      {/* <div className="col-4 text-center">
+                        {/* ./col */}
+                        {/* <div className="col-4 text-center">
                         <div id="sparkline-2" />
                         <div className="">Online</div>
                       </div> */}
-                      {/* ./col */}
+                        {/* ./col */}
 
-                      {/* ./col */}
+                        {/* ./col */}
+                      </div>
+                      {/* /.row */}
                     </div>
-                    {/* /.row */}
                   </div>
-                </div>
+                )}
                 {/* /.card */}
                 {/* solid sales graph */}
                 {/* <div className="card bg-gradient-info">
