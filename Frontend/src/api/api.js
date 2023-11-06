@@ -130,12 +130,24 @@ export const api = createApi({
       query: () => "/events",
       providesTags: ["Event"],
     }),
+    userEvents: build.query({
+      query: (id) => `/user_events/${id}`,
+      providesTags: ["Event"],
+    }),
     calendarEvents: build.query({
       query: () => "/events/calendar",
       providesTags: ["Event"],
     }),
     getAllUsers: build.query({
       query: () => "/users",
+      providesTags: ["User"],
+    }),
+    getAllUsersCount: build.query({
+      query: () => "/users_counts",
+      providesTags: ["User"],
+    }),
+    getRukanMuawins: build.query({
+      query: (id) => `/muawins/${id}`,
       providesTags: ["User"],
     }),
     updateMember: build.mutation({
@@ -150,6 +162,10 @@ export const api = createApi({
     }),
     getTodos: build.query({
       query: (page) => `/todos?page=${page}`,
+      providesTags: ["Todo"],
+    }),
+    getTodosCount: build.query({
+      query: () => "/todos_count",
       providesTags: ["Todo"],
     }),
     addTodo: build.mutation({
@@ -215,6 +231,10 @@ export const {
   useUpdateTodoMutation,
   useDeleteTodoMutation,
   useUpdateMemberMutation,
+  useGetRukanMuawinsQuery,
+  useUserEventsQuery,
+  useGetAllUsersCountQuery,
+  useGetTodosCountQuery,
 } = api;
 
 export function uploadImage(file) {

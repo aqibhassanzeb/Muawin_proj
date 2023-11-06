@@ -1,16 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../common/navbar";
 
 import Footer from "../common/footer";
 import { Link, useNavigate } from "react-router-dom";
-import { useAllEventsQuery, useUpdateEventMutation } from "../../api/api";
+import {
+  useAllEventsQuery,
+  useUserEventsQuery,
+  useUpdateEventMutation,
+} from "../../api/api";
 import moment from "moment";
 import { toast } from "sonner";
 import DeleteDialogue from "../DeleteDialogue";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const Eventdirectory = () => {
-  const { data, isLoading } = useAllEventsQuery();
+  const user = useSelector((state) => state.authReducer.activeUser);
+
+  const [adminSkip, setAdminSkip] = useState(true);
+  const [userSkip, setUserSkip] = useState(true);
+
+  const { data: adminEvents, isLoading } = useAllEventsQuery(null, {
+    skip: adminSkip,
+  });
+  const { data: userEvents } = useUserEventsQuery(user?._id, {
+    skip: userSkip,
+  });
   const [update, updateResp] = useUpdateEventMutation();
 
   const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
@@ -25,6 +40,14 @@ const Eventdirectory = () => {
       }
     });
   }
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      setAdminSkip(false);
+    } else {
+      setUserSkip(false);
+    }
+  }, []);
 
   return (
     <>
@@ -91,85 +114,91 @@ const Eventdirectory = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {data?.map((row, index) => (
-                      <tr key={row._id}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <a>{row.name}</a>
-                          <br />
-                          <small>
-                            Created {moment(row.createdAt).format("DD.MM.YYYY")}
-                          </small>
-                        </td>
-                        <td className="Event_progress">
-                          <div className="progress progress-sm">
-                            <div
-                              className="progress-bar bg-green"
-                              role="progressbar"
-                              aria-volumenow={57}
-                              aria-volumemin={0}
-                              aria-volumemax={100}
-                              style={{ width: "57%" }}
-                            ></div>
-                          </div>
-                          <small>57% Complete</small>
-                        </td>
-                        <td className="Event-state">
-                          <span
-                            className={`badge ${
-                              row.status === "success"
-                                ? "badge-success"
-                                : row.status === "in-progress"
-                                ? "badge-primary"
-                                : row.status === "canceled"
-                                ? "badge-danger"
-                                : row.status === "upcoming"
-                                ? "badge-warning"
-                                : ""
-                            }`}
-                            style={{ padding: "5px 10px" }}
-                          >
-                            {row.status}
-                          </span>
-                        </td>
-                        <td className="Event-actions text-right">
-                          <button
-                            onClick={() =>
-                              navigate("/eventdetails", {
-                                state: { event: row },
-                              })
-                            }
-                            className="btn btn-primary btn-sm"
-                            style={{ marginRight: 5, marginBottom: 5 }}
-                            href="/eventdetails"
-                          >
-                            <i className="fas fa-folder"></i>
-                            View
-                          </button>
-                          <button
-                            onClick={() =>
-                              navigate("/updateevent", {
-                                state: { event: row },
-                              })
-                            }
-                            className="btn btn-info btn-sm"
-                          >
-                            <i className="fas fa-pencil-alt"></i>
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() => {
-                              setSelectedId(row._id);
-                              setOpenDeleteDialogue(true);
-                            }}
-                          >
-                            <i className="fas fa-trash"></i>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {(adminEvents || userEvents) &&
+                      (adminEvents || userEvents).map((row, index) => (
+                        <tr key={row._id}>
+                          <td>{index + 1}</td>
+                          <td>
+                            <a>{row.name}</a>
+                            <br />
+                            <small>
+                              Created{" "}
+                              {moment(row.createdAt).format("DD.MM.YYYY")}
+                            </small>
+                          </td>
+                          <td className="Event_progress">
+                            <div className="progress progress-sm">
+                              <div
+                                className="progress-bar bg-green"
+                                role="progressbar"
+                                aria-volumenow={57}
+                                aria-volumemin={0}
+                                aria-volumemax={100}
+                                style={{ width: "57%" }}
+                              ></div>
+                            </div>
+                            <small>57% Complete</small>
+                          </td>
+                          <td className="Event-state">
+                            <span
+                              className={`badge ${
+                                row.status === "success"
+                                  ? "badge-success"
+                                  : row.status === "in-progress"
+                                  ? "badge-primary"
+                                  : row.status === "canceled"
+                                  ? "badge-danger"
+                                  : row.status === "upcoming"
+                                  ? "badge-warning"
+                                  : ""
+                              }`}
+                              style={{ padding: "5px 10px" }}
+                            >
+                              {row.status}
+                            </span>
+                          </td>
+                          <td className="Event-actions text-right">
+                            <button
+                              onClick={() =>
+                                navigate("/eventdetails", {
+                                  state: { event: row },
+                                })
+                              }
+                              className="btn btn-primary btn-sm"
+                              style={{ marginRight: 5, marginBottom: 5 }}
+                              href="/eventdetails"
+                            >
+                              <i className="fas fa-folder"></i>
+                              View
+                            </button>
+                            {user?.role !== "muawin" && (
+                              <button
+                                onClick={() =>
+                                  navigate("/updateevent", {
+                                    state: { event: row },
+                                  })
+                                }
+                                className="btn btn-info btn-sm"
+                              >
+                                <i className="fas fa-pencil-alt"></i>
+                                Edit
+                              </button>
+                            )}
+                            {user?.role !== "muawin" && (
+                              <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => {
+                                  setSelectedId(row._id);
+                                  setOpenDeleteDialogue(true);
+                                }}
+                              >
+                                <i className="fas fa-trash"></i>
+                                Delete
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

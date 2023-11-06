@@ -47,6 +47,10 @@ const UserSchema = new mongoose.Schema(
     socialMediaProfiles: String,
     volunteerWork: String,
     militaryServices: String,
+    created_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
     last_active: {
       type: String,
       default: new Date().toISOString(),
@@ -54,7 +58,7 @@ const UserSchema = new mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ["admin", "director", "member"],
+      enum: ["admin", "rukan", "muawin", "donor", "director"],
     },
     password: {
       type: String,

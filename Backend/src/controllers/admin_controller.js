@@ -14,8 +14,17 @@ export const getEvents = async (req, res) => {
 };
 
 export const eventsForCalender = async (req, res) => {
+  const { role } = req.user;
   try {
-    const events = await Event.find({ is_active: true }).sort({
+    const events = await Event.find({
+      is_active: true,
+      created_by:
+        role === "admin"
+          ? ""
+          : role === "rukan"
+          ? req.user._id
+          : req.user.created_by,
+    }).sort({
       createdAt: -1,
     });
     res.status(200).json(events);
