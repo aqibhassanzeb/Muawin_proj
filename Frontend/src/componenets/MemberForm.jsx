@@ -1197,33 +1197,37 @@ const MemberForm = () => {
                             </p>
                           )}
                         </div>
-                        {user.role === "rukan" ? null : (
-                          <div className="form-group">
-                            <label>
-                              Member Role{" "}
-                              <span style={{ color: "red" }}>*</span>
-                            </label>
-                            <select
-                              name="blood"
-                              className="form-control"
-                              style={{ width: "100%" }}
-                              {...oregister("role")}
-                            >
-                              <option value="" selected defaultValue disabled>
-                                {" "}
-                              </option>
+
+                        <div className="form-group">
+                          <label>
+                            Member Role <span style={{ color: "red" }}>*</span>
+                          </label>
+                          <select
+                            name="blood"
+                            className="form-control"
+                            style={{ width: "100%" }}
+                            {...oregister("role")}
+                          >
+                            <option value="" selected defaultValue disabled>
+                              {" "}
+                            </option>
+                            {user.role === "admin" && (
                               <option value="rukan">Rukan</option>
-                              <option value="muawin">Muawin</option>
-                              <option value="donor">Donor</option>
-                              <option value="director">Director</option>
-                            </select>
-                            {oerrors.role && (
-                              <p className="validation-error">
-                                {oerrors.role?.message}
-                              </p>
                             )}
-                          </div>
-                        )}
+                            <option value="muawin">Muawin</option>
+                            {user.role === "admin" && (
+                              <>
+                                <option value="donor">Donor</option>
+                                <option value="director">Director</option>
+                              </>
+                            )}
+                          </select>
+                          {oerrors.role && (
+                            <p className="validation-error">
+                              {oerrors.role?.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <hr />

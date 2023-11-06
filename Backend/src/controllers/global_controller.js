@@ -123,11 +123,14 @@ export const getUserEvents = async (req, res) => {
 
 export const getUserCount = async (req, res) => {
   const { role } = req.user;
+  const filter = {
+    is_active: true,
+  };
+  if (role === "rukan") {
+    filter.created_by = req.user._id;
+  }
   try {
-    const users = await User.countDocuments({
-      is_active: true,
-      created_by: role === "admin" ? null : req.user._id,
-    }).sort({
+    const users = await User.countDocuments(filter).sort({
       createdAt: -1,
     });
     res.status(200).json(users);

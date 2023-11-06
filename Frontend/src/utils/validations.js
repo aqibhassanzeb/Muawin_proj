@@ -276,8 +276,5 @@ export const otherInfoValidation = z.object({
     .min(1, { message: "Social Media Profiles is required" }),
   volunteerWork: z.string().min(1, { message: "Volunteer Work are required" }),
   militaryServices: z.string(),
-  role:
-    user?.role === "admin"
-      ? z.string().min(1, { message: "Role is required" })
-      : z.optional(),
+  role: z.string().min(1, { message: "Role is required" }),
 });
