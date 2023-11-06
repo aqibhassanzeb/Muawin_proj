@@ -102,17 +102,24 @@ const Eventdirectory = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  <thead>
-                    <tr>
-                      <th style={{ width: "1%" }}>No.</th>
-                      <th style={{ width: "20%" }}>Event Name</th>
-                      <th>Event Progress</th>
-                      <th style={{ width: "8%" }} className="text-center">
-                        Status
-                      </th>
-                      <th style={{ width: "20%" }}></th>
-                    </tr>
-                  </thead>
+                  {(adminEvents && adminEvents.length > 0) ||
+                  (userEvents && userEvents.length > 0) ? (
+                    <thead>
+                      <tr>
+                        <th style={{ width: "1%" }}>No.</th>
+                        <th style={{ width: "20%" }}>Event Name</th>
+                        <th>Event Progress</th>
+                        <th style={{ width: "8%" }} className="text-center">
+                          Status
+                        </th>
+                        <th style={{ width: "20%" }}></th>
+                      </tr>
+                    </thead>
+                  ) : (
+                    <thead>
+                      <th style={{ textAlign: "center" }}>No Events</th>
+                    </thead>
+                  )}
                   <tbody>
                     {(adminEvents || userEvents) &&
                       (adminEvents || userEvents).map((row, index) => (

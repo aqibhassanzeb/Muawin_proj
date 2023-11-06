@@ -110,18 +110,25 @@ const Member_directory = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  <thead>
-                    <tr>
-                      <th style={{ width: "1%" }}>No.</th>
-                      <th style={{ width: "20%" }}>Member Name</th>
-                      <th style={{ width: "10%" }}>Role</th>
-                      <th>Member Progress</th>
-                      <th style={{ width: "8%" }} className="text-center">
-                        Status
-                      </th>
-                      <th style={{ width: "20%" }}></th>
-                    </tr>
-                  </thead>
+                  {(admin && admin.length > 0) ||
+                  (rukan && rukan.length > 0) ? (
+                    <thead>
+                      <tr>
+                        <th style={{ width: "1%" }}>No.</th>
+                        <th style={{ width: "20%" }}>Member Name</th>
+                        <th style={{ width: "10%" }}>Role</th>
+                        <th>Member Progress</th>
+                        <th style={{ width: "8%" }} className="text-center">
+                          Status
+                        </th>
+                        <th style={{ width: "20%" }}></th>
+                      </tr>
+                    </thead>
+                  ) : (
+                    <thead>
+                      <th style={{ textAlign: "center" }}>No Muawin's</th>
+                    </thead>
+                  )}
                   <tbody>
                     {(admin || rukan) &&
                       (admin || rukan).map((user, index) => (
