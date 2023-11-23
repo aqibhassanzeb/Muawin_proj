@@ -3,6 +3,7 @@ import Navbar from "../common/navbar";
 
 import Footer from "../common/footer";
 import {
+  useDeleteUserMutation,
   useGetAllUsersQuery,
   useGetRukanMuawinsQuery,
   useUpdateMemberMutation,
@@ -13,29 +14,47 @@ import { isActive } from "../../utils";
 import { toast } from "sonner";
 import DeleteDialogue from "../DeleteDialogue";
 import { useSelector } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
+import Loader from "../Loader";
 
 const Member_directory = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
+
   const [adminSkip, setAdminSkip] = useState(true);
   const [rukanSkip, setRukanSkip] = useState(true);
 
   const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
   const [update, updateResp] = useUpdateMemberMutation();
+  const [deleteUser] = useDeleteUserMutation();
+  const [selectedItem, setSelectedItem] = useState({ column: "", id: "" });
 
   const { data: admin, isLoading } = useGetAllUsersQuery(null, {
     skip: adminSkip,
   });
-  const { data: rukan } = useGetRukanMuawinsQuery(user?._id, {
-    skip: rukanSkip,
-  });
+  const { data: rukan, isLoading: rukanLoading } = useGetRukanMuawinsQuery(
+    user?._id,
+    {
+      skip: rukanSkip,
+    }
+  );
   const [selectedId, setSelectedId] = useState("");
 
   const navigate = useNavigate();
 
   function handleDelete(id) {
-    update({ id, data: { is_active: false } }).then((res) => {
+    deleteUser(id).then((res) => {
       if (res?.data?.message) {
-        toast.success("Event Deleted Successfully!");
+        toast.success("User Deleted");
+      }
+    });
+  }
+
+  function handleActive(value, id) {
+    setSelectedItem({ column: "status", id });
+    update({ id, data: { is_active: value } }).then((res) => {
+      if (res?.data?.message) {
+        toast.success("Account Status Updated");
+        setSelectedItem({});
       }
     });
   }
@@ -115,18 +134,22 @@ const Member_directory = () => {
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
-                        <th style={{ width: "20%" }}>Member Name</th>
+                        <th style={{ width: "15%" }}>Member Name</th>
                         <th style={{ width: "10%" }}>Role</th>
-                        <th>Member Progress</th>
-                        <th style={{ width: "8%" }} className="text-center">
-                          Status
-                        </th>
-                        <th style={{ width: "20%" }}></th>
+                        <th style={{ width: "20%" }}>Member Progress</th>
+                        <th style={{ width: "12%" }}>First Login</th>
+                        <th style={{ width: "12%" }}>Last Login</th>
+                        <th style={{ width: "10%" }}>Status</th>
+                        <th style={{ width: "20%" }}>Action</th>
                       </tr>
                     </thead>
                   ) : (
                     <thead>
-                      <th style={{ textAlign: "center" }}>No Muawin's</th>
+                      <th style={{ textAlign: "center" }}>
+                        {isLoading || rukanLoading
+                          ? "Loading..."
+                          : "No Members"}
+                      </th>
                     </thead>
                   )}
                   <tbody>
@@ -165,7 +188,22 @@ const Member_directory = () => {
                             </div>
                             <small>57% Complete</small>
                           </td>
-                          <td className="Event-state">
+
+                          <td
+                            style={{
+                              fontSize: 14,
+                            }}
+                          >
+                            {user.first_login === "Nil"
+                              ? "Nil"
+                              : moment(user.first_login).fromNow()}
+                          </td>
+                          <td style={{ fontSize: 14 }}>
+                            {user.last_login === "Nil"
+                              ? "Nil"
+                              : moment(user.last_login).fromNow()}
+                          </td>
+                          {/* <td className="Event-state">
                             {isActive(user.last_active) ? (
                               <span className="badge badge-danger">
                                 Inactive
@@ -175,41 +213,75 @@ const Member_directory = () => {
                                 Active
                               </span>
                             )}
+                          </td> */}
+                          <td>
+                            {selectedItem.id === user._id &&
+                            selectedItem.column === "status" ? (
+                              <div style={{ marginLeft: 10 }}>
+                                {" "}
+                                <Loader size={20} />
+                              </div>
+                            ) : (
+                              <Select
+                                sx={{
+                                  width: 80,
+                                  height: 30,
+                                  fontSize: 10,
+                                  border: "none",
+                                  outline: "none",
+                                }}
+                                value={user.is_active}
+                                onChange={(e) =>
+                                  handleActive(e.target.value, user._id)
+                                }
+                              >
+                                <MenuItem value={true}>Active</MenuItem>
+                                <MenuItem value={false}>Disabled</MenuItem>
+                              </Select>
+                            )}
                           </td>
-                          <td className="Event-actions text-right">
-                            <button
-                              onClick={() =>
-                                navigate("/memberdetails", {
-                                  state: { user },
-                                })
-                              }
-                              className="btn btn-primary btn-sm"
-                              style={{ marginRight: 5, marginBottom: 5 }}
-                            >
-                              <i className="fas fa-folder"></i>
-                              View
-                            </button>
-                            <button
-                              onClick={() =>
-                                navigate("/updatemember", {
-                                  state: { user },
-                                })
-                              }
-                              className="btn btn-info btn-sm"
-                            >
-                              <i className="fas fa-pencil-alt"></i>
-                              Edit
-                            </button>
-                            <button
-                              className="btn btn-danger btn-sm"
-                              onClick={() => {
-                                setSelectedId(user._id);
-                                setOpenDeleteDialogue(true);
+                          <td className="Event-actions text-center">
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 5,
                               }}
                             >
-                              <i className="fas fa-trash"></i>
-                              Delete
-                            </button>
+                              <button
+                                onClick={() =>
+                                  navigate("/memberdetails", {
+                                    state: { user },
+                                  })
+                                }
+                                className="btn btn-primary btn-sm"
+                              >
+                                <i className="fas fa-eye"></i>
+                                {/* View */}
+                              </button>
+                              <button
+                                onClick={() =>
+                                  navigate("/updatemember", {
+                                    state: { user },
+                                  })
+                                }
+                                className="btn btn-info btn-sm"
+                              >
+                                <i className="fas fa-pencil-alt"></i>
+                                {/* Edit */}
+                              </button>
+                              <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => {
+                                  setSelectedId(user._id);
+                                  setOpenDeleteDialogue(true);
+                                }}
+                              >
+                                <i className="fas fa-trash"></i>
+                                {/* Delete */}
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

@@ -6,6 +6,8 @@ import { generateRandomPassword } from "../utils/index.js";
 import { Message } from "../models/message.js";
 import sendVerificationEmail from "../services/emailService.js";
 import schedule from "node-schedule";
+import axios from "axios";
+import { Event } from "../models/event.js";
 
 export const userSignup = async (req, res) => {
   const { role, email, password, name } = req.body;
@@ -217,8 +219,8 @@ export const userUpdate = async (req, res) => {
     const updateData = passwordUpdate
       ? { ...req.body, password: newPassword }
       : req.body;
-    await User.findByIdAndUpdate(_id, updateData);
-    res.status(200).json({ message: "updated successfully" });
+    const user = await User.findByIdAndUpdate(_id, updateData, { new: true });
+    res.status(200).json({ message: "updated successfully", user });
   } catch (error) {
     res.status(400).json({ error: "something went wrong!" });
   }
@@ -240,7 +242,7 @@ export const userPassUpdate = async (req, res) => {
       userData.password
     );
     if (!isPasswordMatch) {
-      return res.status(400).json({ error: "current password not match" });
+      return res.status(400).json({ error: "old password not match" });
     }
     let hashedpassword = await bcrypt.hash(newPassword, 12);
     const updateData = { password: hashedpassword };
@@ -257,7 +259,7 @@ export const userGet = async (req, res) => {
     filter._id = req.query._id.split(",");
   }
   try {
-    let result = await User.find(filter).select("-password");
+    let result = await User.find().select("-password");
     res.json({ success: true, data: result });
   } catch (error) {
     res.status(400).json({ message: "something went wrong!" });
@@ -545,18 +547,12 @@ export const getMayKnow = async (req, res) => {
 export const deleteAccount = async (req, res) => {
   const { id } = req.params;
   try {
-    await Forum.deleteMany({ posted_by: id });
-    await lostandFound.deleteMany({ posted_by: id });
-    await Notification.deleteMany({ userid: id });
-    await Report.deleteMany({ report_by: id });
-    await Sell.deleteMany({ posted_by: id });
-    await Skill.deleteMany({ posted_by: id });
-    await Watch.deleteMany({ posted_by: id });
+    await Event.deleteMany({ created_by: id });
     await User.findByIdAndDelete(id);
     await Message.deleteMany({
       $or: [{ senderId: id }, { recepientId: id }],
     });
-    res.json({ message: "Accsount and associated data deleted successfully" });
+    res.json({ message: "Accsount deleted" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error Deleting User" });
@@ -607,17 +603,33 @@ export const getUserStatistics = async (req, res) => {
 };
 
 export const handleTrack = async (req, res) => {
-  const { id } = req.body;
-  const track = new Tracker({
-    user: id,
-    login_time: new Date(),
-  });
+  const { id, ip } = req.body;
 
   try {
+    const user = await User.findById(id);
+    if (user) {
+      if (user.first_login === "Nil") {
+        user.first_login = new Date().toISOString();
+      }
+      user.last_login = new Date().toISOString();
+    }
+
+    await user.save();
+
+    const ip_response = await axios(
+      `https://ipinfo.io/${ip}?token=${process.env.IP_INFO_TOKEN}`
+    );
+    const track = new Tracker({
+      user: id,
+      login_time: new Date().toISOString(),
+      country: ip_response.data.country,
+      city: ip_response.data.city,
+      ip,
+    });
     await track.save();
-    res.status(201).json({ message: "Login tracked successfully" });
+    res.status(201).json({ message: "User log saved" });
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while tracking login" });
+    res.status(500).json({ error: "An error occurred while taking log" });
   }
 };
 
@@ -635,3 +647,34 @@ export const RecentLogins = async (req, res) => {
       .json({ error: "An error occurred while fetching latest logins" });
   }
 };
+
+export async function generateOrgChart(req, res) {
+  try {
+    const admin = await User.findOne({ _id: req.params.id });
+    const orgChart = await generateOrgChartHelper(admin);
+
+    res.json(orgChart);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function generateOrgChartHelper(user) {
+  const orgNode = {
+    name: user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName,
+    attributes: {
+      role: user.role,
+      email: user.email,
+    },
+  };
+
+  const children = await User.find({ created_by: user._id });
+
+  if (children.length > 0) {
+    orgNode.children = await Promise.all(
+      children.map((child) => generateOrgChartHelper(child))
+    );
+  }
+
+  return orgNode;
+}

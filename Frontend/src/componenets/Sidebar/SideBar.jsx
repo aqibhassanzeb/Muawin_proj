@@ -14,7 +14,7 @@ const SideBar = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const toggle = () => setIsOpen(!isOpen);
 
@@ -142,8 +142,6 @@ const SideBar = () => {
     }
   }, []);
 
-  console.log(routes);
-
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -242,7 +240,7 @@ const SideBar = () => {
                     <div className="user-panel pt-2 pb-2 d-flex">
                       <div className={`${isOpen ? "image" : ""}`}>
                         <img
-                          src="dist/img/user.png"
+                          src={user.image}
                           className="img-circle elevation-2"
                           alt="User Image"
                         />

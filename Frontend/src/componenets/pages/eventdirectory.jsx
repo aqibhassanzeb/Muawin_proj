@@ -23,9 +23,12 @@ const Eventdirectory = () => {
   const { data: adminEvents, isLoading } = useAllEventsQuery(null, {
     skip: adminSkip,
   });
-  const { data: userEvents } = useUserEventsQuery(user?._id, {
-    skip: userSkip,
-  });
+  const { data: userEvents, isLoading: userLoading } = useUserEventsQuery(
+    user?._id,
+    {
+      skip: userSkip,
+    }
+  );
   const [update, updateResp] = useUpdateEventMutation();
 
   const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
@@ -117,7 +120,11 @@ const Eventdirectory = () => {
                     </thead>
                   ) : (
                     <thead>
-                      <th style={{ textAlign: "center" }}>No Events</th>
+                      <th style={{ textAlign: "center" }}>
+                        {isLoading || userLoading
+                          ? "Loading Events"
+                          : "No Events"}
+                      </th>
                     </thead>
                   )}
                   <tbody>

@@ -4,64 +4,67 @@ import Navbar from "../common/navbar";
 import Countries from "../../constants/Countries.json";
 import States from "../../constants/States.json";
 import Footer from "../common/footer";
-import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { baseURL, useUpdateMemberMutation } from "../../api/api";
 import Loader from "../Loader";
 import { toast } from "sonner";
 import { deepEqual } from "../../utils";
+import { useSelector, useDispatch } from "react-redux";
+import { setActiveUser } from "../../redux/reducers/auth";
 
 const UpdateMember = () => {
   const [update, updateResp] = useUpdateMemberMutation();
+  const activeUser = useSelector((state) => state.authReducer.activeUser);
 
-  const { state } = useLocation();
+  const dispatch = useDispatch();
+
   const initialValues = {
-    firstName: state.user.firstName,
-    lastName: state.user.lastName,
-    address: state.user.address,
-    blood: state.user.blood,
-    city: state.user.city,
-    dob: state.user.dob.split("T")[0],
-    email: state.user.email,
-    gender: state.user.gender,
-    height: state.user.height,
-    maritalStatus: state.user.maritalStatus,
-    medicalCondition: state.user.medicalCondition,
-    nationality: state.user.nationality,
-    phone: state.user.phone,
-    province: state.user.province,
-    religion: state.user.religion,
-    weight: state.user.weight,
-    zip: state.user.zip,
-    emergencyContact: state.user.emergencyContact,
-    fatherName: state.user.fatherName,
-    motherName: state.user.motherName,
-    spouseName: state.user.spouseName,
-    dependents: state.user.dependents,
-    siblings: state.user.siblings,
-    familyContact: state.user.familyContact,
-    educationLevel: state.user.educationLevel,
-    institute: state.user.institute,
-    major: state.user.major,
-    graduationYear: state.user.graduationYear,
-    certificates: state.user.certificates,
-    gpa: state.user.gpa,
-    awards: state.user.awards,
-    jobTitle: state.user.jobTitle,
-    industry: state.user.industry,
-    responsibilities: state.user.responsibilities,
-    skills: state.user.skills,
-    references: state.user.references,
-    company: state.user.company,
-    licenses: state.user.licenses,
-    positions: state.user.positions,
-    workHistory: state.user.workHistory,
-    workExperience: state.user.workExperience,
-    interests: state.user.interests,
-    languages: state.user.languages,
-    socialMediaProfiles: state.user.socialMediaProfiles,
-    volunteerWork: state.user.volunteerWork,
-    militaryServices: state.user.militaryServices,
+    firstName: activeUser?.firstName,
+    lastName: activeUser?.lastName,
+    address: activeUser?.address,
+    blood: activeUser?.blood,
+    city: activeUser?.city,
+    dob: activeUser?.dob?.split("T")[0],
+    email: activeUser?.email,
+    gender: activeUser?.gender,
+    height: activeUser?.height,
+    maritalStatus: activeUser?.maritalStatus,
+    medicalCondition: activeUser?.medicalCondition,
+    nationality: activeUser?.nationality,
+    phone: activeUser?.phone,
+    province: activeUser?.province,
+    religion: activeUser?.religion,
+    weight: activeUser?.weight,
+    zip: activeUser?.zip,
+    emergencyContact: activeUser?.emergencyContact,
+    fatherName: activeUser?.fatherName,
+    motherName: activeUser?.motherName,
+    spouseName: activeUser?.spouseName,
+    dependents: activeUser?.dependents,
+    siblings: activeUser?.siblings,
+    familyContact: activeUser?.familyContact,
+    educationLevel: activeUser?.educationLevel,
+    institute: activeUser?.institute,
+    major: activeUser?.major,
+    graduationYear: activeUser?.graduationYear,
+    certificates: activeUser?.certificates,
+    gpa: activeUser?.gpa,
+    awards: activeUser?.awards,
+    jobTitle: activeUser?.jobTitle,
+    industry: activeUser?.industry,
+    responsibilities: activeUser?.responsibilities,
+    skills: activeUser?.skills,
+    references: activeUser?.references,
+    company: activeUser?.company,
+    licenses: activeUser?.licenses,
+    positions: activeUser?.positions,
+    workHistory: activeUser?.workHistory,
+    workExperience: activeUser?.workExperience,
+    interests: activeUser?.interests,
+    languages: activeUser?.languages,
+    socialMediaProfiles: activeUser?.socialMediaProfiles,
+    volunteerWork: activeUser?.volunteerWork,
+    militaryServices: activeUser?.militaryServices,
   };
 
   const [data, setData] = useState(initialValues);
@@ -88,36 +91,16 @@ const UpdateMember = () => {
   }, [data, initialValues]);
 
   function handleUpdate() {
-    update({ id: state.user._id, data }).then((res) => {
+    update({ id: activeUser._id, data }).then((res) => {
       if (res?.data?.message) {
-        toast.success("Member Updated Successfully!");
+        dispatch(setActiveUser(res.data.user));
+        toast.success("Profile Updated Successfully!");
       }
     });
   }
   return (
     <div className="wrapper">
-      <Navbar />
-      <div style={{ padding: "0 20px" }}>
-        {/* Content Header (Page header) */}
-        <section className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2">
-              <div className="col-sm-6">
-                <h1>Member Edit</h1>
-              </div>
-              <div className="col-sm-6">
-                <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item">
-                    <Link href="/dashboard">Home</Link>
-                  </li>
-                  <li className="breadcrumb-item ">Edit Member</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-          {/* /.container-fluid */}
-        </section>
-        {/* Main content */}
+      <div style={{ padding: "0 5px" }}>
         <section className="content">
           <div className="row">
             <div className="col-md-6">
@@ -231,7 +214,7 @@ const UpdateMember = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Province / State </label>
+                    <label>Province / activeUser </label>
                     <select
                       value={data.province}
                       name="province"
@@ -241,9 +224,9 @@ const UpdateMember = () => {
                       onChange={onChange}
                     >
                       <option selected disabled value={null}></option>
-                      {States.map((state) => {
-                        if (state.country_name === data.nationality) {
-                          return <option>{state.name}</option>;
+                      {States.map((activeUser) => {
+                        if (activeUser.country_name === data.nationality) {
+                          return <option>{activeUser.name}</option>;
                         }
                       })}
                     </select>
@@ -405,9 +388,7 @@ const UpdateMember = () => {
                 </div>
                 <div className="card-body">
                   <div className="form-group">
-                    <label>
-                      Father's Full Name <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Father's Full Name</label>
                     <input
                       name="fatherName"
                       type="text"
@@ -418,9 +399,7 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Mother's Full Name <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Mother's Full Name</label>
                     <input
                       name="motherName"
                       type="text"
@@ -461,10 +440,7 @@ const UpdateMember = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Number of Dependents{" "}
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Number of Dependents </label>
                     <input
                       name="dependents"
                       type="number"
@@ -476,10 +452,7 @@ const UpdateMember = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Family Contact Information{" "}
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Family Contact Information </label>
                     <input
                       name="familyContact"
                       type="tel"
@@ -651,9 +624,7 @@ const UpdateMember = () => {
                 </div>
                 <div className="card-body pt-1 px-4">
                   <div className="form-group">
-                    <label>
-                      Education Level <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Education Level</label>
                     <select
                       name="educationLevel"
                       className="form-control"
@@ -672,10 +643,7 @@ const UpdateMember = () => {
                     </select>
                   </div>
                   <div className="form-group">
-                    <label>
-                      Major / Field Of Study{" "}
-                      <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Major / Field Of Study </label>
                     <input
                       name="major"
                       type="text"
@@ -763,9 +731,7 @@ const UpdateMember = () => {
                 </div>
                 <div className="card-body pt-1 px-4">
                   <div className="form-group">
-                    <label>
-                      Interests/Hobbies <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Interests/Hobbies</label>
                     <textarea
                       name="interests"
                       type="text"
@@ -807,9 +773,7 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Languages Spoken <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Languages Spoken</label>
                     <textarea
                       name="languages"
                       type="text"
@@ -820,9 +784,7 @@ const UpdateMember = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Volunteer Work <span style={{ color: "red" }}>*</span>
-                    </label>
+                    <label>Volunteer Work</label>
                     <textarea
                       name="volunteerWork"
                       type="text"
@@ -837,14 +799,10 @@ const UpdateMember = () => {
             </div>
             <div className="col-md-6"></div>
           </div>
-          <div className="row" id="cap">
-            <div className="col-12">
-              <Link to="/directory" className="btn btn-secondary">
-                Cancel
-              </Link>
-
+          <div className="row mt-2 mb-2 " id="cap">
+            <div className="col-12 d-flex justify-content-center align-items-center">
               {updateResp.isLoading ? (
-                <div className="float-right" style={{ marginRight: 15 }}>
+                <div style={{ marginRight: 15 }}>
                   <Loader size={30} />
                 </div>
               ) : (
@@ -852,9 +810,9 @@ const UpdateMember = () => {
                   disabled={!hasChanged}
                   onClick={handleUpdate}
                   type="button"
-                  className="btn btn-success float-right"
+                  className="btn btn-success "
                 >
-                  Save Changes
+                  Update
                 </button>
               )}
             </div>

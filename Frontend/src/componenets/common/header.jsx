@@ -109,7 +109,7 @@ const Header = () => {
               <div className="col-lg-3 col-6">
                 {/* small box */}
                 <div className="small-box bg-warning">
-                  <div className="inner">
+                  <div className="inner" style={{ color: "white" }}>
                     <h3>
                       {todoCountLoading ? (
                         <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
@@ -123,7 +123,10 @@ const Header = () => {
                     <i className="fas fa-tasks"></i>
                   </div>
                   <a className="small-box-footer">
-                    <i className="fas fa-arrow-circle-down" />
+                    <i
+                      className="fas fa-arrow-circle-down"
+                      style={{ color: "white" }}
+                    />
                   </a>
                 </div>
               </div>
