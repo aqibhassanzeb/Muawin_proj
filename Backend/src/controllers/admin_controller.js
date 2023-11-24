@@ -3,9 +3,11 @@ import { User } from "../models/user.js";
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await Event.find({ is_active: true }).sort({
-      createdAt: -1,
-    });
+    const events = await Event.find({ is_active: true })
+      .populate("created_by", "_id firstName lastName email image")
+      .sort({
+        createdAt: -1,
+      });
     res.status(200).json(events);
   } catch (error) {
     console.log(error);

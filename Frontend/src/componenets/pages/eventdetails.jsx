@@ -52,7 +52,6 @@ const Eventdetails = () => {
         .catch((err) => console.log(err.message));
     }
   }
-
   return (
     <div className="wrapper">
       <Navbar />
@@ -205,7 +204,8 @@ const Eventdetails = () => {
                             </div>
                           </div>
                         ) : (
-                          user.role !== "muawin" && (
+                          user._id === state.event.created_by._id ||
+                          (user.role === "admin" && (
                             <div className="form-group">
                               <div className="btn btn-sm btn-primary btn-file">
                                 <i className="fas fa-paperclip" /> Add Files
@@ -234,7 +234,7 @@ const Eventdetails = () => {
                                 </p>
                               )}
                             </div>
-                          )
+                          ))
                         )}
                       </div>
                     </div>
