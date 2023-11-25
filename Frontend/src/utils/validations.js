@@ -1,7 +1,5 @@
 import { ACCEPTED_ATTACHMENT_TYPES, MAX_FILE_SIZE } from "../constants";
 import { z } from "zod";
-import { store } from "../redux/store";
-const user = store.getState().authReducer.activeUser;
 
 export function validateRegistrationForm(formValue) {
   const errors = {
@@ -204,12 +202,16 @@ export const familyInfoValidation = z.object({
   fatherName: z
     .string()
     .min(1, { message: "Father name is required" })
+    .optional()
+    .or(z.literal(""))
     .refine((value) => containsNoNumbers(value), {
       message: "Invalid Father Name",
     }),
   motherName: z
     .string()
     .min(1, { message: "Mother name is required" })
+    .optional()
+    .or(z.literal(""))
     .refine((value) => containsNoNumbers(value), {
       message: "Invalid Mother Name",
     }),
@@ -219,62 +221,164 @@ export const familyInfoValidation = z.object({
   dependents: z
     .string()
     .min(1, { message: "Dependents is required" })
-    .refine((value) => isNumericString(value), {
-      message: "Dependents must be a number",
-    }),
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (value === null) {
+          return true;
+        }
+        const numericValue = Number(value);
+        return !isNaN(numericValue) && isFinite(numericValue);
+      },
+      {
+        message: "Dependents must be a number",
+      }
+    ),
   siblings: z.string(),
   familyContact: z
     .string()
     .min(1, { message: "Contact is required" })
-    .refine((value) => isNumericString(value), {
-      message: "Contact must contain only numbers",
-    }),
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (value === null) {
+          return true;
+        }
+        const numericValue = Number(value);
+        return !isNaN(numericValue) && isFinite(numericValue);
+      },
+      {
+        message: "Contact must contain only numbers",
+      }
+    ),
 });
 
 export const educationInfoValidation = z.object({
-  educationLevel: z.string().min(1, { message: "Education level is required" }),
-  institute: z.string().min(1, { message: "Institute name is required" }),
-  major: z.string().min(1, { message: "Major is required" }),
+  educationLevel: z
+    .string()
+    .min(1, { message: "Education level is required" })
+    .optional()
+    .or(z.literal("")),
+  institute: z
+    .string()
+    .min(1, { message: "Institute name is required" })
+    .optional()
+    .or(z.literal("")),
+  major: z
+    .string()
+    .min(1, { message: "Major is required" })
+    .optional()
+    .or(z.literal("")),
   graduationYear: z
     .string()
     .min(4, { message: "Invalid Date" })
-    .refine((value) => isNumericString(value), {
-      message: "Invalid Date",
-    }),
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (value === null) {
+          return true;
+        }
+        const numericValue = Number(value);
+        return !isNaN(numericValue) && isFinite(numericValue);
+      },
+      {
+        message: "Invalid Date",
+      }
+    ),
   certificates: z.string(),
   gpa: z.string(),
   awards: z.string(),
 });
 
 export const professionalInfoValidation = z.object({
-  jobTitle: z.string().min(1, { message: "Job Title is required" }),
-  industry: z.string().min(1, { message: "Industry name is required" }),
+  jobTitle: z
+    .string()
+    .min(1, { message: "Job Title is required" })
+    .optional()
+    .or(z.literal("")),
+  industry: z
+    .string()
+    .min(1, { message: "Industry name is required" })
+    .optional()
+    .or(z.literal("")),
   responsibilities: z
     .string()
-    .min(1, { message: "Job Responsibilites is required" }),
-  skills: z.string().min(1, { message: "Skills are required" }),
-  references: z.string().min(1, { message: "Reference are required" }),
-  company: z.string().min(1, { message: "Organization Name is required" }),
-  licenses: z.string().min(1, { message: "Licenses is required" }),
-  positions: z.string().min(1, { message: "Organization Name is required" }),
-  workHistory: z.string().min(1, { message: "Work History is required" }),
+    .min(1, { message: "Job Responsibilites is required" })
+    .optional()
+    .or(z.literal("")),
+  skills: z
+    .string()
+    .min(1, { message: "Skills are required" })
+    .optional()
+    .or(z.literal("")),
+  references: z
+    .string()
+    .min(1, { message: "Reference are required" })
+    .optional()
+    .or(z.literal("")),
+  company: z
+    .string()
+    .min(1, { message: "Organization Name is required" })
+    .optional()
+    .or(z.literal("")),
+  licenses: z
+    .string()
+    .min(1, { message: "Licenses is required" })
+    .optional()
+    .or(z.literal("")),
+  positions: z
+    .string()
+    .min(1, { message: "Organization Name is required" })
+    .optional()
+    .or(z.literal("")),
+  workHistory: z
+    .string()
+    .min(1, { message: "Work History is required" })
+    .optional()
+    .or(z.literal("")),
   workExperience: z
     .string()
     .min(1, { message: "Work Experience is required" })
-    .refine((value) => isNumericString(value), {
-      message: "Experience must be no of years",
-    }),
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (value === null) {
+          return true;
+        }
+        const numericValue = Number(value);
+        return !isNaN(numericValue) && isFinite(numericValue);
+      },
+      {
+        message: "Experience must be no of years",
+      }
+    ),
 });
 
 export const otherInfoValidation = z.object({
-  interests: z.string().min(1, { message: "Interests is required" }),
+  interests: z
+    .string()
+    .min(1, { message: "Interests is required" })
+    .optional()
+    .or(z.literal("")),
   languages: z
     .string()
-    .min(1, { message: "Spoken Languages name is required" }),
+    .min(1, { message: "Spoken Languages name is required" })
+    .optional()
+    .or(z.literal("")),
   socialMediaProfiles: z
     .string()
-    .min(1, { message: "Social Media Profiles is required" }),
-  volunteerWork: z.string().min(1, { message: "Volunteer Work are required" }),
+    .min(1, { message: "Social Media Profiles is required" })
+    .optional()
+    .or(z.literal("")),
+  volunteerWork: z
+    .string()
+    .min(1, { message: "Volunteer Work are required" })
+    .optional()
+    .or(z.literal("")),
   militaryServices: z.string(),
   role: z.string().min(1, { message: "Role is required" }),
 });

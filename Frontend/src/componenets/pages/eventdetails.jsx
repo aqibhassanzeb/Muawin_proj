@@ -13,6 +13,8 @@ import ProgressLoader from "../ProgressLoader";
 import moment from "moment";
 import { convertMinutes } from "../../utils";
 import { useSelector } from "react-redux";
+import { FiMapPin, FiCalendar } from "react-icons/fi";
+import { BsFilePerson } from "react-icons/bs";
 
 const Eventdetails = () => {
   const [update, updateResp] = useUpdateEventMutation();
@@ -50,34 +52,11 @@ const Eventdetails = () => {
         .catch((err) => console.log(err.message));
     }
   }
-
-  console.log(files);
   return (
     <div className="wrapper">
       <Navbar />
       <div style={{ padding: "0 20px" }}>
-        {/* Content Header (Page header) */}
-        <section className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2">
-              <div className="col-sm-6">
-                <h1>Event Detail</h1>
-              </div>
-              <div className="col-sm-6">
-                <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item">
-                    <Link to="/dashboard">Home</Link>
-                  </li>
-                  <li className="breadcrumb-item ">Event Detail</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-          {/* /.container-fluid */}
-        </section>
-        {/* Main content */}
         <section className="content">
-          {/* Default box */}
           <div className="card">
             <div className="card-header">
               <h3 className="card-title">Event Detail</h3>
@@ -104,165 +83,200 @@ const Eventdetails = () => {
             </div>
             <div className="card-body">
               <div className="row">
-                <div className="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-                  <div className="row">
-                    <div className="col-12 col-sm-4">
-                      <div className="info-box bg-light">
-                        <div className="info-box-content">
-                          <span className="info-box-text text-center text-muted">
-                            Estimated budget
-                          </span>
-                          <span className="info-box-number text-center text-muted mb-0">
-                            {state?.event?.budget}
-                          </span>
-                        </div>
+                <div className="col-md-8 mb-4">
+                  <div className="card mb-4">
+                    <div className="card-body">
+                      <div className="form-outline mb-4">
+                        <label style={{ fontSize: 17 }}>Event Name</label>
+                        <p
+                          style={{
+                            textAlign: "start",
+                            fontSize: 16,
+                            marginTop: 2,
+                          }}
+                        >
+                          {state?.event?.name}
+                        </p>
                       </div>
-                    </div>
-                    <div className="col-12 col-sm-4">
-                      <div className="info-box bg-light">
-                        <div className="info-box-content">
-                          <span className="info-box-text text-center text-muted">
-                            Total amount spent
-                          </span>
-                          <span className="info-box-number text-center text-muted mb-0">
-                            {state?.event?.spent}
-                          </span>
-                        </div>
+                      <div className="form-outline mb-4">
+                        <label style={{ fontSize: 17 }}>
+                          Event Description
+                        </label>
+                        <p
+                          style={{
+                            textAlign: "start",
+                            fontSize: 16,
+                            marginTop: 2,
+                          }}
+                        >
+                          {state?.event?.description}
+                        </p>
                       </div>
-                    </div>
-                    <div className="col-12 col-sm-4">
-                      <div className="info-box bg-light">
-                        <div className="info-box-content">
-                          <span className="info-box-text text-center text-muted">
-                            Estimated Event duration
+                      <div className="form-outline mb-4">
+                        <label style={{ fontSize: 17 }}>Event Venue</label>
+                        <p
+                          style={{
+                            textAlign: "start",
+                            fontSize: 16,
+                            marginTop: 2,
+                          }}
+                        >
+                          <FiMapPin /> {state?.event?.venue}
+                        </p>
+                      </div>
+                      <div className="form-outline mb-4">
+                        <label style={{ fontSize: 17 }}>Event Leader</label>
+
+                        <p
+                          style={{
+                            textAlign: "start",
+                            fontSize: 16,
+                            marginTop: 2,
+                          }}
+                        >
+                          <BsFilePerson /> {state?.event?.leader}
+                        </p>
+                      </div>
+                      <div className="form-outline mb-4">
+                        <label style={{ fontSize: 17 }}>Event Date</label>
+                        <p
+                          style={{
+                            textAlign: "start",
+                            fontSize: 16,
+                            marginTop: 2,
+                          }}
+                        >
+                          <FiCalendar />{" "}
+                          <span>
+                            {moment
+                              .unix(state?.event?.date)
+                              .format("MMMM Do YYYY, h:mm:ss a")}
                           </span>
-                          <span className="info-box-number text-center text-muted mb-0">
-                            {convertMinutes(state?.event?.duration)}
-                            <span></span>
-                          </span>
-                        </div>
+                        </p>
+                      </div>
+                      <h5 className="mt-5 ">Event files</h5>
+                      <ul className="list-unstyled">
+                        {stateFiles?.map((file, index) => (
+                          <li key={index}>
+                            <a
+                              href={file.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-link text-secondary"
+                            >
+                              <i className="far fa-fw fa-file-word" />{" "}
+                              {file.name}
+                            </a>
+                          </li>
+                        ))}
+                        {files.length > 0 &&
+                          Array.from(files).map((file, index) => (
+                            <li key={file.name}>
+                              <a className="btn-link text-secondary">
+                                <i className="far fa-fw fa-file-word" />{" "}
+                                {file.name}
+                                <HighlightOffIcon
+                                  onClick={() => handleImageDelete(index)}
+                                  sx={{
+                                    fontSize: 18,
+                                    color: "red",
+                                    marginLeft: 0.5,
+                                    "&:hover": {
+                                      cursor: "pointer",
+                                      color: "darkred",
+                                    },
+                                  }}
+                                />
+                              </a>
+                            </li>
+                          ))}
+                      </ul>
+                      <div className="mt-2 mb-3">
+                        {progress > 0 ? (
+                          <ProgressLoader progress={progress} />
+                        ) : files.length > 0 ? (
+                          <div className="form-group">
+                            <div
+                              className="btn btn-sm btn-primary btn-file"
+                              onClick={handleUpload}
+                            >
+                              <i className="fas fa-upload" /> Upload
+                            </div>
+                          </div>
+                        ) : (
+                          user._id === state.event.created_by._id ||
+                          (user.role === "admin" && (
+                            <div className="form-group">
+                              <div className="btn btn-sm btn-primary btn-file">
+                                <i className="fas fa-paperclip" /> Add Files
+                                <input
+                                  type="file"
+                                  name="attachment"
+                                  onChange={(e) => {
+                                    setFiles(e.target.files);
+                                  }}
+                                  multiple
+                                />
+                              </div>
+                              <p
+                                style={{
+                                  display: "inline",
+                                  marginLeft: 5,
+                                  fontSize: 12,
+                                }}
+                                className="help-block"
+                              >
+                                Max. 10 MB
+                              </p>
+                              {error.attachment && (
+                                <p className="validation-error">
+                                  {error.attachment?.message}
+                                </p>
+                              )}
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-                  <h3 className="text-primary">
-                    <i className="fas fa-paint-brush" /> {state?.event?.name}
-                  </h3>
-                  <p className="text-muted">{state?.event?.description}</p>
-                  <br />
-                  <div className="text-muted">
-                    <p className="text-sm">
-                      Venue
-                      <b className="d-block">{state?.event?.venue}</b>
-                    </p>
-                    <p className="text-sm">
-                      Event Leader
-                      <b className="d-block">{state?.event?.leader}</b>
-                    </p>
-                    <p className="text-sm">
-                      Event Date
-                      <b className="d-block">
-                        {moment
-                          .unix(state?.event?.date)
-                          .format("MMMM Do YYYY, h:mm:ss a")}
-                      </b>
-                    </p>
+                <div className="col-md-4 mb-4">
+                  <div className="info-box bg-light">
+                    <div className="info-box-content">
+                      <span className="info-box-text text-center text-muted">
+                        Estimated budget
+                      </span>
+                      <span className="info-box-number text-center text-muted mb-0">
+                        {state?.event?.budget}
+                      </span>
+                    </div>
                   </div>
-                  <h5 className="mt-5 text-muted">Event files</h5>
-                  <ul className="list-unstyled">
-                    {stateFiles.map((file, index) => (
-                      <li key={index}>
-                        <a
-                          href={file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn-link text-secondary"
-                        >
-                          <i className="far fa-fw fa-file-word" /> {file.name}
-                        </a>
-                      </li>
-                    ))}
-                    {files.length > 0 &&
-                      Array.from(files).map((file, index) => (
-                        <li key={file.name}>
-                          <a className="btn-link text-secondary">
-                            <i className="far fa-fw fa-file-word" /> {file.name}
-                            <HighlightOffIcon
-                              onClick={() => handleImageDelete(index)}
-                              sx={{
-                                fontSize: 18,
-                                color: "red",
-                                marginLeft: 0.5,
-                                "&:hover": {
-                                  cursor: "pointer",
-                                  color: "darkred",
-                                },
-                              }}
-                            />
-                          </a>
-                        </li>
-                      ))}
-                  </ul>
-                  <div className="mt-2 mb-3">
-                    {progress > 0 ? (
-                      <ProgressLoader progress={progress} />
-                    ) : files.length > 0 ? (
-                      <div className="form-group">
-                        <div
-                          className="btn btn-sm btn-primary btn-file"
-                          onClick={handleUpload}
-                        >
-                          <i className="fas fa-upload" /> Upload
-                        </div>
-                      </div>
-                    ) : (
-                      user.role !== "muawin" && (
-                        <div className="form-group">
-                          <div className="btn btn-sm btn-primary btn-file">
-                            <i className="fas fa-paperclip" /> Add Files
-                            <input
-                              type="file"
-                              name="attachment"
-                              onChange={(e) => {
-                                setFiles(e.target.files);
-                              }}
-                              multiple
-                            />
-                          </div>
-                          <p
-                            style={{
-                              display: "inline",
-                              marginLeft: 5,
-                              fontSize: 12,
-                            }}
-                            className="help-block"
-                          >
-                            Max. 10 MB
-                          </p>
-                          {error.attachment && (
-                            <p className="validation-error">
-                              {error.attachment?.message}
-                            </p>
-                          )}
-                        </div>
-                      )
-                    )}
-                    {/* <button className="btn btn-sm btn-primary">
-                      Add Files
-                    </button> */}
-                    {/* <a href="#" className="btn btn-sm btn-warning">
-                      Report contact
-                    </a> */}
+                  <div className="info-box bg-light">
+                    <div className="info-box-content">
+                      <span className="info-box-text text-center text-muted">
+                        Total amount spent
+                      </span>
+                      <span className="info-box-number text-center text-muted mb-0">
+                        {state?.event?.spent}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="info-box bg-light">
+                    <div className="info-box-content">
+                      <span className="info-box-text text-center text-muted">
+                        Estimated Event duration
+                      </span>
+                      <span className="info-box-number text-center text-muted mb-0">
+                        {convertMinutes(state?.event?.duration)}
+                        <span></span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* /.card-body */}
           </div>
-          {/* /.card */}
         </section>
-        {/* /.content */}
       </div>
       <Footer />
     </div>

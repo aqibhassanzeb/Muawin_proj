@@ -3,11 +3,7 @@ import Navbar from "../common/navbar";
 
 import Footer from "../common/footer";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  useAllEventsQuery,
-  useUserEventsQuery,
-  useUpdateEventMutation,
-} from "../../api/api";
+import { useAllEventsQuery, useUpdateEventMutation } from "../../api/api";
 import moment from "moment";
 import { toast } from "sonner";
 import DeleteDialogue from "../DeleteDialogue";
@@ -16,16 +12,9 @@ import { useSelector } from "react-redux";
 
 const Eventdirectory = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
+  console.log(user);
 
-  const [adminSkip, setAdminSkip] = useState(true);
-  const [userSkip, setUserSkip] = useState(true);
-
-  const { data: adminEvents, isLoading } = useAllEventsQuery(null, {
-    skip: adminSkip,
-  });
-  const { data: userEvents } = useUserEventsQuery(user?._id, {
-    skip: userSkip,
-  });
+  const { data, isLoading } = useAllEventsQuery();
   const [update, updateResp] = useUpdateEventMutation();
 
   const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
@@ -40,14 +29,6 @@ const Eventdirectory = () => {
       }
     });
   }
-
-  useEffect(() => {
-    if (user?.role === "admin") {
-      setAdminSkip(false);
-    } else {
-      setUserSkip(false);
-    }
-  }, []);
 
   return (
     <>
@@ -102,13 +83,13 @@ const Eventdirectory = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  {(adminEvents && adminEvents.length > 0) ||
-                  (userEvents && userEvents.length > 0) ? (
+                  {data && data.length > 0 ? (
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
                         <th style={{ width: "20%" }}>Event Name</th>
                         <th>Event Progress</th>
+                        {/* <th>Created By</th> */}
                         <th style={{ width: "8%" }} className="text-center">
                           Status
                         </th>
@@ -117,12 +98,14 @@ const Eventdirectory = () => {
                     </thead>
                   ) : (
                     <thead>
-                      <th style={{ textAlign: "center" }}>No Events</th>
+                      <th style={{ textAlign: "center" }}>
+                        {isLoading ? "Loading Events" : "No Events"}
+                      </th>
                     </thead>
                   )}
                   <tbody>
-                    {(adminEvents || userEvents) &&
-                      (adminEvents || userEvents).map((row, index) => (
+                    {data &&
+                      data.map((row, index) => (
                         <tr key={row._id}>
                           <td>{index + 1}</td>
                           <td>
@@ -146,6 +129,18 @@ const Eventdirectory = () => {
                             </div>
                             <small>57% Complete</small>
                           </td>
+                          {/* <td>
+                            <a>
+                              {`${row.created_by.firstName} 
+                                ${
+                                  row.created_by.lastName
+                                    ? row.created_by.lastName
+                                    : ""
+                                }`}
+                            </a>
+                            <br />
+                            <small>{row.created_by.email}</small>
+                          </td> */}
                           <td className="Event-state">
                             <span
                               className={`badge ${
@@ -178,7 +173,7 @@ const Eventdirectory = () => {
                               <i className="fas fa-folder"></i>
                               View
                             </button>
-                            {user?.role !== "muawin" && (
+                            {user?.role === "admin" ? (
                               <button
                                 onClick={() =>
                                   navigate("/updateevent", {
@@ -190,8 +185,22 @@ const Eventdirectory = () => {
                                 <i className="fas fa-pencil-alt"></i>
                                 Edit
                               </button>
+                            ) : (
+                              user?._id === row.created_by._id && (
+                                <button
+                                  onClick={() =>
+                                    navigate("/updateevent", {
+                                      state: { event: row },
+                                    })
+                                  }
+                                  className="btn btn-info btn-sm"
+                                >
+                                  <i className="fas fa-pencil-alt"></i>
+                                  Edit
+                                </button>
+                              )
                             )}
-                            {user?.role !== "muawin" && (
+                            {user?.role === "admin" ? (
                               <button
                                 className="btn btn-danger btn-sm"
                                 onClick={() => {
@@ -202,6 +211,19 @@ const Eventdirectory = () => {
                                 <i className="fas fa-trash"></i>
                                 Delete
                               </button>
+                            ) : (
+                              user._id === row.created_by._id && (
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => {
+                                    setSelectedId(row._id);
+                                    setOpenDeleteDialogue(true);
+                                  }}
+                                >
+                                  <i className="fas fa-trash"></i>
+                                  Delete
+                                </button>
+                              )
                             )}
                           </td>
                         </tr>

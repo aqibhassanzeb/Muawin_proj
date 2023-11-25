@@ -51,9 +51,13 @@ const UserSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
-    last_active: {
+    first_login: {
       type: String,
-      default: new Date().toISOString(),
+      default: "Nil",
+    },
+    last_login: {
+      type: String,
+      default: "Nil",
     },
     role: {
       type: String,
@@ -70,6 +74,10 @@ const UserSchema = new mongoose.Schema(
     is_active: {
       type: Boolean,
       default: true,
+    },
+    image: {
+      type: String,
+      default: process.env.DEFAULT_PROFILE_IMAGE,
     },
     temp_email: {
       tyep: String,
@@ -92,6 +100,9 @@ const trackerSchema = new mongoose.Schema({
     required: true,
   },
   login_time: Date,
+  ip: String,
+  country: String,
+  city: String,
 });
 
 export const Tracker = mongoose.model("login-tracker", trackerSchema);

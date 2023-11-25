@@ -5,8 +5,9 @@ import { validateLoginForm } from "../../utils/validations";
 import { useDispatch } from "react-redux";
 import { setActiveUser, setToken } from "../../redux/reducers/auth";
 import { toast } from "sonner";
-import { useLoginMutation } from "../../api/api";
+import { useLoginMutation, useTraceLogMutation } from "../../api/api";
 import { MDBSpinner } from "mdb-react-ui-kit";
+import axios from "axios";
 
 const Login = () => {
   const [formValue, setFormValue] = useState({
@@ -16,6 +17,7 @@ const Login = () => {
   });
 
   const [login, response] = useLoginMutation();
+  const [traceLog] = useTraceLogMutation();
 
   const onChange = (e) => {
     setFormValue({ ...formValue, [e.target.name]: e.target.value });
@@ -33,6 +35,23 @@ const Login = () => {
       login({
         email: formValue.email,
         password: formValue.password,
+      }).then((res) => {
+        if (res.error) {
+          toast.error(res?.error?.data?.error);
+        } else if (res.data && res.data.message) {
+          if (!res.data.user.is_active) {
+            toast.error("Your account has been disabled");
+          } else {
+            dispatch(setActiveUser(res?.data?.user));
+            dispatch(setToken(res?.data?.token));
+            navigate("/dashboard");
+            axios
+              .get("https://api.ipify.org?format=json")
+              .then((response) =>
+                traceLog({ id: res.data.user._id, ip: response.data.ip })
+              );
+          }
+        }
       });
     };
 
@@ -52,20 +71,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (response?.isSuccess && response?.data?.message) {
-      dispatch(setActiveUser(response?.data?.user));
-      dispatch(setToken(response?.data?.token));
-      toast.success("Login Successful");
-      navigate("/dashboard");
-    }
-  }, [response?.isSuccess]);
-
-  useEffect(() => {
-    if (response?.isError) {
-      toast.error(response?.error?.data?.error);
-    }
-  }, [response?.isError]);
   return (
     <div className="hold-transition login-page">
       <div className="login-box">

@@ -87,8 +87,11 @@ const VerifyOTP = () => {
                 Verify your email
               </h3>
               <p className="mt-4 mb-1 text-center">
-                Please check your inbox for verification code sent to{" "}
+                Please check your email for verification code sent to{" "}
                 <span style={{ color: "blue" }}>{state?.email}</span>
+              </p>
+              <p className="mt-2 mb-1 text-center">
+                have a look in your spam folder too.
               </p>
               <p className="text-center mt-3">Enter Code:</p>
               <div className=" d-flex justify-content-center align-items-center">

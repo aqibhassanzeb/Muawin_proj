@@ -19,6 +19,7 @@ import {
   otherInfoValidation,
 } from "../utils/validations";
 import { useSelector } from "react-redux";
+import Loader from "./Loader";
 
 const MemberForm = () => {
   const [register, response] = useRegisterMutation();
@@ -572,10 +573,7 @@ const MemberForm = () => {
                     <div className="row">
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label>
-                            Father's Full Name{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Father's Full Name </label>
                           <input
                             type="text"
                             className="form-control"
@@ -631,10 +629,7 @@ const MemberForm = () => {
                       <div className="col-md-6">
                         {/* /.form-group */}
                         <div className="form-group">
-                          <label>
-                            Mother's Full Name{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Mother's Full Name </label>
                           <input
                             type="text"
                             className="form-control"
@@ -649,10 +644,7 @@ const MemberForm = () => {
                         </div>
 
                         <div className="form-group">
-                          <label>
-                            Number of Dependents{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Number of Dependents </label>
                           <input
                             type="text"
                             className="form-control"
@@ -667,10 +659,7 @@ const MemberForm = () => {
                         </div>
 
                         <div className="form-group">
-                          <label>
-                            Family Contact Information{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Family Contact Information </label>
                           <input
                             type="tel"
                             className="form-control"
@@ -720,10 +709,7 @@ const MemberForm = () => {
                     <div className="row">
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label>
-                            Education Level{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Education Level </label>
                           <select
                             name="educationLevel"
                             className="form-control"
@@ -749,10 +735,7 @@ const MemberForm = () => {
                         </div>
 
                         <div className="form-group">
-                          <label>
-                            Major / Field Of Study{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Major / Field Of Study </label>
                           <input
                             type="text"
                             className="form-control"
@@ -801,10 +784,7 @@ const MemberForm = () => {
                       <div className="col-md-6">
                         {/* /.form-group */}
                         <div className="form-group">
-                          <label>
-                            Name of School / College / University{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Name of School / College / University </label>
                           <input
                             type="text"
                             className="form-control"
@@ -884,10 +864,7 @@ const MemberForm = () => {
                     <div className="row">
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label>
-                            Current Job Title{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Current Job Title </label>
                           <input
                             type="text"
                             className="form-control"
@@ -902,9 +879,7 @@ const MemberForm = () => {
                         </div>
 
                         <div className="form-group">
-                          <label>
-                            Industry <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Industry</label>
                           <input
                             type="text"
                             className="form-control"
@@ -919,10 +894,7 @@ const MemberForm = () => {
                         </div>
 
                         <div className="form-group">
-                          <label>
-                            Job Responsibilities{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Job Responsibilities </label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -937,10 +909,7 @@ const MemberForm = () => {
                           )}
                         </div>
                         <div className="form-group">
-                          <label>
-                            Professional Skills
-                            <span style={{ color: "red" }}> *</span>
-                          </label>
+                          <label>Professional Skills</label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -954,10 +923,7 @@ const MemberForm = () => {
                           )}
                         </div>
                         <div className="form-group">
-                          <label>
-                            Work-related References{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Work-related References </label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -976,10 +942,7 @@ const MemberForm = () => {
                       <div className="col-md-6">
                         {/* /.form-group */}
                         <div className="form-group">
-                          <label>
-                            Company / Organization Name{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Company / Organization Name </label>
                           <input
                             type="text"
                             className="form-control"
@@ -996,7 +959,6 @@ const MemberForm = () => {
                         <div className="form-group">
                           <label>
                             Work Experience
-                            <span style={{ color: "red" }}> * </span>
                             <span style={{ fontSize: 14, fontWeight: 400 }}>
                               (Years)
                             </span>
@@ -1015,10 +977,7 @@ const MemberForm = () => {
                         </div>
 
                         <div className="form-group">
-                          <label>
-                            Previous Employers and Positions{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Previous Employers and Positions </label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -1032,10 +991,7 @@ const MemberForm = () => {
                           )}
                         </div>
                         <div className="form-group">
-                          <label>
-                            Certifications or Licenses{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Certifications or Licenses </label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -1050,7 +1006,7 @@ const MemberForm = () => {
                         </div>
                         <div className="form-group">
                           <label>
-                            Work History <span style={{ color: "red" }}>*</span>
+                            Work History
                             <span style={{ fontSize: 14, fontWeight: 400 }}>
                               (including start and end dates)
                             </span>{" "}
@@ -1105,10 +1061,7 @@ const MemberForm = () => {
                     <div className="row">
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label>
-                            Interests/Hobbies{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Interests/Hobbies </label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -1123,10 +1076,7 @@ const MemberForm = () => {
                           )}
                         </div>
                         <div className="form-group">
-                          <label>
-                            Social Media Profiles
-                            <span style={{ color: "red" }}> *</span>
-                          </label>
+                          <label>Social Media Profiles</label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -1164,10 +1114,7 @@ const MemberForm = () => {
                       <div className="col-md-6">
                         {/* /.form-group */}
                         <div className="form-group">
-                          <label>
-                            Languages Spoken{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Languages Spoken </label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -1181,10 +1128,7 @@ const MemberForm = () => {
                           )}
                         </div>
                         <div className="form-group">
-                          <label>
-                            Volunteer Work{" "}
-                            <span style={{ color: "red" }}>*</span>
-                          </label>
+                          <label>Volunteer Work </label>
                           <textarea
                             type="text"
                             className="form-control"
@@ -1249,9 +1193,10 @@ const MemberForm = () => {
                       <button
                         type="submit"
                         className="btn  btn-outline-primary"
+                        disabled={response.isLoading}
                         // onClick={nextStep}
                       >
-                        Submit
+                        {response.isLoading ? <Loader size={30} /> : "Submit"}
                       </button>
                     </div>
                   </form>

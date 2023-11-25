@@ -327,3 +327,11 @@ color: white;
 #reactgooglegraph-1{
   background-color: white !important;
 }
+
+/* .fas.fa-arrow-circle-down {
+  color: white !important;
+} */
+
+.profile-camera-icon:hover {
+  cursor: pointer;
+}

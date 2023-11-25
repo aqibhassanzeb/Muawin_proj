@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/style.css";
 import Navbar from "../common/navbar";
 
@@ -16,13 +16,14 @@ import { toast } from "sonner";
 const Report = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
 
+  const [quote, setQuote] = useState([]);
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reportFormat, setReportFormat] = useState("pdf");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDateChange = (e) => {
-    // Assuming the date format is YYYY-MM-DD
     const { name, value } = e.target;
     if (name === "startDate") {
       setStartDate(value);
@@ -117,6 +118,25 @@ const Report = () => {
     );
   }
 
+  useEffect(() => {
+    if (quote.length === 0) {
+      axios({
+        method: "get",
+        url: "https://api.api-ninjas.com/v1/quotes?category=success",
+        headers: {
+          "X-Api-Key": process.env.REACT_APP_QUOTES_API_KEY,
+          "Content-Type": "application/json",
+        },
+      })
+        .then(function (response) {
+          setQuote(response.data);
+        })
+        .catch(function (error) {
+          console.error("Error getting quote:", error.response.data);
+        });
+    }
+  }, []);
+
   return (
     <div className="wrapper">
       <Navbar />
@@ -181,6 +201,40 @@ const Report = () => {
             contact muawin support for assistance.
           </p>
         </div>
+        <section className="mt-5" style={{ marginLeft: 100, marginRight: 70 }}>
+          <div className="">
+            <div className="">
+              <div className="text-center">
+                <img
+                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-quotes/bulb.webp"
+                  alt="Bulb"
+                  width="100"
+                />
+              </div>
+
+              <figure className="text-center mb-0">
+                <blockquote className="blockquote">
+                  <p className="pb-3">
+                    <i
+                      className="fas fa-quote-left fa-xs text-primary"
+                      style={{ paddingRight: 5 }}
+                    ></i>
+                    <span className="lead font-italic">
+                      {quote.length > 0 && quote[0].quote}
+                    </span>
+                    <i
+                      className="fas fa-quote-right fa-xs text-primary"
+                      style={{ paddingLeft: 5 }}
+                    ></i>
+                  </p>
+                </blockquote>
+                <figcaption className="blockquote-footer mb-0">
+                  {quote.length > 0 && quote[0].author}
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
       </div>
       <Footer />
     </div>

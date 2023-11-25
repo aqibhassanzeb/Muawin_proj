@@ -77,6 +77,15 @@ export const api = createApi({
       },
       providesTags: ["User"],
     }),
+    updatePassword: build.mutation({
+      query: (data) => {
+        return {
+          url: `/user_passupdate`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
     userUpdate: build.mutation({
       query: (data) => {
         return {
@@ -141,6 +150,15 @@ export const api = createApi({
     getAllUsers: build.query({
       query: () => "/users",
       providesTags: ["User"],
+    }),
+    deleteUser: build.mutation({
+      query: (id) => {
+        return {
+          url: `/delete_account/${id}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["User"],
     }),
     getAllUsersCount: build.query({
       query: () => "/users_counts",
@@ -207,6 +225,18 @@ export const api = createApi({
       },
       invalidatesTags: ["WatchCat"],
     }),
+    traceLog: build.mutation({
+      query: (data) => {
+        return {
+          url: "/track_login",
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    getUserTree: build.query({
+      query: (id) => `/user_tree/${id}`,
+    }),
   }),
 });
 
@@ -235,6 +265,10 @@ export const {
   useUserEventsQuery,
   useGetAllUsersCountQuery,
   useGetTodosCountQuery,
+  useTraceLogMutation,
+  useDeleteUserMutation,
+  useGetUserTreeQuery,
+  useUpdatePasswordMutation,
 } = api;
 
 export function uploadImage(file) {
@@ -247,6 +281,7 @@ export function uploadImage(file) {
       body: formData,
     })
       .then((res) => {
+        console.log(res);
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`);
         }
@@ -304,3 +339,24 @@ export async function uploadFiles(files, setProgress) {
     console.error("Error uploading files:", error.message);
   }
 }
+
+export const uploadImageToCloudinary = async (pic) => {
+  const data = new FormData();
+  data.append("file", pic);
+  data.append("upload_preset", process.env.REACT_APP_CLOUDINARY_PRESET);
+  data.append("cloud_name", process.env.REACT_APP_CLOUDINARY_CLOUD_NAME);
+  try {
+    if (document) {
+      const res = await axios({
+        method: "post",
+        url: `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        data,
+      });
+      const result = await res.data;
+      const picURL = result.secure_url;
+      return picURL;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
