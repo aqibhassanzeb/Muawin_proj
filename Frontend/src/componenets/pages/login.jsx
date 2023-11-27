@@ -15,7 +15,6 @@ import axios from "axios";
 
 const Login = () => {
   const isRemember = useSelector((state) => state.authReducer.isRemember);
-  console.log({ isRemember });
   const [checkBox, setCheckBox] = useState(false);
 
   const [formValue, setFormValue] = useState({

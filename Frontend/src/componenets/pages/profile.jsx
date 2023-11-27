@@ -106,7 +106,7 @@ const Profile = () => {
                         color="#007bff"
                         style={{
                           position: "absolute",
-                          bottom: preview ? 80 : 70,
+                          bottom: preview ? 80 : 100,
                           right: 55,
                         }}
                         onClick={() => ImageInputRef.current.click()}
