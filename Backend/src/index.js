@@ -47,9 +47,12 @@ app.use("*", (req, res) => {
   });
 });
 
-//REAL TIME CHAT
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   console.log("User connected to socket:", socket.id);
+  const allNotifications = await Notification.find()
+    .populate("notificationBy", "firstName lastName image")
+    .sort({ createdAt: -1 });
+  socket.emit("initialNotifications", allNotifications);
 
   socket.on("join", (roomId) => {
     socket.join(roomId);
@@ -74,7 +77,10 @@ io.on("connection", (socket) => {
 
   socket.on("adminBroadcast", async (notification) => {
     try {
-      const newNotification = new Notification({ message: notification });
+      const newNotification = new Notification({
+        message: notification,
+        notificationBy: "6523995e4c1094b032c6c61d",
+      });
       await newNotification.save();
       io.emit("notification", newNotification);
     } catch (error) {
@@ -82,15 +88,16 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("markAsRead", async (notificationId, userId) => {
+  socket.on("markAllAsRead", async (userId) => {
     try {
-      await Notification.findByIdAndUpdate(
-        notificationId,
-        { $addToSet: { isReadBy: userId } },
-        { new: true }
+      await Notification.updateMany(
+        { isReadBy: { $nin: [userId] } },
+        { $addToSet: { isReadBy: userId } }
       );
-
-      io.to(userId).emit("notificationRead", notificationId);
+      const userNotifications = await Notification.find()
+        .populate("notificationBy", "firstName lastName image")
+        .sort({ createdAt: -1 });
+      socket.emit("allNotificationsRead", userNotifications);
     } catch (error) {
       console.log(error);
     }

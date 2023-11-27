@@ -29,6 +29,7 @@ import UnderConstruction from "./componenets/pages/underconstruction";
 import MemberDetails from "./componenets/pages/member_details";
 import UpdateMember from "./componenets/pages/updatemember";
 import SideBar from "./componenets/Sidebar/SideBar";
+import Notifications from "./componenets/pages/notification";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
             <Route path="/donations" element={<Donations />} />
             <Route path="/literature" element={<Literature />} />
             <Route path="/config" element={<Configuration />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Route>
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Login />} />

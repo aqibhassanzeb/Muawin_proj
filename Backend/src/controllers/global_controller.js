@@ -143,7 +143,9 @@ export const getUserCount = async (req, res) => {
 
 export const GetNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find().sort({ createdAt: -1 });
+    const notifications = await Notification.find()
+      .populate("notificationBy", "firstName lastName image")
+      .sort({ createdAt: -1 });
     res.status(200).json(notifications);
   } catch (error) {
     console.log(error);

@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const notificationSchema = new mongoose.Schema(
   {
     message: String,
-    isReadBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    isReadBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+    notificationBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   },
   {
     timestamps: true,

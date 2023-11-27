@@ -1,49 +1,93 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/reducers/auth";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import CustomModal from "../Modal";
 import io from "socket.io-client";
-import { useGetNotificationsQuery } from "../../api/api";
 import moment from "moment";
+import { toast } from "sonner";
+import { api } from "../../api/api";
 
 const Navbar = () => {
-  const [socket, setSocket] = useState(null);
   const user = useSelector((state) => state.authReducer.activeUser);
-  const { data } = useGetNotificationsQuery();
 
+  const [noti, setNoti] = useState([]);
   const [openAddNoti, setOpenAddNoti] = useState(false);
+  const [connected, setConnected] = useState(false);
   const textRef = useRef();
 
   const dispatch = useDispatch();
-  const navigagte = useNavigate();
+  const navigate = useNavigate();
 
   function handleLogout() {
     localStorage.removeItem("activeUser");
     localStorage.removeItem("token");
     sessionStorage.removeItem("activeUser");
     sessionStorage.removeItem("token");
+    dispatch(api.util.resetApiState());
     dispatch(() => logout());
-    navigagte("/");
+    navigate("/");
   }
 
-  // useEffect(() => {
-  //   console.log("SOCKET LOG");
-  //   const newSocket = io("http://localhost:3333");
-  //   setSocket(newSocket);
-  //   return () => {
-  //     newSocket.disconnect();
-  //   };
-  // }, []);
+  const socket = useMemo(() => {
+    return io("http://localhost:3333");
+  }, []);
 
-  function handleSendNotification() {
-    if (socket && textRef.current?.value) {
-      socket.emit("adminBroadcast", textRef.current?.value);
+  useEffect(() => {
+    if (!socket) {
+      setConnected(true);
+    }
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("initialNotifications", (initialNotifications) => {
+        setNoti(initialNotifications);
+      });
+
+      socket.on("notification", (newNotification) => {
+        setNoti((prevNotifications) => [newNotification, ...prevNotifications]);
+      });
+      socket.on("allNotificationsRead", (userNotifications) => {
+        setNoti(userNotifications);
+      });
+    }
+  }, [socket]);
+
+  const handleSendNotification = () => {
+    if (socket && textRef?.current?.value) {
+      socket.emit("adminBroadcast", textRef?.current?.value);
+      toast.success("Notification sent");
       setOpenAddNoti(false);
     }
+  };
+
+  const handleMarkAllAsRead = () => {
+    if (socket) {
+      socket.emit("markAllAsRead", user._id);
+    }
+  };
+
+  let unreadCount = 0;
+
+  function countUnreadDocuments() {
+    noti.forEach((notification) => {
+      if (
+        !notification.isReadBy ||
+        notification.isReadBy.indexOf(user._id) === -1
+      ) {
+        unreadCount++;
+      }
+    });
   }
+
+  countUnreadDocuments();
+
   return (
     <div>
       <nav
@@ -221,36 +265,77 @@ const Navbar = () => {
               <a className="nav-link" data-toggle="dropdown" href="#">
                 <i className="far fa-bell" />
                 <span className="badge badge-warning navbar-badge">
-                  {data && data.length}
+                  {noti && unreadCount}
                 </span>
               </a>
-              <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+              <div
+                className="dropdown-menu dropdown-menu-lg dropdown-menu-right"
+                style={{ maxWidth: "515px" }}
+              >
                 <span className="dropdown-item dropdown-header">
-                  {data && data.length} Notification
-                  {data && data.length > 1 ? "s" : ""}
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <p>
+                      {noti && unreadCount} Unread Notification
+                      {noti && unreadCount > 1 ? "s" : ""}
+                    </p>
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      style={{ paddingTop: "1px", paddingBottom: "1px" }}
+                      onClick={() => handleMarkAllAsRead()}
+                    >
+                      Mark all read
+                    </button>
+                  </div>
                 </span>
                 <div className="dropdown-divider" />
-                {data &&
-                  data.map((not) => (
-                    <div key={not._id} className="dropdown-item">
-                      <div>
+                {noti &&
+                  noti.map((not) => (
+                    <div
+                      key={not._id}
+                      className="dropdown-item"
+                      style={{
+                        marginBottom: 5,
+                        backgroundColor: not.isReadBy.includes(user._id)
+                          ? "white"
+                          : "#f1f5f9",
+                        borderRadius: 5,
+                        width: "40vw",
+                      }}
+                    >
+                      <div className="d-flex">
                         <i className="fas fa-envelope mr-2" />
-                        <span style={{ fontSize: 12 }}>{not.message}</span>
-                      </div>
-                      <div>
-                        <span
-                          className="float-right text-muted"
-                          style={{ fontSize: 10 }}
+                        <div
+                          className="d-flex"
+                          style={{ justifyContent: "space-between", flex: 1 }}
                         >
-                          {moment(not.createdAt).fromNow()}
-                        </span>
+                          <p style={{ fontSize: 12, textAlign: "justify" }}>
+                            {not.message}
+                          </p>
+                          <span
+                            className="float-right text-muted"
+                            style={{ fontSize: 10, marginLeft: 5 }}
+                          >
+                            {moment(not.createdAt).fromNow()}
+                          </span>
+                        </div>
                       </div>
+                      <div style={{ borderBottom: "1px solid #f1f5f9" }}></div>
                     </div>
                   ))}
                 <div className="dropdown-divider" />
-                <a href="#" className="dropdown-item dropdown-footer">
+                <div
+                  onClick={() =>
+                    navigate("/notifications", {
+                      state: { notifications: noti },
+                    })
+                  }
+                  className="dropdown-item dropdown-footer"
+                  style={{ cursor: "pointer" }}
+                >
                   See All Notifications
-                </a>
+                </div>
               </div>
             </li>
           )}
