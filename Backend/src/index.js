@@ -12,11 +12,16 @@ import Global from "./routes/global_routes.js";
 import Event from "./routes/event_routes.js";
 import Admin from "./routes/admin_routes.js";
 import { Message } from "./models/message.js";
+import { Notification } from "./models/notification.js";
 
 const app = express();
 
 const server = http.createServer(app);
-const io = new socketIo(server);
+const io = new socketIo(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
 //middelwares
 
@@ -38,7 +43,7 @@ app.use("/api/v1", Auth, Global, MessageRoutes, Event, Admin);
 
 app.use("*", (req, res) => {
   return res.status(404).json({
-    message: "Backend is runing..",
+    message: "Backend is running..",
   });
 });
 
@@ -62,6 +67,30 @@ io.on("connection", (socket) => {
       });
       await newMessage.save();
       io.to(roomId).emit("message", newMessage);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on("adminBroadcast", async (notification) => {
+    try {
+      const newNotification = new Notification({ message: notification });
+      await newNotification.save();
+      io.emit("notification", newNotification);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on("markAsRead", async (notificationId, userId) => {
+    try {
+      await Notification.findByIdAndUpdate(
+        notificationId,
+        { $addToSet: { isReadBy: userId } },
+        { new: true }
+      );
+
+      io.to(userId).emit("notificationRead", notificationId);
     } catch (error) {
       console.log(error);
     }

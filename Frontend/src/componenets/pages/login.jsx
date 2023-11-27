@@ -2,29 +2,40 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/style.css";
 import { validateLoginForm } from "../../utils/validations";
-import { useDispatch } from "react-redux";
-import { setActiveUser, setToken } from "../../redux/reducers/auth";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setActiveUser,
+  setToken,
+  setRemember,
+} from "../../redux/reducers/auth";
 import { toast } from "sonner";
 import { useLoginMutation, useTraceLogMutation } from "../../api/api";
 import { MDBSpinner } from "mdb-react-ui-kit";
 import axios from "axios";
 
 const Login = () => {
+  const isRemember = useSelector((state) => state.authReducer.isRemember);
+  console.log({ isRemember });
+  const [checkBox, setCheckBox] = useState(false);
+
   const [formValue, setFormValue] = useState({
     email: "",
     password: "",
-    rememberMe: false,
   });
 
   const [login, response] = useLoginMutation();
   const [traceLog] = useTraceLogMutation();
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const onChange = (e) => {
     setFormValue({ ...formValue, [e.target.name]: e.target.value });
   };
 
-  const checkBoxChange = () => {
-    setFormValue({ ...formValue, agreeCheck: !formValue.agreeCheck });
+  const checkBoxChange = (e) => {
+    setCheckBox(e.target.checked);
+    dispatch(setRemember(e.target.checked));
   };
 
   function handleSignIn(e) {
@@ -42,6 +53,19 @@ const Login = () => {
           if (!res.data.user.is_active) {
             toast.error("Your account has been disabled");
           } else {
+            if (checkBox) {
+              localStorage.setItem(
+                "activeUser",
+                JSON.stringify(res?.data?.user)
+              );
+              localStorage.setItem("token", JSON.stringify(res?.data?.token));
+            } else {
+              sessionStorage.setItem(
+                "activeUser",
+                JSON.stringify(res?.data?.user)
+              );
+              sessionStorage.setItem("token", res?.data?.token);
+            }
             dispatch(setActiveUser(res?.data?.user));
             dispatch(setToken(res?.data?.token));
             navigate("/dashboard");
@@ -67,9 +91,6 @@ const Login = () => {
       }
     }, 0);
   }
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   return (
     <div className="hold-transition login-page">
@@ -127,7 +148,7 @@ const Login = () => {
                       <input
                         type="checkbox"
                         id="remember"
-                        value={formValue.rememberMe}
+                        value={checkBox}
                         onChange={checkBoxChange}
                       />
                       <label htmlFor="remember">Remember Me</label>
