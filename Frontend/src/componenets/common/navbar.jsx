@@ -1,16 +1,48 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../redux/reducers/auth";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import CustomModal from "../Modal";
+import io from "socket.io-client";
+import { useGetNotificationsQuery } from "../../api/api";
+import moment from "moment";
 
 const Navbar = () => {
+  const [socket, setSocket] = useState(null);
+  const user = useSelector((state) => state.authReducer.activeUser);
+  const { data } = useGetNotificationsQuery();
+
+  const [openAddNoti, setOpenAddNoti] = useState(false);
+  const textRef = useRef();
+
   const dispatch = useDispatch();
   const navigagte = useNavigate();
+
   function handleLogout() {
+    localStorage.removeItem("activeUser");
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("activeUser");
+    sessionStorage.removeItem("token");
     dispatch(() => logout());
     navigagte("/");
+  }
+
+  // useEffect(() => {
+  //   console.log("SOCKET LOG");
+  //   const newSocket = io("http://localhost:3333");
+  //   setSocket(newSocket);
+  //   return () => {
+  //     newSocket.disconnect();
+  //   };
+  // }, []);
+
+  function handleSendNotification() {
+    if (socket && textRef.current?.value) {
+      socket.emit("adminBroadcast", textRef.current?.value);
+      setOpenAddNoti(false);
+    }
   }
   return (
     <div>
@@ -170,37 +202,58 @@ const Navbar = () => {
           </li> */}
 
           {/* Notifications Dropdown Menu */}
-          {/* <li className="nav-item dropdown">
-            <a className="nav-link" data-toggle="dropdown" href="#">
-              <i className="far fa-bell" />
-              <span className="badge badge-warning navbar-badge">15</span>
-            </a>
-
-            <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-              <span className="dropdown-item dropdown-header">
-                15 Notifications
+          {user.role === "admin" ? (
+            <div
+              className="nav-link"
+              style={{ position: "relative", cursor: "pointer" }}
+              onClick={() => setOpenAddNoti(true)}
+            >
+              <i className="fa fa-bell" />
+              <span
+                className="badge badge-info navbar-badge"
+                style={{ position: "absolute" }}
+              >
+                <i className="fas fa-plus" />
               </span>
-              <div className="dropdown-divider" />
-              <a href="#" className="dropdown-item">
-                <i className="fas fa-envelope mr-2" /> 4 new messages
-                <span className="float-right text-muted text-sm">3 mins</span>
-              </a>
-              <div className="dropdown-divider" />
-              <a href="#" className="dropdown-item">
-                <i className="fas fa-users mr-2" /> 8 friend requests
-                <span className="float-right text-muted text-sm">12 hours</span>
-              </a>
-              <div className="dropdown-divider" />
-              <a href="#" className="dropdown-item">
-                <i className="fas fa-file mr-2" /> 3 new reports
-                <span className="float-right text-muted text-sm">2 days</span>
-              </a>
-              <div className="dropdown-divider" />
-              <a href="#" className="dropdown-item dropdown-footer">
-                See All Notifications
-              </a>
             </div>
-          </li> */}
+          ) : (
+            <li className="nav-item dropdown">
+              <a className="nav-link" data-toggle="dropdown" href="#">
+                <i className="far fa-bell" />
+                <span className="badge badge-warning navbar-badge">
+                  {data && data.length}
+                </span>
+              </a>
+              <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <span className="dropdown-item dropdown-header">
+                  {data && data.length} Notification
+                  {data && data.length > 1 ? "s" : ""}
+                </span>
+                <div className="dropdown-divider" />
+                {data &&
+                  data.map((not) => (
+                    <div key={not._id} className="dropdown-item">
+                      <div>
+                        <i className="fas fa-envelope mr-2" />
+                        <span style={{ fontSize: 12 }}>{not.message}</span>
+                      </div>
+                      <div>
+                        <span
+                          className="float-right text-muted"
+                          style={{ fontSize: 10 }}
+                        >
+                          {moment(not.createdAt).fromNow()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                <div className="dropdown-divider" />
+                <a href="#" className="dropdown-item dropdown-footer">
+                  See All Notifications
+                </a>
+              </div>
+            </li>
+          )}
 
           <li className="nav-item">
             <a
@@ -225,6 +278,36 @@ const Navbar = () => {
           </li>
         </ul>
       </nav>
+      <CustomModal open={openAddNoti} setOpen={setOpenAddNoti}>
+        <div className="form-group">
+          <label>Enter Notification to be broadcast</label>
+          <textarea
+            type="text"
+            className="form-control"
+            style={{ width: "100%" }}
+            rows="2"
+            ref={textRef}
+          />
+        </div>
+        <div
+          className="d-flex gap-5 justify-content-center align-items-center"
+          style={{ gap: 10 }}
+        >
+          <button
+            onClick={() => setOpenAddNoti(false)}
+            className="btn btn-outline-secondary"
+          >
+            Cancel
+          </button>
+
+          <button
+            className="btn btn-outline-primary"
+            onClick={handleSendNotification}
+          >
+            Send
+          </button>
+        </div>
+      </CustomModal>
     </div>
   );
 };

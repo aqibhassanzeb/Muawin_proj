@@ -236,6 +236,10 @@ export const api = createApi({
     getUserTree: build.query({
       query: (id) => `/user_tree/${id}`,
     }),
+    getNotifications: build.query({
+      query: () => "/notifications",
+      // providesTags: ["User"],
+    }),
   }),
 });
 
@@ -268,6 +272,7 @@ export const {
   useDeleteUserMutation,
   useGetUserTreeQuery,
   useUpdatePasswordMutation,
+  useGetNotificationsQuery,
 } = api;
 
 export function uploadImage(file) {

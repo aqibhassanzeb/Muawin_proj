@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Todo } from "../models/todo.js";
 import { User } from "../models/user.js";
 import { Event } from "../models/event.js";
+import { Notification } from "../models/notification.js";
 
 export const getCities = async (req, res) => {
   let { country, state } = req.params;
@@ -134,6 +135,16 @@ export const getUserCount = async (req, res) => {
       createdAt: -1,
     });
     res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const GetNotifications = async (req, res) => {
+  try {
+    const notifications = await Notification.find().sort({ createdAt: -1 });
+    res.status(200).json(notifications);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });

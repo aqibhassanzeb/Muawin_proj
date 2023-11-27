@@ -2,6 +2,7 @@ import express from "express";
 const routes = express.Router();
 import { protect } from "../middleware/user_middleware.js";
 import {
+  GetNotifications,
   createTodo,
   deleteTodo,
   getCities,
@@ -20,5 +21,6 @@ routes.post("/todos", protect, createTodo);
 routes.delete("/todos/:_id", protect, deleteTodo);
 routes.get("/muawins/:_id", getMuawins);
 routes.get("/users_counts", protect, getUserCount);
+routes.get("/notifications", GetNotifications);
 
 export default routes;
