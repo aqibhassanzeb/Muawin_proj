@@ -14,7 +14,7 @@ export const api = createApi({
     },
   }),
   reducerPath: "muawin-api",
-  tagTypes: ["User", "Event", "Todo"],
+  tagTypes: ["User", "Event", "Todo", "Donation"],
   endpoints: (build) => ({
     Register: build.mutation({
       query: (data) => {
@@ -240,6 +240,49 @@ export const api = createApi({
       query: () => "/notifications",
       // providesTags: ["User"],
     }),
+    addDonation: build.mutation({
+      query: (data) => {
+        return {
+          url: "/create-donation",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: ["Donation"],
+    }),
+    getDonations: build.query({
+      query: () => "/donations",
+      providesTags: ["Donation"],
+    }),
+    addDonationAmount: build.mutation({
+      query: (params) => {
+        return {
+          url: `/donate/${params.id}`,
+          method: "POST",
+          body: params.data,
+        };
+      },
+      invalidatesTags: ["Donation"],
+    }),
+    updateDonation: build.mutation({
+      query: (params) => {
+        return {
+          url: `/update-donation/${params.id}`,
+          method: "PUT",
+          body: params.data,
+        };
+      },
+      invalidatesTags: ["Donation"],
+    }),
+    updateMark: build.mutation({
+      query: (params) => {
+        return {
+          url: `/update-mark/${params.donationId}/${params.donorId}`,
+          method: "PUT",
+        };
+      },
+      invalidatesTags: ["Donation"],
+    }),
   }),
 });
 
@@ -273,6 +316,11 @@ export const {
   useGetUserTreeQuery,
   useUpdatePasswordMutation,
   useGetNotificationsQuery,
+  useAddDonationMutation,
+  useGetDonationsQuery,
+  useAddDonationAmountMutation,
+  useUpdateDonationMutation,
+  useUpdateMarkMutation,
 } = api;
 
 export function uploadImage(file) {

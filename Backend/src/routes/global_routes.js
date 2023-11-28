@@ -5,6 +5,7 @@ import {
   GetNotifications,
   createTodo,
   deleteTodo,
+  getAllCities,
   getCities,
   getMuawins,
   getTodos,
@@ -14,6 +15,7 @@ import {
 } from "../controllers/global_controller.js";
 
 routes.get("/cities/:country/:state", getCities);
+routes.get("/cities", getAllCities);
 routes.get("/todos", protect, getTodos);
 routes.get("/todos_count", protect, getTodosCount);
 routes.put("/todos/:_id", protect, updateTodo);

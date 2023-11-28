@@ -59,7 +59,8 @@ const Configuration = () => {
     const filtered = users?.filter(
       (user) =>
         user.firstName.toLowerCase().includes(term.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(term.toLowerCase())
+        user.lastName.toLowerCase().includes(term.toLowerCase()) ||
+        user.email.toLowerCase().includes(term.toLowerCase())
     );
 
     setFilteredItems(filtered);
@@ -91,7 +92,7 @@ const Configuration = () => {
           <div className="mb-2" style={{ width: "30%", marginLeft: "auto" }}>
             <input
               className="form-control"
-              placeholder="Search"
+              placeholder="Search by name or email"
               value={search}
               onChange={(e) => handleSearch(e)}
             />

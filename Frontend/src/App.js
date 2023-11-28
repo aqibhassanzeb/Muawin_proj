@@ -11,10 +11,13 @@ import Reports from "./componenets/pages/reports";
 import MemberManagement from "./componenets/pages/member_management";
 import Lockscreen from "./componenets/pages/lockscreen";
 import MemberDirectory from "./componenets/pages/member_directory";
+import AdminMemberDirectory from "./componenets/pages/admin_member_directory";
 import Addevent from "./componenets/pages/addevent";
 import Updateevent from "./componenets/pages/updateevent";
 import Eventdetails from "./componenets/pages/eventdetails";
 import Eventdirectory from "./componenets/pages/eventdirectory";
+import AdminEventDirectory from "./componenets/pages/admin_event_direcotory";
+import MuawinEventDirectory from "./componenets/pages/muawin_event_directory";
 import Compose from "./componenets/pages/compose";
 import Read from "./componenets/pages/read";
 import Inbox from "./componenets/pages/inbox";
@@ -30,6 +33,8 @@ import MemberDetails from "./componenets/pages/member_details";
 import UpdateMember from "./componenets/pages/updatemember";
 import SideBar from "./componenets/Sidebar/SideBar";
 import Notifications from "./componenets/pages/notification";
+import AddDonation from "./componenets/pages/adddonation";
+import DonorsDetail from "./componenets/pages/donorsdetails";
 
 function App() {
   return (
@@ -50,6 +55,7 @@ function App() {
           <Route element={<SideBar />}>
             <Route path="/membermanagement" element={<MemberManagement />} />
             <Route path="/directory" element={<MemberDirectory />} />
+            <Route path="/admin-directory" element={<AdminMemberDirectory />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/profile" element={<Profile />} />
@@ -61,10 +67,20 @@ function App() {
             <Route path="/updateevent" element={<Updateevent />} />
             <Route path="/eventdetails" element={<Eventdetails />} />
             <Route path="/eventdirectory" element={<Eventdirectory />} />
+            <Route
+              path="/admin-event-directory"
+              element={<AdminEventDirectory />}
+            />
+            <Route
+              path="/muawin-event-directory"
+              element={<MuawinEventDirectory />}
+            />
             <Route path="/compose" element={<Compose />} />
             <Route path="/read" element={<Read />} />
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/donations" element={<Donations />} />
+            <Route path="/adddonation" element={<AddDonation />} />
+            <Route path="/donorsdetail" element={<DonorsDetail />} />
             <Route path="/literature" element={<Literature />} />
             <Route path="/config" element={<Configuration />} />
             <Route path="/notifications" element={<Notifications />} />

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Footer from "../common/footer";
 import Navbar from "../common/navbar";
-
 import { Link } from "react-router-dom";
-import States from "../../constants/States.json";
-import { useLazyGetCitiesQuery } from "../../api/api";
+import NotAuth from "./notauth";
 import MemberForm from "../MemberForm";
+import { useSelector } from "react-redux";
 
 const MemberManagement = () => {
+  const permissions = useSelector((state) => state.authReducer.permissions);
   return (
     <div className="wrapper">
       <Navbar />
@@ -19,7 +19,7 @@ const MemberManagement = () => {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1>Add Member</h1>
+                {permissions.includes("create") ? <h1>Add Member</h1> : null}
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
@@ -35,7 +35,13 @@ const MemberManagement = () => {
         </section>
 
         {/* Main content */}
-        <MemberForm />
+        {permissions.includes("create") ? (
+          <MemberForm />
+        ) : (
+          <div style={{ minHeight: "73vh" }}>
+            <NotAuth />
+          </div>
+        )}
         {/* /.content */}
       </div>
       <Footer />

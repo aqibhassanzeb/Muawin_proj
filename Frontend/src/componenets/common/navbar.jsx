@@ -50,7 +50,6 @@ const Navbar = () => {
       });
       socketRef.current.on("permissionChanged", (data) => {
         if (data.userId === user._id) {
-          toast(`${data.updatedPermission} Permission Updated By Admin`);
           dispatch(setPermissions(data.permissions));
           if (isRemember) {
             localStorage.setItem(

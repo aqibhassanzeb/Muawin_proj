@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 
 const Eventdirectory = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
-  console.log(user);
+  const permissions = useSelector((state) => state.authReducer.permissions);
 
   const { data, isLoading } = useAllEventsQuery();
   const [update, updateResp] = useUpdateEventMutation();
@@ -87,13 +87,13 @@ const Eventdirectory = () => {
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
-                        <th style={{ width: "20%" }}>Event Name</th>
+                        <th style={{ width: "30%" }}>Event Name</th>
                         <th>Event Progress</th>
                         {/* <th>Created By</th> */}
                         <th style={{ width: "8%" }} className="text-center">
                           Status
                         </th>
-                        <th style={{ width: "20%" }}></th>
+                        <th style={{ width: "20%" }}>Actions</th>
                       </tr>
                     </thead>
                   ) : (
@@ -129,18 +129,6 @@ const Eventdirectory = () => {
                             </div>
                             <small>57% Complete</small>
                           </td>
-                          {/* <td>
-                            <a>
-                              {`${row.created_by.firstName} 
-                                ${
-                                  row.created_by.lastName
-                                    ? row.created_by.lastName
-                                    : ""
-                                }`}
-                            </a>
-                            <br />
-                            <small>{row.created_by.email}</small>
-                          </td> */}
                           <td className="Event-state">
                             <span
                               className={`badge ${
@@ -154,12 +142,19 @@ const Eventdirectory = () => {
                                   ? "badge-warning"
                                   : ""
                               }`}
-                              style={{ padding: "5px 10px" }}
+                              style={{ padding: "8px 12px", width: 100 }}
                             >
                               {row.status}
                             </span>
                           </td>
-                          <td className="Event-actions text-right">
+                          <td
+                            className="Event-actions text-right"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 5,
+                            }}
+                          >
                             <button
                               onClick={() =>
                                 navigate("/eventdetails", {
@@ -167,26 +162,12 @@ const Eventdirectory = () => {
                                 })
                               }
                               className="btn btn-primary btn-sm"
-                              style={{ marginRight: 5, marginBottom: 5 }}
                               href="/eventdetails"
                             >
                               <i className="fas fa-folder"></i>
-                              View
                             </button>
-                            {user?.role === "admin" ? (
-                              <button
-                                onClick={() =>
-                                  navigate("/updateevent", {
-                                    state: { event: row },
-                                  })
-                                }
-                                className="btn btn-info btn-sm"
-                              >
-                                <i className="fas fa-pencil-alt"></i>
-                                Edit
-                              </button>
-                            ) : (
-                              user?._id === row.created_by._id && (
+                            {user?._id === row.created_by._id &&
+                              permissions.includes("update") && (
                                 <button
                                   onClick={() =>
                                     navigate("/updateevent", {
@@ -196,23 +177,10 @@ const Eventdirectory = () => {
                                   className="btn btn-info btn-sm"
                                 >
                                   <i className="fas fa-pencil-alt"></i>
-                                  Edit
                                 </button>
-                              )
-                            )}
-                            {user?.role === "admin" ? (
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => {
-                                  setSelectedId(row._id);
-                                  setOpenDeleteDialogue(true);
-                                }}
-                              >
-                                <i className="fas fa-trash"></i>
-                                Delete
-                              </button>
-                            ) : (
-                              user._id === row.created_by._id && (
+                              )}
+                            {user._id === row.created_by._id &&
+                              permissions.includes("delete") && (
                                 <button
                                   className="btn btn-danger btn-sm"
                                   onClick={() => {
@@ -221,10 +189,8 @@ const Eventdirectory = () => {
                                   }}
                                 >
                                   <i className="fas fa-trash"></i>
-                                  Delete
                                 </button>
-                              )
-                            )}
+                              )}
                           </td>
                         </tr>
                       ))}

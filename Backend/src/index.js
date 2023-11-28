@@ -11,6 +11,7 @@ import MessageRoutes from "./routes/message_routes.js";
 import Global from "./routes/global_routes.js";
 import Event from "./routes/event_routes.js";
 import Admin from "./routes/admin_routes.js";
+import Donation from "./routes/donation_routes.js";
 import { Notification } from "./models/notification.js";
 import { User } from "./models/user.js";
 
@@ -39,7 +40,7 @@ app.use(
 app.use(express.static("public"));
 
 //All APi's Endponits
-app.use("/api/v1", Auth, Global, MessageRoutes, Event, Admin);
+app.use("/api/v1", Auth, Global, MessageRoutes, Event, Admin, Donation);
 
 app.use("*", (req, res) => {
   return res.status(404).json({

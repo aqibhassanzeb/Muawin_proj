@@ -238,7 +238,9 @@ const MemberForm = () => {
                             </option>
                             {States.map((state) => {
                               if (state.country_name === country) {
-                                return <option>{state.name}</option>;
+                                return (
+                                  <option key={state.name}>{state.name}</option>
+                                );
                               }
                             })}
                           </select>
@@ -405,7 +407,7 @@ const MemberForm = () => {
                               {" "}
                             </option>
                             {Countries.map((country) => (
-                              <option>{country.name}</option>
+                              <option key={country.name}>{country.name}</option>
                             ))}
                           </select>
                           {perrors.nationality && (
@@ -429,7 +431,7 @@ const MemberForm = () => {
                               {" "}
                             </option>
                             {cities.map((city) => (
-                              <option>{city.name}</option>
+                              <option key={city.name}>{city.name}</option>
                             ))}
                           </select>
                           {perrors.city && (
@@ -1162,7 +1164,6 @@ const MemberForm = () => {
                             {user.role === "admin" && (
                               <>
                                 <option value="donor">Donor</option>
-                                <option value="director">Director</option>
                               </>
                             )}
                           </select>

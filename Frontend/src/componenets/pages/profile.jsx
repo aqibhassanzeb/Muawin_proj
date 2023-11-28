@@ -23,6 +23,7 @@ import ConfirmationDialog from "../PasswordDialogue";
 
 const Profile = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
+  const isRemember = useSelector((state) => state.authReducer.isRemember);
   const [update] = useUpdateMemberMutation();
 
   const [image, setImage] = useState();
@@ -57,6 +58,11 @@ const Profile = () => {
         setImage();
         setIsLoading(false);
         dispatch(setActiveUser(res.data.user));
+        if (isRemember) {
+          localStorage.setItem("activeUser", JSON.stringify(res.data.user));
+        } else {
+          sessionStorage.setItem("activeUser", JSON.stringify(res.data.user));
+        }
         toast.success("Picture Updated Successfully!");
       }
     });
@@ -106,7 +112,7 @@ const Profile = () => {
                         color="#007bff"
                         style={{
                           position: "absolute",
-                          bottom: preview ? 80 : 100,
+                          bottom: 100,
                           right: 55,
                         }}
                         onClick={() => ImageInputRef.current.click()}

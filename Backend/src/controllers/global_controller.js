@@ -3,6 +3,7 @@ import { Todo } from "../models/todo.js";
 import { User } from "../models/user.js";
 import { Event } from "../models/event.js";
 import { Notification } from "../models/notification.js";
+import { City } from "../models/city.js";
 
 export const getCities = async (req, res) => {
   let { country, state } = req.params;
@@ -13,6 +14,16 @@ export const getCities = async (req, res) => {
       .sort({ name: 1 })
       .toArray();
 
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const getAllCities = async (req, res) => {
+  try {
+    const response = await City.find({ country_code: "PK" }).sort({ name: 1 });
     res.status(200).json(response);
   } catch (error) {
     console.log(error);

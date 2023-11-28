@@ -14,8 +14,12 @@ import { eventValidationSchema, validateFiles } from "../../utils/validations";
 import Datetime from "react-datetime";
 import moment from "moment";
 import { convertToUnix } from "../../utils";
+import NotAuth from "./notauth";
+import { useSelector } from "react-redux";
 
 const Addevent = () => {
+  const permissions = useSelector((state) => state.authReducer.permissions);
+
   const {
     register,
     handleSubmit,
@@ -68,320 +72,326 @@ const Addevent = () => {
   return (
     <div className="wrapper">
       <Navbar />
-      <div style={{ padding: "0 20px" }}>
-        {/* Content Header (Page header) */}
-        <section className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2">
-              <div className="col-sm-6">
-                <h1>Event Add</h1>
-              </div>
-              <div className="col-sm-6">
-                <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item">
-                    <Link to="/dashboard">Home</Link>
-                  </li>
-                  <li className="breadcrumb-item">Event Add</li>
-                </ol>
+      {permissions.includes("create") ? (
+        <div style={{ padding: "0 20px" }}>
+          {/* Content Header (Page header) */}
+          <section className="content-header">
+            <div className="container-fluid">
+              <div className="row mb-2">
+                <div className="col-sm-6">
+                  <h1>Event Add</h1>
+                </div>
+                <div className="col-sm-6">
+                  <ol className="breadcrumb float-sm-right">
+                    <li className="breadcrumb-item">
+                      <Link to="/dashboard">Home</Link>
+                    </li>
+                    <li className="breadcrumb-item">Event Add</li>
+                  </ol>
+                </div>
               </div>
             </div>
-          </div>
-          {/* /.container-fluid */}
-        </section>
-        {/* Main content */}
-        <form
-          style={{ marginLeft: 15, marginRight: 15 }}
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <section className="content">
-            <div className="row">
-              <div className="col-md-6">
-                <div className="card card-primary">
-                  <div className="card-header">
-                    <h3 className="card-title">General</h3>
-                    <div className="card-tools">
-                      <button
-                        type="button"
-                        className="btn btn-tool"
-                        data-card-widget="collapse"
-                        data-toggle="tooltip"
-                        title="Collapse"
-                      >
-                        <i className="fas fa-minus" />
-                      </button>
+            {/* /.container-fluid */}
+          </section>
+          {/* Main content */}
+          <form
+            style={{ marginLeft: 15, marginRight: 15 }}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <section className="content">
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="card card-primary">
+                    <div className="card-header">
+                      <h3 className="card-title">General</h3>
+                      <div className="card-tools">
+                        <button
+                          type="button"
+                          className="btn btn-tool"
+                          data-card-widget="collapse"
+                          data-toggle="tooltip"
+                          title="Collapse"
+                        >
+                          <i className="fas fa-minus" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="card-body">
-                    <div className="form-group">
-                      <label htmlFor="inputName">
-                        Event Name <span style={{ color: "red" }}>*</span>
-                      </label>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label htmlFor="inputName">
+                          Event Name <span style={{ color: "red" }}>*</span>
+                        </label>
 
-                      <input
-                        type="text"
-                        id="inputName"
-                        className="form-control"
-                        {...register("name")}
-                      />
-                      {errors.name && (
-                        <p className="validation-error">
-                          {errors.name?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="inputDescription">
-                        Event Description
-                      </label>
-                      <textarea
-                        id="inputDescription"
-                        className="form-control"
-                        rows={4}
-                        defaultValue={""}
-                        {...register("description")}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="inputStatus">
-                        Status <span style={{ color: "red" }}>*</span>
-                      </label>
-                      <select
-                        className="form-control custom-select"
-                        {...register("status")}
-                      >
-                        <option value="" defaultValue="" selected disabled>
-                          Select one
-                        </option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="canceled">Canceled</option>
-                        <option value="success">Success</option>
-                      </select>
-                      {errors.status && (
-                        <p className="validation-error">
-                          {errors.status?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="inputClientCompany">
-                        Venue <span style={{ color: "red" }}>*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="inputClientCompany"
-                        className="form-control"
-                        {...register("venue")}
-                      />
-                      {errors.venue && (
-                        <p className="validation-error">
-                          {errors.venue?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="inputEventLeader">
-                        Event Leader <span style={{ color: "red" }}>*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="inputEventLeader"
-                        className="form-control"
-                        {...register("leader")}
-                      />
-                      {errors.leader && (
-                        <p className="validation-error">
-                          {errors.leader?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="form-group">
-                          <label>
-                            Event Date <span style={{ color: "red" }}>*</span>
-                          </label>
-                          <input
-                            type="date"
-                            id="inputEventLeader"
-                            className="form-control"
-                            {...register("date")}
-                          />
-                          {errors.date && (
-                            <p className="validation-error">
-                              {errors.date?.message}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="form-group">
-                          <label>
-                            Event Time <span style={{ color: "red" }}>*</span>
-                          </label>
-                          <input
-                            type="time"
-                            id="inputEventLeader"
-                            className="form-control"
-                            {...register("time")}
-                          />
-                          {errors.time && (
-                            <p className="validation-error">
-                              {errors.time?.message}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* /.card-body */}
-                </div>
-                {/* /.card */}
-              </div>
-              <div className="col-md-6">
-                <div className="card card-secondary">
-                  <div className="card-header">
-                    <h3 className="card-title">Budget</h3>
-                    <div className="card-tools">
-                      <button
-                        type="button"
-                        className="btn btn-tool"
-                        data-card-widget="collapse"
-                        data-toggle="tooltip"
-                        title="Collapse"
-                      >
-                        <i className="fas fa-minus" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <div className="form-group">
-                      <label htmlFor="inputEstimatedBudget">
-                        Estimated budget
-                        <span style={{ color: "red" }}> *</span>
-                      </label>
-                      <input
-                        type="number"
-                        id="inputEstimatedBudget"
-                        className="form-control"
-                        {...register("budget", {
-                          setValueAs: (v) =>
-                            v === "" ? undefined : parseInt(v, 10),
-                        })}
-                      />
-                      {errors.budget && (
-                        <p className="validation-error">
-                          {errors.budget?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="inputSpentBudget">
-                        Total amount spent
-                        <span style={{ color: "red" }}> *</span>
-                      </label>
-                      <input
-                        type="number"
-                        id="inputSpentBudget"
-                        className="form-control"
-                        {...register("spent", {
-                          setValueAs: (v) =>
-                            v === "" ? undefined : parseInt(v, 10),
-                        })}
-                      />
-                      {errors.spent && (
-                        <p className="validation-error">
-                          {errors.spent?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="inputEstimatedDuration">
-                        Estimated Event duration
-                        <span style={{ fontSize: 12, fontWeight: 400 }}>
-                          {" "}
-                          (minutes)
-                        </span>
-                        <span style={{ color: "red" }}> *</span>
-                      </label>
-                      <input
-                        type="number"
-                        id="inputEstimatedDuration"
-                        className="form-control"
-                        {...register("duration", {
-                          setValueAs: (v) =>
-                            v === "" ? undefined : parseInt(v, 10),
-                        })}
-                      />
-                      {errors.duration && (
-                        <p className="validation-error">
-                          {errors.duration?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <div className="btn btn-default btn-file">
-                        <i className="fas fa-paperclip" /> Attachment
                         <input
-                          type="file"
-                          name="attachment"
-                          onChange={(e) => {
-                            clearErrors("attachment");
-                            setFiles(e.target.files);
-                          }}
-                          multiple
+                          type="text"
+                          id="inputName"
+                          className="form-control"
+                          {...register("name")}
+                        />
+                        {errors.name && (
+                          <p className="validation-error">
+                            {errors.name?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="inputDescription">
+                          Event Description
+                        </label>
+                        <textarea
+                          id="inputDescription"
+                          className="form-control"
+                          rows={4}
+                          defaultValue={""}
+                          {...register("description")}
                         />
                       </div>
-                      <p
-                        style={{
-                          display: "inline",
-                          marginLeft: 5,
-                        }}
-                        className="help-block"
-                      >
-                        Max. 10 MB
-                      </p>
-                      <div style={{ marginTop: 10 }}>
-                        {files.length > 0 &&
-                          Array.from(files).map((file) => (
-                            <div key={file.name}>{file.name}</div>
-                          ))}
+                      <div className="form-group">
+                        <label htmlFor="inputStatus">
+                          Status <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <select
+                          className="form-control custom-select"
+                          {...register("status")}
+                        >
+                          <option value="" defaultValue="" selected disabled>
+                            Select one
+                          </option>
+                          <option value="upcoming">Upcoming</option>
+                          <option value="in-progress">In Progress</option>
+                          <option value="canceled">Canceled</option>
+                          <option value="success">Success</option>
+                        </select>
+                        {errors.status && (
+                          <p className="validation-error">
+                            {errors.status?.message}
+                          </p>
+                        )}
                       </div>
-
-                      {errors.attachment && (
-                        <p className="validation-error">
-                          {errors.attachment?.message}
-                        </p>
-                      )}
+                      <div className="form-group">
+                        <label htmlFor="inputClientCompany">
+                          Venue <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="inputClientCompany"
+                          className="form-control"
+                          {...register("venue")}
+                        />
+                        {errors.venue && (
+                          <p className="validation-error">
+                            {errors.venue?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="inputEventLeader">
+                          Event Leader <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="inputEventLeader"
+                          className="form-control"
+                          {...register("leader")}
+                        />
+                        {errors.leader && (
+                          <p className="validation-error">
+                            {errors.leader?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label>
+                              Event Date <span style={{ color: "red" }}>*</span>
+                            </label>
+                            <input
+                              type="date"
+                              id="inputEventLeader"
+                              className="form-control"
+                              {...register("date")}
+                            />
+                            {errors.date && (
+                              <p className="validation-error">
+                                {errors.date?.message}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label>
+                              Event Time <span style={{ color: "red" }}>*</span>
+                            </label>
+                            <input
+                              type="time"
+                              id="inputEventLeader"
+                              className="form-control"
+                              {...register("time")}
+                            />
+                            {errors.time && (
+                              <p className="validation-error">
+                                {errors.time?.message}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                    {/* /.card-body */}
                   </div>
-                  {/* /.card-body */}
+                  {/* /.card */}
                 </div>
-                {/* /.card */}
-              </div>
-            </div>
-            <div className="row" id="cap">
-              <div className="col-12">
-                <Link to="/" className="btn btn-secondary">
-                  Cancel
-                </Link>
-                {progress > 0 ? (
-                  <div className="float-right" style={{ marginRight: 10 }}>
-                    <ProgressLoader progress={progress} />
+                <div className="col-md-6">
+                  <div className="card card-secondary">
+                    <div className="card-header">
+                      <h3 className="card-title">Budget</h3>
+                      <div className="card-tools">
+                        <button
+                          type="button"
+                          className="btn btn-tool"
+                          data-card-widget="collapse"
+                          data-toggle="tooltip"
+                          title="Collapse"
+                        >
+                          <i className="fas fa-minus" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      <div className="form-group">
+                        <label htmlFor="inputEstimatedBudget">
+                          Estimated budget
+                          <span style={{ color: "red" }}> *</span>
+                        </label>
+                        <input
+                          type="number"
+                          id="inputEstimatedBudget"
+                          className="form-control"
+                          {...register("budget", {
+                            setValueAs: (v) =>
+                              v === "" ? undefined : parseInt(v, 10),
+                          })}
+                        />
+                        {errors.budget && (
+                          <p className="validation-error">
+                            {errors.budget?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="inputSpentBudget">
+                          Total amount spent
+                          <span style={{ color: "red" }}> *</span>
+                        </label>
+                        <input
+                          type="number"
+                          id="inputSpentBudget"
+                          className="form-control"
+                          {...register("spent", {
+                            setValueAs: (v) =>
+                              v === "" ? undefined : parseInt(v, 10),
+                          })}
+                        />
+                        {errors.spent && (
+                          <p className="validation-error">
+                            {errors.spent?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="inputEstimatedDuration">
+                          Estimated Event duration
+                          <span style={{ fontSize: 12, fontWeight: 400 }}>
+                            {" "}
+                            (minutes)
+                          </span>
+                          <span style={{ color: "red" }}> *</span>
+                        </label>
+                        <input
+                          type="number"
+                          id="inputEstimatedDuration"
+                          className="form-control"
+                          {...register("duration", {
+                            setValueAs: (v) =>
+                              v === "" ? undefined : parseInt(v, 10),
+                          })}
+                        />
+                        {errors.duration && (
+                          <p className="validation-error">
+                            {errors.duration?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <div className="btn btn-default btn-file">
+                          <i className="fas fa-paperclip" /> Attachment
+                          <input
+                            type="file"
+                            name="attachment"
+                            onChange={(e) => {
+                              clearErrors("attachment");
+                              setFiles(e.target.files);
+                            }}
+                            multiple
+                          />
+                        </div>
+                        <p
+                          style={{
+                            display: "inline",
+                            marginLeft: 5,
+                          }}
+                          className="help-block"
+                        >
+                          Max. 10 MB
+                        </p>
+                        <div style={{ marginTop: 10 }}>
+                          {files.length > 0 &&
+                            Array.from(files).map((file) => (
+                              <div key={file.name}>{file.name}</div>
+                            ))}
+                        </div>
+
+                        {errors.attachment && (
+                          <p className="validation-error">
+                            {errors.attachment?.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {/* /.card-body */}
                   </div>
-                ) : (
-                  <input
-                    type="submit"
-                    defaultValue="Create new Porject"
-                    className="btn btn-success float-right"
-                  />
-                )}
+                  {/* /.card */}
+                </div>
               </div>
-            </div>
-          </section>
-        </form>
-        {/* /.content */}
-      </div>
+              <div className="row" id="cap">
+                <div className="col-12">
+                  <Link to="/" className="btn btn-secondary">
+                    Cancel
+                  </Link>
+                  {progress > 0 ? (
+                    <div className="float-right" style={{ marginRight: 10 }}>
+                      <ProgressLoader progress={progress} />
+                    </div>
+                  ) : (
+                    <input
+                      type="submit"
+                      defaultValue="Create new Porject"
+                      className="btn btn-success float-right"
+                    />
+                  )}
+                </div>
+              </div>
+            </section>
+          </form>
+          {/* /.content */}
+        </div>
+      ) : (
+        <div style={{ minHeight: "83vh" }}>
+          <NotAuth />
+        </div>
+      )}
       <Footer />
     </div>
   );
