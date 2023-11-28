@@ -48,41 +48,14 @@ app.use("*", (req, res) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log("User connected to socket:", socket.id);
-  const allNotifications = await Notification.find()
-    .populate("notificationBy", "firstName lastName image")
-    .sort({ createdAt: -1 });
-  socket.emit("initialNotifications", allNotifications);
-
-  socket.on("join", (roomId) => {
-    socket.join(roomId);
-  });
-
-  socket.on("message", async (roomId, message) => {
-    try {
-      const newMessage = new Message({
-        senderId: message.senderId,
-        recepientId: message.recepientId,
-        messageType: message.messageType,
-        message: message.messageText,
-        timestamp: new Date(),
-        imageUrl: message.messageType === "image" ? message.imageUrl : null,
-      });
-      await newMessage.save();
-      io.to(roomId).emit("message", newMessage);
-    } catch (error) {
-      console.log(error);
-    }
-  });
-
   socket.on("adminBroadcast", async (notification) => {
     try {
-      const newNotification = new Notification({
+      await Notification.create({
         message: notification,
         notificationBy: "6523995e4c1094b032c6c61d",
       });
-      await newNotification.save();
-      io.emit("notification", newNotification);
+
+      io.emit("notification");
     } catch (error) {
       console.log(error);
     }
@@ -94,10 +67,8 @@ io.on("connection", async (socket) => {
         { isReadBy: { $nin: [userId] } },
         { $addToSet: { isReadBy: userId } }
       );
-      const userNotifications = await Notification.find()
-        .populate("notificationBy", "firstName lastName image")
-        .sort({ createdAt: -1 });
-      socket.emit("allNotificationsRead", userNotifications);
+
+      socket.emit("allNotificationsRead");
     } catch (error) {
       console.log(error);
     }
