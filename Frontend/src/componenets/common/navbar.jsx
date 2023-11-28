@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../redux/reducers/auth";
+import { logout, setPermissions } from "../../redux/reducers/auth";
 import CustomModal from "../Modal";
 import moment from "moment";
 import { toast } from "sonner";
@@ -10,6 +10,8 @@ import { initSocket } from "../../socket";
 
 const Navbar = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
+  const isRemember = useSelector((state) => state.authReducer.isRemember);
+
   const { data, refetch } = useGetNotificationsQuery();
 
   const [noti, setNoti] = useState([]);
@@ -22,10 +24,8 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   function handleLogout() {
-    localStorage.removeItem("activeUser");
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("activeUser");
-    sessionStorage.removeItem("token");
+    sessionStorage.clear();
+    localStorage.clear();
     dispatch(api.util.resetApiState());
     dispatch(() => logout());
     navigate("/");
@@ -47,6 +47,24 @@ const Navbar = () => {
       });
       socketRef.current.on("allNotificationsRead", () => {
         refetch();
+      });
+      socketRef.current.on("permissionChanged", (data) => {
+        if (data.userId === user._id) {
+          toast(`${data.updatedPermission} Permission Updated By Admin`);
+          dispatch(setPermissions(data.permissions));
+          if (isRemember) {
+            localStorage.setItem(
+              "permissions",
+              JSON.stringify(data.permissions)
+            );
+          } else {
+            sessionStorage.setItem(
+              "permissions",
+              JSON.stringify(data.permissions)
+            );
+          }
+        }
+        // dispatch(api.util.updateQueryData("/users"));
       });
     };
     init();

@@ -11,8 +11,8 @@ import MessageRoutes from "./routes/message_routes.js";
 import Global from "./routes/global_routes.js";
 import Event from "./routes/event_routes.js";
 import Admin from "./routes/admin_routes.js";
-import { Message } from "./models/message.js";
 import { Notification } from "./models/notification.js";
+import { User } from "./models/user.js";
 
 const app = express();
 
@@ -74,13 +74,30 @@ io.on("connection", async (socket) => {
     }
   });
 
+  socket.on("updatePermission", async (data) => {
+    const { userId, permission, isChecked } = data;
+    const user = await User.findOne({ _id: userId });
+    const permissionIndex = user.permissions.indexOf(permission);
+    if (permissionIndex !== -1 && !isChecked) {
+      user.permissions.splice(permissionIndex, 1);
+    } else if (isChecked && permissionIndex === -1) {
+      user.permissions.push(permission);
+    }
+    const response = await user.save();
+    io.emit("permissionChanged", {
+      userId,
+      permissions: response.permissions,
+      updatedPermission: permission,
+    });
+  });
+
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    // console.log("User disconnected:", socket.id);
   });
 });
 
 //Port
 const port = process.env.PORT || 3333;
 const nodeServer = server.listen(port, () => {
-  console.log(`server is running on port: ${port}`);
+  console.log("\x1b[34m", `🌐 Server started http://localhost:${port}`);
 });

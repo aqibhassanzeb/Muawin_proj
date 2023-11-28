@@ -7,6 +7,7 @@ import {
   setActiveUser,
   setToken,
   setRemember,
+  setPermissions,
 } from "../../redux/reducers/auth";
 import { toast } from "sonner";
 import { useLoginMutation, useTraceLogMutation } from "../../api/api";
@@ -58,15 +59,24 @@ const Login = () => {
                 JSON.stringify(res?.data?.user)
               );
               localStorage.setItem("token", JSON.stringify(res?.data?.token));
+              localStorage.setItem(
+                "permissions",
+                JSON.stringify(res?.data?.user?.permissions)
+              );
             } else {
               sessionStorage.setItem(
                 "activeUser",
                 JSON.stringify(res?.data?.user)
               );
               sessionStorage.setItem("token", res?.data?.token);
+              sessionStorage.setItem(
+                "permissions",
+                JSON.stringify(res?.data?.user?.permissions)
+              );
             }
             dispatch(setActiveUser(res?.data?.user));
             dispatch(setToken(res?.data?.token));
+            dispatch(setPermissions(res?.data?.user?.permissions));
             navigate("/dashboard");
             axios
               .get("https://api.ipify.org?format=json")

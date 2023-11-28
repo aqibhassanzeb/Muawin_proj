@@ -6,6 +6,9 @@ const userTokenLocal = localStorage.getItem("token");
 const userInfoLocal = localStorage.getItem("activeUser");
 const userInfoSession = sessionStorage.getItem("activeUser");
 
+const permissionsLocal = localStorage.getItem("permissions");
+const permissionsSession = sessionStorage.getItem("permissions");
+
 const initialState = {
   activeUser: userInfoLocal
     ? JSON.parse(userInfoLocal)
@@ -17,6 +20,11 @@ const initialState = {
     : userTokenSession
     ? userTokenSession
     : null,
+  permissions: permissionsLocal
+    ? JSON.parse(permissionsLocal)
+    : permissionsSession
+    ? JSON.parse(permissionsSession)
+    : [],
   isRemember: false,
 };
 
@@ -33,6 +41,9 @@ const authReducer = createSlice({
     setRemember: (state, action) => {
       state.isRemember = action.payload;
     },
+    setPermissions: (state, action) => {
+      state.permissions = action.payload;
+    },
     logout: (state) => {
       state.activeUser = null;
       state.token = null;
@@ -41,7 +52,7 @@ const authReducer = createSlice({
   },
 });
 
-export const { setActiveUser, logout, setToken, setRemember } =
+export const { setActiveUser, logout, setToken, setRemember, setPermissions } =
   authReducer.actions;
 
 export default authReducer.reducer;
