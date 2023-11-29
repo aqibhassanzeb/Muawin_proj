@@ -7,6 +7,7 @@ import EventsCalendar from "../EventsCalendar";
 import {
   useCalendarEventsQuery,
   useGetAllUsersCountQuery,
+  useGetCityStatsQuery,
   useGetDonationsCountQuery,
   useGetStatsQuery,
   useGetTodosCountQuery,
@@ -37,7 +38,8 @@ const Header = () => {
     useGetTodosCountQuery();
   const { data: donationCount, isLoading: donationLoading } =
     useGetDonationsCountQuery();
-
+  const { data: userCitiesStats } = useGetCityStatsQuery();
+  console.log({ userCitiesStats });
   return (
     <div>
       <div>
@@ -186,10 +188,10 @@ const Header = () => {
                               href="#revenue-chart"
                               data-toggle="tab"
                             >
-                              Area
+                              Chart
                             </a>
                           </li>
-                          <li className="nav-item">
+                          {/* <li className="nav-item">
                             <a
                               className="nav-link"
                               href="#sales-chart"
@@ -197,7 +199,7 @@ const Header = () => {
                             >
                               Donut
                             </a>
-                          </li>
+                          </li> */}
                         </ul>
                       </div>
                     </div>
@@ -212,7 +214,7 @@ const Header = () => {
                           height: "55vh",
                         }}
                       >
-                        <Pie data={data} />
+                        {userCitiesStats && <Pie data={userCitiesStats} />}
                       </div>
                     </div>
                     {/* /.card-body */}

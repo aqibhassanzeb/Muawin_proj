@@ -299,7 +299,9 @@ export const api = createApi({
     }),
     getStats: build.query({
       query: () => "/today_logins",
-      // providesTags: ["Donation"],
+    }),
+    getCityStats: build.query({
+      query: () => "/user_city_stats",
     }),
   }),
 });
@@ -342,6 +344,7 @@ export const {
   useAddRatingMutation,
   useGetDonationsCountQuery,
   useGetStatsQuery,
+  useGetCityStatsQuery,
 } = api;
 
 export function uploadImage(file) {
