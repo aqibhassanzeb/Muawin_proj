@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useLoginMutation, useTraceLogMutation } from "../../api/api";
 import { MDBSpinner } from "mdb-react-ui-kit";
 import axios from "axios";
+import Loader from "../Loader";
 
 const Login = () => {
   const isRemember = useSelector((state) => state.authReducer.isRemember);
@@ -79,7 +80,7 @@ const Login = () => {
             dispatch(setPermissions(res?.data?.user?.permissions));
             navigate("/dashboard");
             axios
-              .get("https://api.ipify.org?format=json")
+              .get(process.env.REACT_APP_IP_FINDER)
               .then((response) =>
                 traceLog({ id: res.data.user._id, ip: response.data.ip })
               );
@@ -168,10 +169,9 @@ const Login = () => {
                   <div className="col-8">{/* Remember Me checkbox */}</div>
                   <div className="col-4">
                     {response.isLoading ? (
-                      <MDBSpinner
-                        color="primary"
-                        style={{ marginLeft: 10, marginTop: 3 }}
-                      />
+                      <div style={{ marginLeft: 30 }}>
+                        <Loader size={30} />
+                      </div>
                     ) : (
                       <button
                         onClick={handleSignIn}

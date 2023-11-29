@@ -9,7 +9,7 @@ import { Divider } from "@mui/material";
 import { useSelector } from "react-redux";
 // import { routes } from "../../constants";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { adminRoutes, muawinRoutes, rukanRoutes } from "./Routes";
+import { adminRoutes, donorRoutes, muawinRoutes, rukanRoutes } from "./Routes";
 
 const SideBar = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
@@ -62,6 +62,8 @@ const SideBar = () => {
       setRoutes(rukanRoutes);
     } else if (user?.role === "muawin") {
       setRoutes(muawinRoutes);
+    } else if (user?.role === "donor") {
+      setRoutes(donorRoutes);
     }
   }, []);
 

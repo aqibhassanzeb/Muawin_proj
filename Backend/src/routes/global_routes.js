@@ -2,6 +2,8 @@ import express from "express";
 const routes = express.Router();
 import { protect } from "../middleware/user_middleware.js";
 import {
+  GetDonationCount,
+  GetLogins,
   GetNotifications,
   createTodo,
   deleteTodo,
@@ -24,5 +26,7 @@ routes.delete("/todos/:_id", protect, deleteTodo);
 routes.get("/muawins/:_id", getMuawins);
 routes.get("/users_counts", protect, getUserCount);
 routes.get("/notifications", GetNotifications);
+routes.get("/donations_count", GetDonationCount);
+routes.get("/today_logins", GetLogins);
 
 export default routes;

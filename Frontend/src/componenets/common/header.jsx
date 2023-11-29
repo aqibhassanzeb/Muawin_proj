@@ -7,6 +7,8 @@ import EventsCalendar from "../EventsCalendar";
 import {
   useCalendarEventsQuery,
   useGetAllUsersCountQuery,
+  useGetDonationsCountQuery,
+  useGetStatsQuery,
   useGetTodosCountQuery,
 } from "../../api/api";
 import { useSelector } from "react-redux";
@@ -25,12 +27,16 @@ const data = [
 const Header = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
 
+  const { data: statsData, isLoading: statsLoading } = useGetStatsQuery();
   const { data: events, isLoading: eventsLoading } = useCalendarEventsQuery();
   const { data: userCount, isLoading: userCountLoading } =
     useGetAllUsersCountQuery();
   const { data: todoCount, isLoading: todoCountLoading } =
     useGetTodosCountQuery();
+  const { data: donationCount, isLoading: donationLoading } =
+    useGetDonationsCountQuery();
 
+  console.log({ statsData });
   return (
     <div>
       <div>
@@ -93,14 +99,18 @@ const Header = () => {
                 <div className="small-box bg-success">
                   <div className="inner">
                     <h3>
-                      53<sup style={{ fontSize: 20 }}>%</sup>
+                      {donationLoading ? (
+                        <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                      ) : (
+                        donationCount
+                      )}
                     </h3>
-                    <p>My Reports</p>
+                    <p>Open Donations</p>
                   </div>
                   <div className="icon">
-                    <i className="ion ion-stats-bars" />
+                    <i className="fa fa-donate" />
                   </div>
-                  <Link to="/reports" className="small-box-footer">
+                  <Link to="/donations" className="small-box-footer">
                     More info <i className="fas fa-arrow-circle-right" />
                   </Link>
                 </div>
@@ -530,7 +540,7 @@ const Header = () => {
                         chartType="GeoChart"
                         width="100%"
                         height="200px"
-                        data={data}
+                        data={statsData && statsData?.chartData}
                         style={{ backgroundColor: "white" }}
                       />
                     </div>
@@ -541,7 +551,9 @@ const Header = () => {
                           <div id="sparkline-1" />
                           <div className="">
                             Today Visitors{" "}
-                            <span style={{ fontWeight: 600 }}>2</span>
+                            <span style={{ fontWeight: 600 }}>
+                              {statsData && statsData.loginsCount.length}
+                            </span>
                           </div>
                         </div>
                         {/* ./col */}

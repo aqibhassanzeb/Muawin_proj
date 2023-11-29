@@ -13,13 +13,12 @@ import CustomModal from "../Modal";
 import Loader from "../Loader";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import moment from "moment";
 
 function Donations() {
   const navigation = useNavigate();
   const user = useSelector((state) => state.authReducer.activeUser);
 
-  const { data: donations, isLoading } = useGetDonationsQuery();
+  const { data, isLoading } = useGetDonationsQuery();
   const [addAmount] = useAddDonationAmountMutation();
   const [updateDonation, { isLoading: updateLoading }] =
     useUpdateDonationMutation();
@@ -72,6 +71,10 @@ function Donations() {
       });
   }
 
+  const matchedArray = data?.filter((item) => item.city === user.city) || [];
+  const notMatchedArray = data?.filter((item) => item.city !== user.city) || [];
+  const donations = [...matchedArray, ...notMatchedArray];
+
   return (
     <div className="wrapper">
       <Navbar />
@@ -91,123 +94,140 @@ function Donations() {
                 </ol>
               </div>
             </div>
-            <div className="row">
-              <button
-                onClick={() => navigation("/adddonation")}
-                className="btn btn-primary"
-                style={{ marginLeft: "auto" }}
-              >
-                Create
-              </button>
-            </div>
+            {user.role === "admin" && (
+              <div className="row">
+                <button
+                  onClick={() => navigation("/adddonation")}
+                  className="btn btn-primary"
+                  style={{ marginLeft: "auto" }}
+                >
+                  Create
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
         <div>
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Location</th>
-                <th>City</th>
-                <th style={{ textAlign: "center" }}>Collection</th>
-                <th>Required Cost</th>
-                <th>Donate Now</th>
-                <th>Donations</th>
-              </tr>
-            </thead>
-            <tbody>
-              {donations &&
-                donations.length > 0 &&
-                donations.map((donation) => (
-                  <tr key={donation._id}>
-                    <td>
-                      <span>{donation.projectName}</span>
-                    </td>
-                    <td>
-                      <span>{donation.location}</span>
-                    </td>
-                    <td>
-                      <span>{donation.city}</span>
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center justify-content-center ">
-                        <div style={{ width: "5rem" }}>
-                          <span>RS</span>{" "}
-                          <span>{donation.collectedAmount}</span>
+          {isLoading ? (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Loader size={25} />
+            </div>
+          ) : (
+            <table className="user-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>City</th>
+                  <th style={{ textAlign: "center" }}>Collection</th>
+                  <th>Required Cost</th>
+                  <th>Donate Now</th>
+                  {user.role === "admin" && <th>Donations</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {donations &&
+                  donations.length > 0 &&
+                  donations.map((donation) => (
+                    <tr key={donation._id}>
+                      <td>
+                        <span>{donation.projectName}</span>
+                      </td>
+                      <td>
+                        <span>{donation.location}</span>
+                      </td>
+                      <td>
+                        <span>{donation.city}</span>
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-center ">
+                          <div style={{ width: "5rem" }}>
+                            <span>RS</span>{" "}
+                            <span>{donation.collectedAmount}</span>
+                          </div>
+                          {user.role === "admin" && (
+                            <button
+                              className="btn-sm"
+                              style={{ backgroundColor: "rgb(19, 132, 150)" }}
+                              onClick={() => {
+                                setSelectedId(donation._id);
+                                setDonationAmount(donation.collectedAmount);
+                                setOpenUpdate(true);
+                              }}
+                            >
+                              <i className="fas fa-pencil-alt"></i>
+                            </button>
+                          )}
+                          <CustomModal
+                            open={openUpdate}
+                            setOpen={setOpenUpdate}
+                          >
+                            <h6 className="mb-4">Update Collected Amount</h6>
+                            <input
+                              className="form-control"
+                              value={donationAmount}
+                              onChange={(e) =>
+                                setDonationAmount(e.target.value)
+                              }
+                            />
+                            <div className="d-flex mt-3 align-items-center">
+                              <button
+                                onClick={() => setOpenUpdate(false)}
+                                className="btn-secondary mr-2"
+                              >
+                                Cancel
+                              </button>
+                              {updateLoading ? (
+                                <div style={{ display: "inline" }}>
+                                  <Loader size={30} />
+                                </div>
+                              ) : (
+                                <button onClick={() => handleUpdateDonation()}>
+                                  Update
+                                </button>
+                              )}
+                            </div>
+                          </CustomModal>
                         </div>
+                      </td>
+                      <td>
+                        <span>RS</span> <span>{donation.requiredCost}</span>
+                      </td>
+                      <td>
                         <button
-                          className="btn-sm"
-                          style={{ backgroundColor: "rgb(19, 132, 150)" }}
+                          className="btn btn-sm btn-success"
                           onClick={() => {
                             setSelectedId(donation._id);
-                            setDonationAmount(donation.collectedAmount);
-                            setOpenUpdate(true);
+                            setOpenDonation(true);
                           }}
                         >
-                          <i className="fas fa-pencil-alt"></i>
+                          Donate Now
                         </button>
-                        <CustomModal open={openUpdate} setOpen={setOpenUpdate}>
-                          <h6 className="mb-4">Update Collected Amount</h6>
-                          <input
-                            className="form-control"
-                            value={donationAmount}
-                            onChange={(e) => setDonationAmount(e.target.value)}
-                          />
-                          <div className="d-flex mt-3 align-items-center">
-                            <button
-                              onClick={() => setOpenUpdate(false)}
-                              className="btn-secondary mr-2"
-                            >
-                              Cancel
-                            </button>
-                            {updateLoading ? (
-                              <div style={{ display: "inline" }}>
-                                <Loader size={30} />
-                              </div>
-                            ) : (
-                              <button onClick={() => handleUpdateDonation()}>
-                                Update
-                              </button>
-                            )}
-                          </div>
-                        </CustomModal>
-                      </div>
-                    </td>
-                    <td>
-                      <span>RS</span> <span>{donation.requiredCost}</span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-success"
-                        onClick={() => {
-                          setSelectedId(donation._id);
-                          setOpenDonation(true);
-                        }}
-                      >
-                        Donate Now
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        className="btn-sm"
-                        style={{ backgroundColor: "rgb(92, 99, 106)" }}
-                        onClick={() =>
-                          navigation("/donorsdetail", {
-                            state: {
-                              donors: donation.donors,
-                              donationId: donation._id,
-                            },
-                          })
-                        }
-                      >
-                        View Donors
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+                      </td>
+                      {user.role === "admin" && (
+                        <td>
+                          <button
+                            className="btn-sm"
+                            style={{ backgroundColor: "rgb(92, 99, 106)" }}
+                            onClick={() =>
+                              navigation("/donorsdetail", {
+                                state: {
+                                  donors: donation.donors,
+                                  donationId: donation._id,
+                                },
+                              })
+                            }
+                          >
+                            View Donors
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
       <CustomModal open={openDonation} setOpen={setOpenDonation}>

@@ -254,6 +254,10 @@ export const api = createApi({
       query: () => "/donations",
       providesTags: ["Donation"],
     }),
+    getDonationsCount: build.query({
+      query: () => "/donations_count",
+      providesTags: ["Donation"],
+    }),
     addDonationAmount: build.mutation({
       query: (params) => {
         return {
@@ -282,6 +286,20 @@ export const api = createApi({
         };
       },
       invalidatesTags: ["Donation"],
+    }),
+    addRating: build.mutation({
+      query: (params) => {
+        return {
+          url: `/event_rate/${params.id}`,
+          method: "POST",
+          body: params.data,
+        };
+      },
+      invalidatesTags: ["Event"],
+    }),
+    getStats: build.query({
+      query: () => "/today_logins",
+      // providesTags: ["Donation"],
     }),
   }),
 });
@@ -321,6 +339,9 @@ export const {
   useAddDonationAmountMutation,
   useUpdateDonationMutation,
   useUpdateMarkMutation,
+  useAddRatingMutation,
+  useGetDonationsCountQuery,
+  useGetStatsQuery,
 } = api;
 
 export function uploadImage(file) {

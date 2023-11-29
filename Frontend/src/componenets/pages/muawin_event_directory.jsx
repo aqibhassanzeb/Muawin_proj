@@ -191,7 +191,7 @@ const Eventdirectory = () => {
                                 <i className="fas fa-pencil-alt"></i>
                               </button>
                             ) : (
-                              user?._id === row.created_by._id && (
+                              user?._id === row?.created_by?._id && (
                                 <button
                                   onClick={() =>
                                     navigate("/updateevent", {
@@ -208,18 +208,18 @@ const Eventdirectory = () => {
                               <button
                                 className="btn btn-danger btn-sm"
                                 onClick={() => {
-                                  setSelectedId(row._id);
+                                  setSelectedId(row?._id);
                                   setOpenDeleteDialogue(true);
                                 }}
                               >
                                 <i className="fas fa-trash"></i>
                               </button>
                             ) : (
-                              user._id === row.created_by._id && (
+                              user._id === row?.created_by?._id && (
                                 <button
                                   className="btn btn-danger btn-sm"
                                   onClick={() => {
-                                    setSelectedId(row._id);
+                                    setSelectedId(row?._id);
                                     setOpenDeleteDialogue(true);
                                   }}
                                 >

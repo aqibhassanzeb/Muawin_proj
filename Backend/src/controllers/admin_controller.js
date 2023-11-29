@@ -27,7 +27,7 @@ export const eventsForCalender = async (req, res) => {
     filter.created_by = req.user.created_by;
   }
   try {
-    const events = await Event.find(filter).sort({
+    const events = await Event.find().sort({
       createdAt: -1,
     });
     res.status(200).json(events);

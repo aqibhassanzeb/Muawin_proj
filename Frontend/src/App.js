@@ -35,6 +35,7 @@ import SideBar from "./componenets/Sidebar/SideBar";
 import Notifications from "./componenets/pages/notification";
 import AddDonation from "./componenets/pages/adddonation";
 import DonorsDetail from "./componenets/pages/donorsdetails";
+import EventFeedback from "./componenets/pages/eventfeedback";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
             <Route path="/updatemember" element={<UpdateMember />} />
             <Route path="/addevent" element={<Addevent />} />
             <Route path="/updateevent" element={<Updateevent />} />
+            <Route path="/eventfeedback" element={<EventFeedback />} />
             <Route path="/eventdetails" element={<Eventdetails />} />
             <Route path="/eventdirectory" element={<Eventdirectory />} />
             <Route

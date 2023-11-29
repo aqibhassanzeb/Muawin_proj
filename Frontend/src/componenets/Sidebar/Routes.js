@@ -37,6 +37,11 @@ export const adminRoutes = [
         name: "Events Directory",
         icon: <i className="far fa-circle nav-icon" />,
       },
+      {
+        path: "/eventfeedback",
+        name: "Events Feedback",
+        icon: <i className="far fa-circle nav-icon" />,
+      },
     ],
   },
   {
@@ -100,6 +105,11 @@ export const rukanRoutes = [
         name: "Events Directory",
         icon: <i className="far fa-circle nav-icon" />,
       },
+      {
+        path: "/eventfeedback",
+        name: "Events Feedback",
+        icon: <i className="far fa-circle nav-icon" />,
+      },
     ],
   },
   {
@@ -142,6 +152,11 @@ export const muawinRoutes = [
         name: "Events Directory",
         icon: <i className="far fa-circle nav-icon" />,
       },
+      {
+        path: "/eventfeedback",
+        name: "Events Feedback",
+        icon: <i className="far fa-circle nav-icon" />,
+      },
     ],
   },
   {
@@ -149,6 +164,25 @@ export const muawinRoutes = [
     name: "Reports and Analytics",
     icon: <i class="nav-icon fas fa-edit"></i>,
   },
+  {
+    path: "/donations",
+    name: "Donations",
+    icon: <i class="nav-icon fas fa-tree"></i>,
+  },
+  {
+    path: "/literature",
+    name: "Literature",
+    icon: <i class="nav-icon fas fa-file"></i>,
+  },
+];
+
+export const donorRoutes = [
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    icon: <i className="nav-icon fas fa-tachometer-alt" />,
+  },
+
   {
     path: "/donations",
     name: "Donations",

@@ -16,6 +16,12 @@ const eventSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
+    ratings: [
+      {
+        byUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        rating: { type: Number, min: 1, max: 5 },
+      },
+    ],
     is_active: {
       type: Boolean,
       default: true,

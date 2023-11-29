@@ -287,7 +287,7 @@ const Navbar = () => {
               </a>
               <div
                 className="dropdown-menu dropdown-menu-lg dropdown-menu-right"
-                style={{ maxWidth: "515px" }}
+                style={{ maxWidth: "41vw" }}
               >
                 <span className="dropdown-item dropdown-header">
                   <div
@@ -308,7 +308,7 @@ const Navbar = () => {
                 </span>
                 <div className="dropdown-divider" />
                 {noti &&
-                  noti.map((not) => (
+                  noti.slice(0, 7).map((not) => (
                     <div
                       key={not._id}
                       className="dropdown-item"

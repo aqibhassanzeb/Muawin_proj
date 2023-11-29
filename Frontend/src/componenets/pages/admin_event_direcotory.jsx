@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import DeleteDialogue from "../DeleteDialogue";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { calculatePercentage } from "../../utils";
 
 const Eventdirectory = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
@@ -104,132 +105,152 @@ const Eventdirectory = () => {
                   )}
                   <tbody>
                     {data &&
-                      data.map((row, index) => (
-                        <tr key={row._id}>
-                          <td>{index + 1}</td>
-                          <td>
-                            <a>{row.name}</a>
-                            <br />
-                            <small>
-                              Created{" "}
-                              {moment(row.createdAt).format("DD.MM.YYYY")}
-                            </small>
-                          </td>
-                          <td className="Event_progress">
-                            <div className="progress progress-sm">
-                              <div
-                                className="progress-bar bg-green"
-                                role="progressbar"
-                                aria-volumenow={57}
-                                aria-volumemin={0}
-                                aria-volumemax={100}
-                                style={{ width: "57%" }}
-                              ></div>
-                            </div>
-                            <small>57% Complete</small>
-                          </td>
-                          {/* <td>
-                            <a>
-                              {`${row.created_by.firstName} 
-                                ${
-                                  row.created_by.lastName
-                                    ? row.created_by.lastName
-                                    : ""
-                                }`}
-                            </a>
-                            <br />
-                            <small>{row.created_by.email}</small>
-                          </td> */}
-                          <td className="Event-state">
-                            <span
-                              className={`badge ${
-                                row.status === "success"
-                                  ? "badge-success"
-                                  : row.status === "in-progress"
-                                  ? "badge-primary"
-                                  : row.status === "canceled"
-                                  ? "badge-danger"
-                                  : row.status === "upcoming"
-                                  ? "badge-warning"
-                                  : ""
-                              }`}
-                              style={{ padding: "5px 10px" }}
-                            >
-                              {row.status}
-                            </span>
-                          </td>
-                          <td
-                            className="Event-actions text-right"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "start",
-                              gap: 5,
-                            }}
-                          >
-                            <button
-                              onClick={() =>
-                                navigate("/eventdetails", {
-                                  state: { event: row },
-                                })
-                              }
-                              className="btn btn-primary btn-sm"
-                              style={{ marginRight: 5, marginBottom: 5 }}
-                              href="/eventdetails"
-                            >
-                              <i className="fas fa-folder"></i>
-                            </button>
-                            {user?.role === "admin" ? (
-                              <button
-                                onClick={() =>
-                                  navigate("/updateevent", {
-                                    state: { event: row },
-                                  })
-                                }
-                                className="btn btn-info btn-sm"
+                      data.map((row, index) => {
+                        if (row.status !== "success") {
+                          return (
+                            <tr key={row._id}>
+                              <td>{index + 1}</td>
+                              <td>
+                                <a>{row.name}</a>
+                                <br />
+                                <small>
+                                  Created{" "}
+                                  {moment(row.createdAt).format("DD.MM.YYYY")}
+                                </small>
+                              </td>
+                              <td className="Event_progress">
+                                <div className="progress progress-sm">
+                                  <div
+                                    className="progress-bar bg-green"
+                                    role="progressbar"
+                                    aria-volumenow={57}
+                                    aria-volumemin={0}
+                                    aria-volumemax={100}
+                                    style={{
+                                      width: `${calculatePercentage(
+                                        row.ratings
+                                      )}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                                {row.status !== "success" ? (
+                                  <small className="mt-3">No ratings yet</small>
+                                ) : (
+                                  <>
+                                    <small className="d-block mt-2">
+                                      {calculatePercentage(row.ratings)}%
+                                      Success Rate
+                                    </small>
+                                    <small className="d-block">
+                                      Based on {row.ratings.length} reviews
+                                    </small>
+                                  </>
+                                )}
+                              </td>
+                              {/* <td>
+                              <a>
+                                {`${row.created_by.firstName} 
+                                  ${
+                                    row.created_by.lastName
+                                      ? row.created_by.lastName
+                                      : ""
+                                  }`}
+                              </a>
+                              <br />
+                              <small>{row.created_by.email}</small>
+                            </td> */}
+                              <td className="Event-state">
+                                <span
+                                  className={`badge ${
+                                    row.status === "success"
+                                      ? "badge-success"
+                                      : row.status === "in-progress"
+                                      ? "badge-primary"
+                                      : row.status === "canceled"
+                                      ? "badge-danger"
+                                      : row.status === "upcoming"
+                                      ? "badge-warning"
+                                      : ""
+                                  }`}
+                                  style={{ padding: "5px 10px" }}
+                                >
+                                  {row.status}
+                                </span>
+                              </td>
+                              <td
+                                className="Event-actions text-right"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "start",
+                                  gap: 5,
+                                }}
                               >
-                                <i className="fas fa-pencil-alt"></i>
-                              </button>
-                            ) : (
-                              user?._id === row.created_by._id && (
                                 <button
                                   onClick={() =>
-                                    navigate("/updateevent", {
+                                    navigate("/eventdetails", {
                                       state: { event: row },
                                     })
                                   }
-                                  className="btn btn-info btn-sm"
+                                  className="btn btn-primary btn-sm"
+                                  style={{ marginRight: 5, marginBottom: 5 }}
+                                  href="/eventdetails"
                                 >
-                                  <i className="fas fa-pencil-alt"></i>
+                                  <i className="fas fa-folder"></i>
                                 </button>
-                              )
-                            )}
-                            {user?.role === "admin" ? (
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => {
-                                  setSelectedId(row._id);
-                                  setOpenDeleteDialogue(true);
-                                }}
-                              >
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            ) : (
-                              user._id === row.created_by._id && (
-                                <button
-                                  className="btn btn-danger btn-sm"
-                                  onClick={() => {
-                                    setSelectedId(row._id);
-                                    setOpenDeleteDialogue(true);
-                                  }}
-                                >
-                                  <i className="fas fa-trash"></i>
-                                </button>
-                              )
-                            )}
-                          </td>
-                        </tr>
-                      ))}
+                                {user?.role === "admin" ? (
+                                  <button
+                                    onClick={() =>
+                                      navigate("/updateevent", {
+                                        state: { event: row },
+                                      })
+                                    }
+                                    className="btn btn-info btn-sm"
+                                  >
+                                    <i className="fas fa-pencil-alt"></i>
+                                  </button>
+                                ) : (
+                                  user?._id === row.created_by._id && (
+                                    <button
+                                      onClick={() =>
+                                        navigate("/updateevent", {
+                                          state: { event: row },
+                                        })
+                                      }
+                                      className="btn btn-info btn-sm"
+                                    >
+                                      <i className="fas fa-pencil-alt"></i>
+                                    </button>
+                                  )
+                                )}
+                                {user?.role === "admin" ? (
+                                  <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => {
+                                      setSelectedId(row._id);
+                                      setOpenDeleteDialogue(true);
+                                    }}
+                                  >
+                                    <i className="fas fa-trash"></i>
+                                  </button>
+                                ) : (
+                                  user._id === row.created_by._id && (
+                                    <button
+                                      className="btn btn-danger btn-sm"
+                                      onClick={() => {
+                                        setSelectedId(row._id);
+                                        setOpenDeleteDialogue(true);
+                                      }}
+                                    >
+                                      <i className="fas fa-trash"></i>
+                                    </button>
+                                  )
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        }
+                      })}
                   </tbody>
                 </table>
               </div>
