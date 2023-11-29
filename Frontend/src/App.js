@@ -36,6 +36,9 @@ import Notifications from "./componenets/pages/notification";
 import AddDonation from "./componenets/pages/adddonation";
 import DonorsDetail from "./componenets/pages/donorsdetails";
 import EventFeedback from "./componenets/pages/eventfeedback";
+import AdminProtected from "./routes/AdminProtected";
+import CheckActiveUser from "./routes/CheckActiveUser";
+import CheckLogin from "./routes/CheckLogin";
 
 function App() {
   return (
@@ -54,41 +57,49 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<SideBar />}>
-            <Route path="/membermanagement" element={<MemberManagement />} />
-            <Route path="/directory" element={<MemberDirectory />} />
-            <Route path="/admin-directory" element={<AdminMemberDirectory />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/lock" element={<Lockscreen />} />
-            <Route path="/memberdetails" element={<MemberDetails />} />
-            <Route path="/updatemember" element={<UpdateMember />} />
-            <Route path="/addevent" element={<Addevent />} />
-            <Route path="/updateevent" element={<Updateevent />} />
-            <Route path="/eventfeedback" element={<EventFeedback />} />
-            <Route path="/eventdetails" element={<Eventdetails />} />
-            <Route path="/eventdirectory" element={<Eventdirectory />} />
-            <Route
-              path="/admin-event-directory"
-              element={<AdminEventDirectory />}
-            />
-            <Route
-              path="/muawin-event-directory"
-              element={<MuawinEventDirectory />}
-            />
-            <Route path="/compose" element={<Compose />} />
-            <Route path="/read" element={<Read />} />
-            <Route path="/inbox" element={<Inbox />} />
-            <Route path="/donations" element={<Donations />} />
-            <Route path="/adddonation" element={<AddDonation />} />
-            <Route path="/donorsdetail" element={<DonorsDetail />} />
-            <Route path="/literature" element={<Literature />} />
-            <Route path="/config" element={<Configuration />} />
-            <Route path="/notifications" element={<Notifications />} />
+            <Route element={<CheckActiveUser />}>
+              <Route path="/membermanagement" element={<MemberManagement />} />
+              <Route path="/directory" element={<MemberDirectory />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/lock" element={<Lockscreen />} />
+              <Route path="/memberdetails" element={<MemberDetails />} />
+              <Route path="/updatemember" element={<UpdateMember />} />
+              <Route path="/addevent" element={<Addevent />} />
+              <Route path="/updateevent" element={<Updateevent />} />
+              <Route path="/eventfeedback" element={<EventFeedback />} />
+              <Route path="/eventdetails" element={<Eventdetails />} />
+              <Route path="/eventdirectory" element={<Eventdirectory />} />
+              <Route
+                path="/muawin-event-directory"
+                element={<MuawinEventDirectory />}
+              />
+              <Route path="/donations" element={<Donations />} />
+              <Route path="/literature" element={<Literature />} />
+              <Route path="/notifications" element={<Notifications />} />
+            </Route>
           </Route>
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Login />} />
+          <Route element={<AdminProtected />}>
+            <Route element={<SideBar />}>
+              <Route
+                path="/admin-directory"
+                element={<AdminMemberDirectory />}
+              />
+              <Route
+                path="/admin-event-directory"
+                element={<AdminEventDirectory />}
+              />
+              <Route path="/config" element={<Configuration />} />
+              <Route path="/adddonation" element={<AddDonation />} />
+              <Route path="/donorsdetail" element={<DonorsDetail />} />
+            </Route>
+          </Route>
+          <Route element={<CheckLogin />}>
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Login />} />
+          </Route>
           <Route path="/forgot" element={<ForgotPassword />} />
           <Route path="/recover" element={<RecoverPassword />} />
           <Route path="/terms" element={<Terms />} />

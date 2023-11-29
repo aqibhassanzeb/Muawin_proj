@@ -39,7 +39,6 @@ const Header = () => {
   const { data: donationCount, isLoading: donationLoading } =
     useGetDonationsCountQuery();
   const { data: userCitiesStats } = useGetCityStatsQuery();
-  console.log({ userCitiesStats });
   return (
     <div>
       <div>

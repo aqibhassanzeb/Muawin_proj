@@ -27,7 +27,7 @@ const Navbar = () => {
     sessionStorage.clear();
     localStorage.clear();
     dispatch(api.util.resetApiState());
-    dispatch(() => logout());
+    dispatch(logout());
     navigate("/");
   }
 

@@ -11,12 +11,11 @@ import {
 } from "../../redux/reducers/auth";
 import { toast } from "sonner";
 import { useLoginMutation, useTraceLogMutation } from "../../api/api";
-import { MDBSpinner } from "mdb-react-ui-kit";
 import axios from "axios";
 import Loader from "../Loader";
 
 const Login = () => {
-  const isRemember = useSelector((state) => state.authReducer.isRemember);
+  const user = useSelector((state) => state.authReducer.activeUser);
   const [checkBox, setCheckBox] = useState(false);
 
   const [formValue, setFormValue] = useState({
