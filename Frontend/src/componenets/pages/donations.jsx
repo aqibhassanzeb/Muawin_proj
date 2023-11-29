@@ -225,15 +225,17 @@ function Donations() {
                         <span>RS</span> <span>{donation.requiredCost}</span>
                       </td>
                       <td>
-                        <button
-                          className="btn btn-sm btn-success"
-                          onClick={() => {
-                            setSelectedId(donation._id);
-                            setOpenDonation(true);
-                          }}
-                        >
-                          Donate Now
-                        </button>
+                        {donation.is_active && (
+                          <button
+                            className="btn btn-sm btn-success"
+                            onClick={() => {
+                              setSelectedId(donation._id);
+                              setOpenDonation(true);
+                            }}
+                          >
+                            Donate Now
+                          </button>
+                        )}
                       </td>
                       {user.role === "admin" && (
                         <td>
