@@ -86,8 +86,7 @@ export const MarkDonate = async (req, res) => {
 
 export const updateDonation = async (req, res) => {
   const donationId = req.params.donationId;
-  const { collectedAmount, projectName, estimatedCost } = req.body;
-
+  const { collectedAmount, projectName, estimatedCost, isActive } = req.body;
   try {
     const donationEvent = await Donation.findById(donationId);
 
@@ -104,6 +103,9 @@ export const updateDonation = async (req, res) => {
 
     if (collectedAmount) {
       donationEvent.collectedAmount = collectedAmount;
+    }
+    if (isActive) {
+      donationEvent.is_active = false;
     }
     await donationEvent.save();
     return res.json({

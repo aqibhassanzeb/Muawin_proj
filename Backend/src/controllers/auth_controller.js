@@ -8,6 +8,7 @@ import sendVerificationEmail from "../services/emailService.js";
 import schedule from "node-schedule";
 import axios from "axios";
 import { Event } from "../models/event.js";
+import { Todo } from "../models/todo.js";
 
 export const userSignup = async (req, res) => {
   const { role, email, password, name } = req.body;
@@ -548,10 +549,11 @@ export const deleteAccount = async (req, res) => {
   const { id } = req.params;
   try {
     await Event.deleteMany({ created_by: id });
-    await User.findByIdAndDelete(id);
     await Message.deleteMany({
       $or: [{ senderId: id }, { recepientId: id }],
     });
+    await Todo.deleteMany({ created_by: id });
+    await User.findByIdAndDelete(id);
     res.json({ message: "Accsount deleted" });
   } catch (err) {
     console.error(err);

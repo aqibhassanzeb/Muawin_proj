@@ -109,71 +109,75 @@ const Configuration = () => {
             <tbody>
               {users &&
                 filteredItems.length > 0 &&
-                filteredItems.map((user) => (
-                  <tr key={user._id}>
-                    <td>{user._id}</td>
-                    <td>
-                      <span className="d-block">
-                        {user.firstName} {user.lastName}
-                      </span>
-                      <small>{user.email}</small>
-                    </td>
-                    <td>
-                      <span style={{ textTransform: "capitalize" }}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="d-flex">
-                        <label style={{ marginRight: 10 }}>
-                          <input
-                            type="checkbox"
-                            checked={user.permissions.includes("create")}
-                            onChange={(e) =>
-                              handlePermissionChange(
-                                user._id,
-                                "create",
-                                e.target.checked
-                              )
-                            }
-                            style={{ cursor: "pointer" }}
-                          />
-                          Create
-                        </label>
-                        <label style={{ marginRight: 10 }}>
-                          <input
-                            type="checkbox"
-                            checked={user.permissions.includes("update")}
-                            onChange={(e) =>
-                              handlePermissionChange(
-                                user._id,
-                                "update",
-                                e.target.checked
-                              )
-                            }
-                            style={{ cursor: "pointer" }}
-                          />
-                          Update
-                        </label>
-                        <label style={{ marginRight: 10 }}>
-                          <input
-                            type="checkbox"
-                            checked={user.permissions.includes("delete")}
-                            onChange={(e) =>
-                              handlePermissionChange(
-                                user._id,
-                                "delete",
-                                e.target.checked
-                              )
-                            }
-                            style={{ cursor: "pointer" }}
-                          />
-                          Delete
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                filteredItems.map((user) => {
+                  if (user.role === "rukan") {
+                    return (
+                      <tr key={user._id}>
+                        <td>{user._id}</td>
+                        <td>
+                          <span className="d-block">
+                            {user.firstName} {user.lastName}
+                          </span>
+                          <small>{user.email}</small>
+                        </td>
+                        <td>
+                          <span style={{ textTransform: "capitalize" }}>
+                            {user.role}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="d-flex">
+                            <label style={{ marginRight: 10 }}>
+                              <input
+                                type="checkbox"
+                                checked={user.permissions.includes("create")}
+                                onChange={(e) =>
+                                  handlePermissionChange(
+                                    user._id,
+                                    "create",
+                                    e.target.checked
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              Create
+                            </label>
+                            <label style={{ marginRight: 10 }}>
+                              <input
+                                type="checkbox"
+                                checked={user.permissions.includes("update")}
+                                onChange={(e) =>
+                                  handlePermissionChange(
+                                    user._id,
+                                    "update",
+                                    e.target.checked
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              Update
+                            </label>
+                            <label style={{ marginRight: 10 }}>
+                              <input
+                                type="checkbox"
+                                checked={user.permissions.includes("delete")}
+                                onChange={(e) =>
+                                  handlePermissionChange(
+                                    user._id,
+                                    "delete",
+                                    e.target.checked
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              Delete
+                            </label>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                })}
             </tbody>
           </table>
         </div>

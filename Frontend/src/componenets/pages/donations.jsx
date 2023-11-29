@@ -30,6 +30,7 @@ function Donations() {
   const [amountLoading, setAmountLoading] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [donationAmount, setDonationAmount] = useState("");
+  const [openMark, setOpenMark] = useState(false);
 
   async function handleDonation(e) {
     e.preventDefault();
@@ -68,6 +69,25 @@ function Donations() {
       })
       .catch((err) => {
         setOpenUpdate(false);
+        toast.error(err.message);
+      });
+  }
+
+  function handleMark(e) {
+    e.preventDefault();
+    e.preventDefault();
+    updateDonation({
+      id: selectedId,
+      data: { isActive: "false" },
+    })
+      .then((res) => {
+        if (res.data.message) {
+          toast.success("Donation Marked As Done");
+        }
+        setOpenMark(false);
+      })
+      .catch((err) => {
+        setOpenMark(false);
         toast.error(err.message);
       });
   }
@@ -131,7 +151,14 @@ function Donations() {
                 {donations &&
                   donations.length > 0 &&
                   donations.map((donation) => (
-                    <tr key={donation._id}>
+                    <tr
+                      key={donation._id}
+                      style={{
+                        backgroundColor: donation.is_active
+                          ? "#f7fee7"
+                          : "#fff1f2",
+                      }}
+                    >
                       <td>
                         <span>{donation.projectName}</span>
                       </td>
@@ -224,6 +251,16 @@ function Donations() {
                           >
                             View Donors
                           </button>
+                          <button
+                            onClick={() => {
+                              setOpenMark(true);
+                              setSelectedId(donation._id);
+                            }}
+                            className="btn btn-info btn-sm ml-2"
+                            disabled={!donation.is_active}
+                          >
+                            <i className="fas fa-check"></i>
+                          </button>
                         </td>
                       )}
                     </tr>
@@ -285,6 +322,44 @@ function Donations() {
                 <button
                   type="button"
                   onClick={() => setOpenDonation(false)}
+                  className="btn btn-sm btn-secondary float-right mr-2"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </section>
+        </form>
+      </CustomModal>
+      <CustomModal open={openMark} setOpen={setOpenMark}>
+        <form onSubmit={handleMark}>
+          <section className="">
+            <div className="row">
+              <div className="card-body">
+                <div className="form-group" style={{ textAlign: "center" }}>
+                  <label htmlFor="donationAmount">
+                    Are You sure want to Mark Done ?
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="row" id="cap">
+              <div className="col-12" style={{ padding: "0px 1.5rem" }}>
+                {updateLoading ? (
+                  <div className="float-right mt-2">
+                    <Loader size={20} />
+                  </div>
+                ) : (
+                  <button
+                    type="submit"
+                    className="btn btn-sm btn-success float-right"
+                  >
+                    Confirm
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setOpenMark(false)}
                   className="btn btn-sm btn-secondary float-right mr-2"
                 >
                   Cancel

@@ -70,7 +70,7 @@ const Header = () => {
           <div className="container-fluid">
             {/* Small boxes (Stat box) */}
             <div className="row">
-              {user?.role !== "muawin" && (
+              {user?.role !== "muawin" && user.role !== "donor" && (
                 <div className="col-lg-3 col-6">
                   {/* small box */}
                   <div className="small-box bg-info">
@@ -143,27 +143,29 @@ const Header = () => {
                 </div>
               </div>
               {/* ./col */}
-              <div className="col-lg-3 col-6">
-                {/* small box */}
-                <div className="small-box bg-danger">
-                  <div className="inner">
-                    <h3>
-                      {eventsLoading ? (
-                        <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
-                      ) : (
-                        events?.length
-                      )}
-                    </h3>
-                    <p>Events</p>
+              {user.role !== "donor" && (
+                <div className="col-lg-3 col-6">
+                  {/* small box */}
+                  <div className="small-box bg-danger">
+                    <div className="inner">
+                      <h3>
+                        {eventsLoading ? (
+                          <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                        ) : (
+                          events?.length
+                        )}
+                      </h3>
+                      <p>Events</p>
+                    </div>
+                    <div className="icon">
+                      <i className="ion ion-pie-graph" />
+                    </div>
+                    <Link to="/eventdirectory" className="small-box-footer">
+                      More info <i className="fas fa-arrow-circle-right" />
+                    </Link>
                   </div>
-                  <div className="icon">
-                    <i className="ion ion-pie-graph" />
-                  </div>
-                  <Link to="/eventdirectory" className="small-box-footer">
-                    More info <i className="fas fa-arrow-circle-right" />
-                  </Link>
                 </div>
-              </div>
+              )}
               {/* ./col */}
             </div>
             {/* /.row */}
@@ -624,7 +626,10 @@ const Header = () => {
                 </div> */}
                 {/* /.card */}
                 {/* Calendar */}
-                <EventsCalendar events={events} />
+                {user.role !== "donor" && <EventsCalendar events={events} />}
+                {user.role === "donor" && (
+                  <div style={{ height: "48vh" }}></div>
+                )}
                 {/* /.card */}
               </section>
               {/* right col */}
