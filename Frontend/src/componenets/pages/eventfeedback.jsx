@@ -51,6 +51,10 @@ const EventFeedback = () => {
     setFiltered(data);
   }, [data]);
 
+  function isRated(ratingsArray) {
+    return ratingsArray.some((rating) => rating.byUser === user._id);
+  }
+
   return (
     <>
       <div className="wrapper">
@@ -213,8 +217,14 @@ const EventFeedback = () => {
                                     setOpenStarDialogue(true);
                                   }}
                                   className="btn btn-warning btn-sm"
+                                  disabled={isRated(row.ratings)}
                                 >
-                                  <i className="fas fa-star"> Rate this</i>
+                                  <i className="fas fa-star">
+                                    {" "}
+                                    {isRated(row.ratings)
+                                      ? "Rated"
+                                      : "Rate this"}
+                                  </i>
                                 </button>
                               </td>
                             </tr>
