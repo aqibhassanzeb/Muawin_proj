@@ -678,3 +678,15 @@ async function generateOrgChartHelper(user) {
 
   return orgNode;
 }
+
+export const PermissionChecked = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const user = await User.findById(userId);
+    res.json(user.permissions);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching permissions" });
+  }
+};

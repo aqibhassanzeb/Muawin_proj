@@ -303,6 +303,9 @@ export const api = createApi({
     getCityStats: build.query({
       query: () => "/user_city_stats",
     }),
+    getPermissions: build.query({
+      query: (id) => `/permissions_check/${id}`,
+    }),
   }),
 });
 
@@ -345,6 +348,7 @@ export const {
   useGetDonationsCountQuery,
   useGetStatsQuery,
   useGetCityStatsQuery,
+  useLazyGetPermissionsQuery,
 } = api;
 
 export function uploadImage(file) {

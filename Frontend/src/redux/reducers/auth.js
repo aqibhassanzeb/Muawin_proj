@@ -26,6 +26,7 @@ const initialState = {
     ? JSON.parse(permissionsSession)
     : [],
   isRemember: false,
+  permissionChecked: false,
 };
 
 const authReducer = createSlice({
@@ -44,6 +45,9 @@ const authReducer = createSlice({
     setPermissions: (state, action) => {
       state.permissions = action.payload;
     },
+    setPermissionChecked: (state, action) => {
+      state.permissionChecked = action.payload;
+    },
     logout: (state) => {
       state.activeUser = null;
       state.token = null;
@@ -52,7 +56,13 @@ const authReducer = createSlice({
   },
 });
 
-export const { setActiveUser, logout, setToken, setRemember, setPermissions } =
-  authReducer.actions;
+export const {
+  setActiveUser,
+  logout,
+  setToken,
+  setRemember,
+  setPermissions,
+  setPermissionChecked,
+} = authReducer.actions;
 
 export default authReducer.reducer;

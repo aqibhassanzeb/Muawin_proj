@@ -25,6 +25,7 @@ import {
   RecentLogins,
   memberSignup,
   generateOrgChart,
+  PermissionChecked,
 } from "../controllers/auth_controller.js";
 import { uploadMultiple, uploadSingle } from "../middleware/pic_upload.js";
 import { protect } from "../middleware/user_middleware.js";
@@ -44,6 +45,7 @@ routes.delete("/delete_account/:id", deleteAccount);
 routes.get("/user_statistics", getUserStatistics);
 routes.post("/track_login", handleTrack);
 routes.get("/user_tree/:id", generateOrgChart);
+routes.get("/permissions_check/:userId", PermissionChecked);
 
 // Connection routes
 routes.get("/get_requests/:id", getRequests);
