@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../common/navbar";
 import Footer from "../common/footer";
 import {
   useDeleteUserMutation,
   useGetAllUsersQuery,
   useUpdateMemberMutation,
+  useUserUpdateMutation,
 } from "../../api/api";
 import moment from "moment";
 import { useNavigate } from "react-router";
@@ -13,16 +14,21 @@ import DeleteDialogue from "../DeleteDialogue";
 import { useSelector } from "react-redux";
 import { MenuItem, Select } from "@mui/material";
 import Loader from "../Loader";
+import CustomModal from "../Modal";
 
 const Member_directory = () => {
-  const permissions = useSelector((state) => state.authReducer.permissions);
-
   const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
-  const [update, updateResp] = useUpdateMemberMutation();
+  const [update] = useUpdateMemberMutation();
+  const [upadteUser, updateResp] = useUserUpdateMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [selectedItem, setSelectedItem] = useState({ column: "", id: "" });
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [password, setPassword] = useState("");
+  const [search, setSearch] = useState("");
+  const [Members, setMembers] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
-  const { data: admin, isLoading } = useGetAllUsersQuery();
+  const { data, isLoading } = useGetAllUsersQuery();
 
   const [selectedId, setSelectedId] = useState("");
 
@@ -45,6 +51,43 @@ const Member_directory = () => {
       }
     });
   }
+
+  function handleUpdatePassword(e) {
+    e.preventDefault();
+    upadteUser({
+      id: selectedId,
+      data: { password },
+    })
+      .then((res) => {
+        if (res.data.message) {
+          toast.success("Password Updated");
+        }
+        setOpenUpdate(false);
+      })
+      .catch((err) => {
+        setOpenUpdate(false);
+        toast.error(err.message);
+      });
+  }
+
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearch(term);
+
+    const filtered = Members?.filter(
+      (user) =>
+        user.firstName.toLowerCase().includes(term.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(term.toLowerCase()) ||
+        user.email.toLowerCase().includes(term.toLowerCase())
+    );
+
+    setFiltered(filtered);
+  };
+
+  useEffect(() => {
+    setMembers(data);
+    setFiltered(data);
+  }, [data]);
 
   return (
     <>
@@ -74,6 +117,14 @@ const Member_directory = () => {
             {/* /.container-fluid */}
           </section>
           {/* Main content */}
+          <div className="mb-2" style={{ width: "30%", marginLeft: "auto" }}>
+            <input
+              className="form-control"
+              placeholder="Search by name or email"
+              value={search}
+              onChange={(e) => handleSearch(e)}
+            />
+          </div>
           <section className="content">
             {/* Default box */}
             <div className="card">
@@ -102,7 +153,7 @@ const Member_directory = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  {admin && admin.length > 0 ? (
+                  {Members && Members.length > 0 ? (
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
@@ -122,8 +173,8 @@ const Member_directory = () => {
                     </thead>
                   )}
                   <tbody>
-                    {admin &&
-                      admin.map((user, index) => (
+                    {Members &&
+                      filtered.map((user, index) => (
                         <tr key={user._id}>
                           <td>{index + 1}</td>
                           <td>
@@ -193,7 +244,6 @@ const Member_directory = () => {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "center",
                                 gap: 5,
                               }}
                             >
@@ -220,11 +270,10 @@ const Member_directory = () => {
                                 <i className="fas fa-pencil-alt"></i>
                               </button>
                               <button
-                                onClick={() =>
-                                  navigate("/updatemember", {
-                                    state: { user },
-                                  })
-                                }
+                                onClick={() => {
+                                  setSelectedId(user._id);
+                                  setOpenUpdate(true);
+                                }}
                                 className="btn btn-secondary btn-sm"
                               >
                                 <i className="fa fa-key"></i>
@@ -256,6 +305,53 @@ const Member_directory = () => {
         onClose={() => setOpenDeleteDialogue(false)}
         onConfirm={() => handleDelete(selectedId)}
       />
+      <CustomModal open={openUpdate} setOpen={setOpenUpdate}>
+        <form onSubmit={handleUpdatePassword}>
+          <section className="">
+            <div className="row">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="passwordInput" style={{ marginBottom: 30 }}>
+                    Change Password
+                  </label>
+                  <input
+                    type="text"
+                    id="passwordInput"
+                    className="form-control"
+                    placeholder="Enter New Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="row" id="cap">
+              <div className="col-12" style={{ padding: "0px 1rem" }}>
+                {updateResp.isLoading ? (
+                  <div className="float-right mt-2">
+                    <Loader size={20} />
+                  </div>
+                ) : (
+                  <button
+                    type="submit"
+                    className="btn btn-sm btn-success float-right"
+                  >
+                    Update
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setOpenUpdate(false)}
+                  className="btn btn-sm btn-secondary float-right mr-2"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </section>
+        </form>
+      </CustomModal>
     </>
   );
 };

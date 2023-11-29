@@ -19,6 +19,9 @@ const Eventdirectory = () => {
 
   const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
   const [selectedId, setSelectedId] = useState("");
+  const [search, setSearch] = useState("");
+  const [Events, setEvents] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
   const navigate = useNavigate();
 
@@ -29,6 +32,21 @@ const Eventdirectory = () => {
       }
     });
   }
+
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearch(term);
+
+    const filtered = Events?.filter((event) =>
+      event.name.toLowerCase().includes(term.toLowerCase())
+    );
+    setFiltered(filtered);
+  };
+
+  useEffect(() => {
+    setEvents(data);
+    setFiltered(data);
+  }, [data]);
 
   return (
     <>
@@ -55,6 +73,14 @@ const Eventdirectory = () => {
             {/* /.container-fluid */}
           </section>
           {/* Main content */}
+          <div className="mb-2" style={{ width: "30%", marginLeft: "auto" }}>
+            <input
+              className="form-control"
+              placeholder="Search"
+              value={search}
+              onChange={(e) => handleSearch(e)}
+            />
+          </div>
           <section className="content">
             {/* Default box */}
             <div className="card">
@@ -83,7 +109,7 @@ const Eventdirectory = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  {data && data.length > 0 ? (
+                  {Events && Events.length > 0 ? (
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
@@ -104,8 +130,8 @@ const Eventdirectory = () => {
                     </thead>
                   )}
                   <tbody>
-                    {data &&
-                      data.map((row, index) => {
+                    {Events &&
+                      filtered.map((row, index) => {
                         if (row.status !== "success") {
                           return (
                             <tr key={row._id}>

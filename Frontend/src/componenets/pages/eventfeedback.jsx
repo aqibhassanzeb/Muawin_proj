@@ -18,6 +18,9 @@ const EventFeedback = () => {
   const { data, isLoading } = useAllEventsQuery();
   const [add, addResp] = useAddRatingMutation();
   const [rating, setRating] = useState(0);
+  const [search, setSearch] = useState("");
+  const [Events, setEvents] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
   const [openStartDialogue, setOpenStarDialogue] = useState(false);
   const [selectedId, setSelectedId] = useState("");
@@ -32,6 +35,21 @@ const EventFeedback = () => {
       }
     });
   }
+
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearch(term);
+
+    const filtered = Events?.filter((event) =>
+      event.name.toLowerCase().includes(term.toLowerCase())
+    );
+    setFiltered(filtered);
+  };
+
+  useEffect(() => {
+    setEvents(data);
+    setFiltered(data);
+  }, [data]);
 
   return (
     <>
@@ -58,6 +76,14 @@ const EventFeedback = () => {
             {/* /.container-fluid */}
           </section>
           {/* Main content */}
+          <div className="mb-2" style={{ width: "30%", marginLeft: "auto" }}>
+            <input
+              className="form-control"
+              placeholder="Search"
+              value={search}
+              onChange={(e) => handleSearch(e)}
+            />
+          </div>
           <section className="content">
             {/* Default box */}
             <div className="card">
@@ -86,7 +112,7 @@ const EventFeedback = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  {data && data.length > 0 ? (
+                  {Events && Events.length > 0 ? (
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
@@ -107,8 +133,8 @@ const EventFeedback = () => {
                     </thead>
                   )}
                   <tbody>
-                    {data &&
-                      data.map((row, index) => {
+                    {Events &&
+                      filtered.map((row, index) => {
                         if (row.status === "success") {
                           return (
                             <tr key={row._id}>

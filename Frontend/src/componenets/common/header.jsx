@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
-import { Chart } from "react-google-charts";
+import { Chart as GoogleChart } from "react-google-charts";
 import Todos from "../Todos";
 import EventsCalendar from "../EventsCalendar";
 import {
@@ -12,17 +12,19 @@ import {
   useGetTodosCountQuery,
 } from "../../api/api";
 import { useSelector } from "react-redux";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "react-chartjs-2";
 
-const data = [
-  ["Country", "Visitors"],
-  ["Germany", 1],
-  ["United States", 2],
-  ["Brazil", 1],
-  ["Canada", 2],
-  ["France", 1],
-  ["RU", 1],
-  ["Pakistan", 2],
-];
+ChartJS.register(ArcElement, Tooltip, Legend);
+export const data = {
+  labels: ["18-24", "25-34", "35-44", "45-54", "55+"],
+  datasets: [
+    {
+      data: [20, 30, 25, 15, 10],
+      backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#9966FF"],
+    },
+  ],
+};
 
 const Header = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
@@ -36,7 +38,6 @@ const Header = () => {
   const { data: donationCount, isLoading: donationLoading } =
     useGetDonationsCountQuery();
 
-  console.log({ statsData });
   return (
     <div>
       <div>
@@ -201,35 +202,17 @@ const Header = () => {
                       </div>
                     </div>
                     {/* /.card-header */}
-                    <div className="card-body">
-                      <div className="tab-content p-0">
-                        {/* Morris chart - Sales */}
-                        <div
-                          className="chart tab-pane active"
-                          id="revenue-chart"
-                          style={{
-                            position: "relative",
-                            height: 300,
-                            backgroundColor: "white",
-                          }}
-                        >
-                          <canvas
-                            id="revenue-chart-canvas"
-                            height={300}
-                            style={{ height: 300 }}
-                          />
-                        </div>
-                        <div
-                          className="chart tab-pane"
-                          id="sales-chart"
-                          style={{ position: "relative", height: 300 }}
-                        >
-                          <canvas
-                            id="sales-chart-canvas"
-                            height={300}
-                            style={{ height: 300 }}
-                          />
-                        </div>
+                    <div
+                      className="card-body"
+                      style={{ display: "flex", justifyContent: "center" }}
+                    >
+                      <div
+                        style={{
+                          width: "55vh",
+                          height: "55vh",
+                        }}
+                      >
+                        <Pie data={data} />
                       </div>
                     </div>
                     {/* /.card-body */}
@@ -524,7 +507,7 @@ const Header = () => {
                       id="world-map"
                       style={{ height: 250, width: "100%" }}
                     /> */}
-                      <Chart
+                      <GoogleChart
                         chartEvents={[
                           {
                             eventName: "select",
@@ -532,7 +515,9 @@ const Header = () => {
                               const chart = chartWrapper.getChart();
                               const selection = chart.getSelection();
                               if (selection.length === 0) return;
-                              const region = data[selection[0].row + 1];
+                              const region =
+                                statsData &&
+                                statsData?.chartData[selection[0].row + 1];
                               console.log("Selected : " + region);
                             },
                           },

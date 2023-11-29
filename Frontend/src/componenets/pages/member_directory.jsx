@@ -24,10 +24,11 @@ const Member_directory = () => {
   const [update, updateResp] = useUpdateMemberMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [selectedItem, setSelectedItem] = useState({ column: "", id: "" });
+  const [search, setSearch] = useState("");
+  const [Members, setMembers] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
-  const { data: rukan, isLoading: rukanLoading } = useGetRukanMuawinsQuery(
-    user?._id
-  );
+  const { data, isLoading: rukanLoading } = useGetRukanMuawinsQuery(user?._id);
   const [selectedId, setSelectedId] = useState("");
 
   const navigate = useNavigate();
@@ -49,6 +50,25 @@ const Member_directory = () => {
       }
     });
   }
+
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearch(term);
+
+    const filtered = Members?.filter(
+      (user) =>
+        user.firstName.toLowerCase().includes(term.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(term.toLowerCase()) ||
+        user.email.toLowerCase().includes(term.toLowerCase())
+    );
+
+    setFiltered(filtered);
+  };
+
+  useEffect(() => {
+    setMembers(data);
+    setFiltered(data);
+  }, [data]);
 
   return (
     <>
@@ -78,6 +98,14 @@ const Member_directory = () => {
             {/* /.container-fluid */}
           </section>
           {/* Main content */}
+          <div className="mb-2" style={{ width: "30%", marginLeft: "auto" }}>
+            <input
+              className="form-control"
+              placeholder="Search by name or email"
+              value={search}
+              onChange={(e) => handleSearch(e)}
+            />
+          </div>
           <section className="content">
             {/* Default box */}
             <div className="card">
@@ -106,7 +134,7 @@ const Member_directory = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  {rukan && rukan.length > 0 ? (
+                  {Members && Members.length > 0 ? (
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
@@ -126,8 +154,8 @@ const Member_directory = () => {
                     </thead>
                   )}
                   <tbody>
-                    {rukan &&
-                      rukan.map((user, index) => (
+                    {Members &&
+                      filtered.map((user, index) => (
                         <tr key={user._id}>
                           <td>{index + 1}</td>
                           <td>

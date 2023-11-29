@@ -54,7 +54,8 @@ function Donations() {
       });
   }
 
-  function handleUpdateDonation() {
+  function handleUpdateDonation(e) {
+    e.preventDefault();
     updateDonation({
       id: selectedId,
       data: { collectedAmount: donationAmount },
@@ -183,7 +184,9 @@ function Donations() {
                                   <Loader size={30} />
                                 </div>
                               ) : (
-                                <button onClick={() => handleUpdateDonation()}>
+                                <button
+                                  onClick={(e) => handleUpdateDonation(e)}
+                                >
                                   Update
                                 </button>
                               )}
