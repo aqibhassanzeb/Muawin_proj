@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import { Todo } from "../models/todo.js";
-import { User } from "../models/user.js";
+import { Tracker, User } from "../models/user.js";
 import { Event } from "../models/event.js";
 import { Notification } from "../models/notification.js";
+import { City } from "../models/city.js";
+import { Donation } from "../models/donation.js";
 
 export const getCities = async (req, res) => {
   let { country, state } = req.params;
@@ -13,6 +15,16 @@ export const getCities = async (req, res) => {
       .sort({ name: 1 })
       .toArray();
 
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const getAllCities = async (req, res) => {
+  try {
+    const response = await City.find({ country_code: "PK" }).sort({ name: 1 });
     res.status(200).json(response);
   } catch (error) {
     console.log(error);
@@ -149,6 +161,63 @@ export const GetNotifications = async (req, res) => {
     res.status(200).json(notifications);
   } catch (error) {
     console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const GetDonationCount = async (req, res) => {
+  try {
+    const count = await Donation.countDocuments({ is_active: true });
+    res.status(200).json(count);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const GetLogins = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const loginsCount = await Tracker.aggregate([
+      {
+        $match: {
+          login_time: {
+            $gte: today,
+            $lt: tomorrow,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$ip",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const result = await Tracker.aggregate([
+      {
+        $group: {
+          _id: { country: "$country", ip: "$ip" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.country",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const headers = ["Country", "Visitors"];
+    const reshapedData = result.map((item) => [item._id, item.count]);
+    const output = [headers, ...reshapedData];
+    res.status(200).json({ loginsCount, chartData: output });
+  } catch (error) {
+    console.error(error);
     res.status(400).json({ error: error.message });
   }
 };

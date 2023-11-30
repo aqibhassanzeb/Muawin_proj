@@ -1,82 +1,95 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../redux/reducers/auth";
+import { logout, setPermissions } from "../../redux/reducers/auth";
 import CustomModal from "../Modal";
-import io from "socket.io-client";
 import moment from "moment";
 import { toast } from "sonner";
-import { api } from "../../api/api";
+import { api, useGetNotificationsQuery } from "../../api/api";
+import { initSocket } from "../../socket";
 
 const Navbar = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
+  const isRemember = useSelector((state) => state.authReducer.isRemember);
+
+  const { data, refetch } = useGetNotificationsQuery();
 
   const [noti, setNoti] = useState([]);
+  const socketRef = useRef(null);
+
   const [openAddNoti, setOpenAddNoti] = useState(false);
-  const [connected, setConnected] = useState(false);
   const textRef = useRef();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   function handleLogout() {
-    localStorage.removeItem("activeUser");
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("activeUser");
-    sessionStorage.removeItem("token");
+    sessionStorage.clear();
+    localStorage.clear();
     dispatch(api.util.resetApiState());
-    dispatch(() => logout());
+    dispatch(logout());
     navigate("/");
   }
 
-  const socket = useMemo(() => {
-    return io("http://localhost:3333");
+  useEffect(() => {
+    const init = async () => {
+      socketRef.current = await initSocket();
+      socketRef.current.on("connect_error", (err) => handleErrors(err));
+      socketRef.current.on("connect_failed", (err) => handleErrors(err));
+
+      function handleErrors(e) {
+        console.log("socket error", e);
+        toast.error("Socket connection failed, try again later.");
+      }
+
+      socketRef.current.on("notification", () => {
+        refetch();
+      });
+      socketRef.current.on("allNotificationsRead", () => {
+        refetch();
+      });
+      socketRef.current.on("permissionChanged", (data) => {
+        if (data.userId === user._id) {
+          dispatch(setPermissions(data.permissions));
+          if (isRemember) {
+            localStorage.setItem(
+              "permissions",
+              JSON.stringify(data.permissions)
+            );
+          } else {
+            sessionStorage.setItem(
+              "permissions",
+              JSON.stringify(data.permissions)
+            );
+          }
+        }
+        // dispatch(api.util.updateQueryData("/users"));
+      });
+    };
+    init();
+    return () => {
+      socketRef.current.disconnect();
+      socketRef.current.off("notification");
+      socketRef.current.off("allNotificationsRead");
+    };
   }, []);
 
-  useEffect(() => {
-    if (!socket) {
-      setConnected(true);
-    }
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    if (socket) {
-      socket.on("initialNotifications", (initialNotifications) => {
-        setNoti(initialNotifications);
-      });
-
-      socket.on("notification", (newNotification) => {
-        setNoti((prevNotifications) => [newNotification, ...prevNotifications]);
-      });
-      socket.on("allNotificationsRead", (userNotifications) => {
-        setNoti(userNotifications);
-      });
-    }
-  }, [socket]);
-
   const handleSendNotification = () => {
-    if (socket && textRef?.current?.value) {
-      socket.emit("adminBroadcast", textRef?.current?.value);
+    if (socketRef.current && textRef?.current?.value) {
+      socketRef.current.emit("adminBroadcast", textRef?.current?.value);
       toast.success("Notification sent");
       setOpenAddNoti(false);
     }
   };
 
   const handleMarkAllAsRead = () => {
-    if (socket) {
-      socket.emit("markAllAsRead", user._id);
-    }
+    socketRef.current.emit("markAllAsRead", user._id);
   };
 
   let unreadCount = 0;
 
   function countUnreadDocuments() {
-    noti.forEach((notification) => {
+    noti?.forEach((notification) => {
       if (
         !notification.isReadBy ||
         notification.isReadBy.indexOf(user._id) === -1
@@ -87,6 +100,10 @@ const Navbar = () => {
   }
 
   countUnreadDocuments();
+
+  useEffect(() => {
+    setNoti(data);
+  }, [data]);
 
   return (
     <div>
@@ -270,7 +287,7 @@ const Navbar = () => {
               </a>
               <div
                 className="dropdown-menu dropdown-menu-lg dropdown-menu-right"
-                style={{ maxWidth: "515px" }}
+                style={{ maxWidth: "41vw" }}
               >
                 <span className="dropdown-item dropdown-header">
                   <div
@@ -291,7 +308,7 @@ const Navbar = () => {
                 </span>
                 <div className="dropdown-divider" />
                 {noti &&
-                  noti.map((not) => (
+                  noti.slice(0, 7).map((not) => (
                     <div
                       key={not._id}
                       className="dropdown-item"

@@ -1,64 +1,80 @@
-import React from "react";
+import React, { useRef } from "react";
 import "../css/style.css";
 import { useState } from "react";
 import Navbar from "../common/navbar";
-
 import Footer from "../common/footer";
+import { useGetAllUsersQuery } from "../../api/api";
+import { useEffect } from "react";
+import { initSocket } from "../../socket";
+import { toast } from "sonner";
 
 const Configuration = () => {
-  const [users, setUsers] = useState([
-    {
-      id: 10001,
-      name: "Dr. Musharraf Ahmed",
-      role: "admin",
-      permissions: ["create", "delete", "update"],
-    },
-    {
-      id: 11065,
-      name: "Abdul Sami",
-      role: "editor",
-      permissions: ["create", "update"],
-    },
-    { id: 19686, name: "Hassan Ali", role: "viewer", permissions: ["read"] },
-  ]);
+  const { data, refetch } = useGetAllUsersQuery();
+  const [users, setUsers] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [search, setSearch] = useState("");
+  const socketRef = useRef(null);
 
-  const handleRoleChange = (userId, newRole) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === userId ? { ...user, role: newRole } : user
-      )
-    );
-  };
+  useEffect(() => {
+    const init = async () => {
+      socketRef.current = await initSocket();
+      socketRef.current.on("connect_error", (err) => handleErrors(err));
+      socketRef.current.on("connect_failed", (err) => handleErrors(err));
+
+      function handleErrors(e) {
+        console.log("socket error", e);
+        toast.error("Socket connection failed, try again later.");
+      }
+      socketRef.current.on("permissionChanged", (data) => {
+        refetch().then((res) => {
+          setUsers(res.data);
+          setFilteredItems(res.data);
+        });
+      });
+    };
+    init();
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    setUsers(data);
+    setFilteredItems(data);
+  }, [data]);
 
   const handlePermissionChange = (userId, permission, isChecked) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) => {
-        if (user.id === userId) {
-          let updatedPermissions;
-          if (isChecked) {
-            updatedPermissions = [...user.permissions, permission];
-          } else {
-            updatedPermissions = user.permissions.filter(
-              (p) => p !== permission
-            );
-          }
-          return { ...user, permissions: updatedPermissions };
-        }
-        return user;
-      })
-    );
+    socketRef.current.emit("updatePermission", {
+      userId,
+      permission,
+      isChecked,
+    });
+    toast.success("Permission Updated");
   };
 
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearch(term);
+
+    const filtered = users?.filter(
+      (user) =>
+        user.firstName.toLowerCase().includes(term.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(term.toLowerCase()) ||
+        user.email.toLowerCase().includes(term.toLowerCase())
+    );
+
+    setFilteredItems(filtered);
+  };
   return (
     <div className="wrapper">
       <Navbar />
-      <div style={{ padding: "0 20px" }}>
+      <div style={{ padding: "0 20px", minHeight: "83vh" }}>
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1>System Configuration</h1>
+                <h5>System Configuration</h5>
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
@@ -72,7 +88,15 @@ const Configuration = () => {
           </div>
           {/* /.container-fluid */}
         </section>
-        <div className="container">
+        <div className="">
+          <div className="mb-2" style={{ width: "30%", marginLeft: "auto" }}>
+            <input
+              className="form-control"
+              placeholder="Search by name or email"
+              value={search}
+              onChange={(e) => handleSearch(e)}
+            />
+          </div>
           <table className="user-table">
             <thead>
               <tr>
@@ -80,89 +104,80 @@ const Configuration = () => {
                 <th>Name</th>
                 <th>Role</th>
                 <th>Permissions</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.name}</td>
-                  <td>
-                    <select
-                      value={user.role}
-                      onChange={(e) =>
-                        handleRoleChange(user.id, e.target.value)
-                      }
-                    >
-                      <option value="admin">Admin</option>
-                      <option value="editor">Editor</option>
-                      <option value="viewer">Viewer</option>
-                    </select>
-                  </td>
-                  <td>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={user.permissions.includes("create")}
-                        onChange={(e) =>
-                          handlePermissionChange(
-                            user.id,
-                            "create",
-                            e.target.checked
-                          )
-                        }
-                      />
-                      Create
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={user.permissions.includes("read")}
-                        onChange={(e) =>
-                          handlePermissionChange(
-                            user.id,
-                            "read",
-                            e.target.checked
-                          )
-                        }
-                      />
-                      Read
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={user.permissions.includes("update")}
-                        onChange={(e) =>
-                          handlePermissionChange(
-                            user.id,
-                            "update",
-                            e.target.checked
-                          )
-                        }
-                      />
-                      Update
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={user.permissions.includes("delete")}
-                        onChange={(e) =>
-                          handlePermissionChange(
-                            user.id,
-                            "delete",
-                            e.target.checked
-                          )
-                        }
-                      />
-                      Delete
-                    </label>
-                  </td>
-                  <td>
-                    <button>Update</button>
-                  </td>
-                </tr>
-              ))}
+              {users &&
+                filteredItems.length > 0 &&
+                filteredItems.map((user) => {
+                  if (user.role === "rukan") {
+                    return (
+                      <tr key={user._id}>
+                        <td>{user._id}</td>
+                        <td>
+                          <span className="d-block">
+                            {user.firstName} {user.lastName}
+                          </span>
+                          <small>{user.email}</small>
+                        </td>
+                        <td>
+                          <span style={{ textTransform: "capitalize" }}>
+                            {user.role}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="d-flex">
+                            <label style={{ marginRight: 10 }}>
+                              <input
+                                type="checkbox"
+                                checked={user.permissions.includes("create")}
+                                onChange={(e) =>
+                                  handlePermissionChange(
+                                    user._id,
+                                    "create",
+                                    e.target.checked
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              Create
+                            </label>
+                            <label style={{ marginRight: 10 }}>
+                              <input
+                                type="checkbox"
+                                checked={user.permissions.includes("update")}
+                                onChange={(e) =>
+                                  handlePermissionChange(
+                                    user._id,
+                                    "update",
+                                    e.target.checked
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              Update
+                            </label>
+                            <label style={{ marginRight: 10 }}>
+                              <input
+                                type="checkbox"
+                                checked={user.permissions.includes("delete")}
+                                onChange={(e) =>
+                                  handlePermissionChange(
+                                    user._id,
+                                    "delete",
+                                    e.target.checked
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              Delete
+                            </label>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                })}
             </tbody>
           </table>
         </div>

@@ -382,3 +382,16 @@ export const otherInfoValidation = z.object({
   militaryServices: z.string(),
   role: z.string().min(1, { message: "Role is required" }),
 });
+
+export const donationValidationSchema = z.object({
+  projectName: z.string().min(1, { message: "Project Name is required" }),
+  location: z.string().min(1, { message: "Location is required" }),
+  requiredCost: z
+    .number({
+      required_error: "Required Cost is required",
+      invalid_type_error: "Invalid Input",
+    })
+    .int()
+    .positive(),
+  city: z.string(),
+});

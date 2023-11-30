@@ -57,3 +57,14 @@ export function deepEqual(objA, objB) {
 
   return true;
 }
+
+export function calculatePercentage(ratings) {
+  if (ratings.length === 0) {
+    return 0;
+  }
+  const averageRating =
+    ratings.reduce((total, rating) => total + rating.rating, 0) /
+    ratings.length;
+  const successPercentage = Math.floor((averageRating / 5) * 100);
+  return successPercentage;
+}

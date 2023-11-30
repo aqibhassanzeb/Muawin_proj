@@ -94,3 +94,25 @@ export const generateUserPDF = async (req, res) => {
     console.log(error);
   }
 };
+
+export const addRating = async (req, res) => {
+  try {
+    const { rating } = req.body;
+    const userId = req.user._id;
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Invalid rating value" });
+    }
+    const eventId = req.params.eventId;
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+    event.ratings.push({ byUser: userId, rating });
+    const response = await event.save();
+    res.json({ message: "Rating added successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

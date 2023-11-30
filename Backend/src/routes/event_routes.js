@@ -3,6 +3,7 @@ const routes = express.Router();
 import { protect } from "../middleware/user_middleware.js";
 import multer from "multer";
 import {
+  addRating,
   createEvent,
   generateEvents,
   generateUserPDF,
@@ -18,5 +19,7 @@ routes.put("/event/update/:_id", protect, updateEvent);
 routes.get("/event/pdf", generateEvents);
 routes.get("/user_events/pdf", generateUserPDF);
 routes.get("/user_events/:_id", protect, getUserEvents);
+routes.post("/event_rate/:eventId", protect, addRating);
+// routes.get("/event_rating/:id", protect, averageRating);
 
 export default routes;

@@ -3,33 +3,35 @@ import Navbar from "../common/navbar";
 
 import Footer from "../common/footer";
 import { Link, useNavigate } from "react-router-dom";
-import { useAllEventsQuery, useUpdateEventMutation } from "../../api/api";
+import { useAddRatingMutation, useAllEventsQuery } from "../../api/api";
 import moment from "moment";
 import { toast } from "sonner";
 import DeleteDialogue from "../DeleteDialogue";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import CustomModal from "../Modal";
+import Rating from "react-rating";
 import { calculatePercentage } from "../../utils";
 
-const Eventdirectory = () => {
+const EventFeedback = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
-  const permissions = useSelector((state) => state.authReducer.permissions);
-
   const { data, isLoading } = useAllEventsQuery();
-  const [update, updateResp] = useUpdateEventMutation();
-
-  const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
-  const [selectedId, setSelectedId] = useState("");
+  const [add, addResp] = useAddRatingMutation();
+  const [rating, setRating] = useState(0);
   const [search, setSearch] = useState("");
   const [Events, setEvents] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
+  const [openStartDialogue, setOpenStarDialogue] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
+
   const navigate = useNavigate();
 
-  function handleDelete(id) {
-    update({ id, data: { is_active: false } }).then((res) => {
+  function handleRating() {
+    add({ id: selectedId, data: { rating } }).then((res) => {
       if (res?.data?.message) {
-        toast.success("Event Deleted Successfully!");
+        setOpenStarDialogue(false);
+        toast.success("Ratings Done");
       }
     });
   }
@@ -48,6 +50,10 @@ const Eventdirectory = () => {
     setEvents(data);
     setFiltered(data);
   }, [data]);
+
+  function isRated(ratingsArray) {
+    return ratingsArray.some((rating) => rating.byUser === user._id);
+  }
 
   return (
     <>
@@ -114,13 +120,13 @@ const Eventdirectory = () => {
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
-                        <th style={{ width: "30%" }}>Event Name</th>
+                        <th style={{ width: "25%" }}>Event Name</th>
                         <th>Event Progress</th>
                         {/* <th>Created By</th> */}
                         <th style={{ width: "8%" }} className="text-center">
                           Status
                         </th>
-                        <th style={{ width: "20%" }}>Actions</th>
+                        <th style={{ width: "20%" }}>Rating</th>
                       </tr>
                     </thead>
                   ) : (
@@ -133,7 +139,7 @@ const Eventdirectory = () => {
                   <tbody>
                     {Events &&
                       filtered.map((row, index) => {
-                        if (row.status !== "success") {
+                        if (row.status === "success") {
                           return (
                             <tr key={row._id}>
                               <td>{index + 1}</td>
@@ -160,19 +166,13 @@ const Eventdirectory = () => {
                                     }}
                                   ></div>
                                 </div>
-                                {row.status !== "success" ? (
-                                  <small className="mt-3">No ratings yet</small>
-                                ) : (
-                                  <>
-                                    <small className="d-block mt-2">
-                                      {calculatePercentage(row.ratings)}%
-                                      Success Rate
-                                    </small>
-                                    <small className="d-block">
-                                      Based on {row.ratings.length} reviews
-                                    </small>
-                                  </>
-                                )}
+                                <small className="d-block mt-2">
+                                  {calculatePercentage(row.ratings)}% Success
+                                  Rate
+                                </small>
+                                <small className="d-block">
+                                  Based on {row.ratings.length} reviews
+                                </small>
                               </td>
                               <td className="Event-state">
                                 <span
@@ -211,31 +211,21 @@ const Eventdirectory = () => {
                                 >
                                   <i className="fas fa-folder"></i>
                                 </button>
-                                {user?._id === row.created_by._id &&
-                                  permissions.includes("update") && (
-                                    <button
-                                      onClick={() =>
-                                        navigate("/updateevent", {
-                                          state: { event: row },
-                                        })
-                                      }
-                                      className="btn btn-info btn-sm"
-                                    >
-                                      <i className="fas fa-pencil-alt"></i>
-                                    </button>
-                                  )}
-                                {user._id === row.created_by._id &&
-                                  permissions.includes("delete") && (
-                                    <button
-                                      className="btn btn-danger btn-sm"
-                                      onClick={() => {
-                                        setSelectedId(row._id);
-                                        setOpenDeleteDialogue(true);
-                                      }}
-                                    >
-                                      <i className="fas fa-trash"></i>
-                                    </button>
-                                  )}
+                                <button
+                                  onClick={() => {
+                                    setSelectedId(row._id);
+                                    setOpenStarDialogue(true);
+                                  }}
+                                  className="btn btn-warning btn-sm"
+                                  disabled={isRated(row.ratings)}
+                                >
+                                  <i className="fas fa-star">
+                                    {" "}
+                                    {isRated(row.ratings)
+                                      ? "Rated"
+                                      : "Rate this"}
+                                  </i>
+                                </button>
                               </td>
                             </tr>
                           );
@@ -250,15 +240,69 @@ const Eventdirectory = () => {
           </section>
           {/* /.content */}
         </div>
-        <DeleteDialogue
-          open={openDeleteDialogue}
-          onClose={() => setOpenDeleteDialogue(false)}
-          onConfirm={() => handleDelete(selectedId)}
-        />
+        <CustomModal open={openStartDialogue} setOpen={setOpenStarDialogue}>
+          <div
+            className="flex-center"
+            style={{ flexDirection: "column", gap: 10 }}
+          >
+            <span className="d-block" style={{ fontWeight: "bold" }}>
+              Give Feedback
+            </span>
+            <span
+              className="d-block"
+              style={{
+                fontSize: 14,
+                marginBottom: 10,
+                textAlign: "center",
+              }}
+            >
+              Thank you for attending! We value your feedback and would love to
+              hear about your experience.
+            </span>
+            <Rating
+              emptySymbol={
+                <img
+                  src="dist/img/star-empty.png"
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    marginRight: "5px",
+                  }}
+                />
+              }
+              fullSymbol={
+                <img
+                  src="dist/img/star-full.png"
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    marginRight: "5px",
+                  }}
+                />
+              }
+              onChange={(value) => setRating(value)}
+              initialRating={rating}
+            />
+            <div className="flex-center" style={{ gap: 10, marginTop: 20 }}>
+              <button
+                className="btn btn-sm btn-success"
+                onClick={() => handleRating()}
+              >
+                Submit
+              </button>
+              <button
+                className="btn btn-sm btn-secondary"
+                onClick={() => setOpenStarDialogue(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </CustomModal>
         <Footer />
       </div>
     </>
   );
 };
 
-export default Eventdirectory;
+export default EventFeedback;

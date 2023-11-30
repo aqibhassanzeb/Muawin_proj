@@ -12,7 +12,7 @@ transporter.verify((err, succ) => {
   if (err) {
     console.log(err);
   } else if (succ) {
-    console.log("mail service connected");
+    console.log("\x1b[34m", "🖂  Mail service connected");
   }
 });
 

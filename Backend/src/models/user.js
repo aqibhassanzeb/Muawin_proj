@@ -68,6 +68,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    permissions: ["create", "update", "delete"],
     verification_code: {
       type: String,
     },

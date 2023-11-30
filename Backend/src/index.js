@@ -11,8 +11,9 @@ import MessageRoutes from "./routes/message_routes.js";
 import Global from "./routes/global_routes.js";
 import Event from "./routes/event_routes.js";
 import Admin from "./routes/admin_routes.js";
-import { Message } from "./models/message.js";
+import Donation from "./routes/donation_routes.js";
 import { Notification } from "./models/notification.js";
+import { User } from "./models/user.js";
 
 const app = express();
 
@@ -39,7 +40,7 @@ app.use(
 app.use(express.static("public"));
 
 //All APi's Endponits
-app.use("/api/v1", Auth, Global, MessageRoutes, Event, Admin);
+app.use("/api/v1", Auth, Global, MessageRoutes, Event, Admin, Donation);
 
 app.use("*", (req, res) => {
   return res.status(404).json({
@@ -48,41 +49,14 @@ app.use("*", (req, res) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log("User connected to socket:", socket.id);
-  const allNotifications = await Notification.find()
-    .populate("notificationBy", "firstName lastName image")
-    .sort({ createdAt: -1 });
-  socket.emit("initialNotifications", allNotifications);
-
-  socket.on("join", (roomId) => {
-    socket.join(roomId);
-  });
-
-  socket.on("message", async (roomId, message) => {
-    try {
-      const newMessage = new Message({
-        senderId: message.senderId,
-        recepientId: message.recepientId,
-        messageType: message.messageType,
-        message: message.messageText,
-        timestamp: new Date(),
-        imageUrl: message.messageType === "image" ? message.imageUrl : null,
-      });
-      await newMessage.save();
-      io.to(roomId).emit("message", newMessage);
-    } catch (error) {
-      console.log(error);
-    }
-  });
-
   socket.on("adminBroadcast", async (notification) => {
     try {
-      const newNotification = new Notification({
+      await Notification.create({
         message: notification,
         notificationBy: "6523995e4c1094b032c6c61d",
       });
-      await newNotification.save();
-      io.emit("notification", newNotification);
+
+      io.emit("notification");
     } catch (error) {
       console.log(error);
     }
@@ -94,22 +68,37 @@ io.on("connection", async (socket) => {
         { isReadBy: { $nin: [userId] } },
         { $addToSet: { isReadBy: userId } }
       );
-      const userNotifications = await Notification.find()
-        .populate("notificationBy", "firstName lastName image")
-        .sort({ createdAt: -1 });
-      socket.emit("allNotificationsRead", userNotifications);
+
+      socket.emit("allNotificationsRead");
     } catch (error) {
       console.log(error);
     }
   });
 
+  socket.on("updatePermission", async (data) => {
+    const { userId, permission, isChecked } = data;
+    const user = await User.findOne({ _id: userId });
+    const permissionIndex = user.permissions.indexOf(permission);
+    if (permissionIndex !== -1 && !isChecked) {
+      user.permissions.splice(permissionIndex, 1);
+    } else if (isChecked && permissionIndex === -1) {
+      user.permissions.push(permission);
+    }
+    const response = await user.save();
+    io.emit("permissionChanged", {
+      userId,
+      permissions: response.permissions,
+      updatedPermission: permission,
+    });
+  });
+
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    // console.log("User disconnected:", socket.id);
   });
 });
 
 //Port
 const port = process.env.PORT || 3333;
 const nodeServer = server.listen(port, () => {
-  console.log(`server is running on port: ${port}`);
+  console.log("\x1b[34m", `🌐 Server started http://localhost:${port}`);
 });

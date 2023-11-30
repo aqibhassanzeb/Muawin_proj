@@ -2,9 +2,12 @@ import express from "express";
 const routes = express.Router();
 import { protect } from "../middleware/user_middleware.js";
 import {
+  GetDonationCount,
+  GetLogins,
   GetNotifications,
   createTodo,
   deleteTodo,
+  getAllCities,
   getCities,
   getMuawins,
   getTodos,
@@ -14,6 +17,7 @@ import {
 } from "../controllers/global_controller.js";
 
 routes.get("/cities/:country/:state", getCities);
+routes.get("/cities", getAllCities);
 routes.get("/todos", protect, getTodos);
 routes.get("/todos_count", protect, getTodosCount);
 routes.put("/todos/:_id", protect, updateTodo);
@@ -22,5 +26,7 @@ routes.delete("/todos/:_id", protect, deleteTodo);
 routes.get("/muawins/:_id", getMuawins);
 routes.get("/users_counts", protect, getUserCount);
 routes.get("/notifications", GetNotifications);
+routes.get("/donations_count", GetDonationCount);
+routes.get("/today_logins", GetLogins);
 
 export default routes;

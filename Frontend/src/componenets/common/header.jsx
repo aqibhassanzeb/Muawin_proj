@@ -1,36 +1,44 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
-import { Chart } from "react-google-charts";
+import { Chart as GoogleChart } from "react-google-charts";
 import Todos from "../Todos";
 import EventsCalendar from "../EventsCalendar";
 import {
   useCalendarEventsQuery,
   useGetAllUsersCountQuery,
+  useGetCityStatsQuery,
+  useGetDonationsCountQuery,
+  useGetStatsQuery,
   useGetTodosCountQuery,
 } from "../../api/api";
 import { useSelector } from "react-redux";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "react-chartjs-2";
 
-const data = [
-  ["Country", "Visitors"],
-  ["Germany", 1],
-  ["United States", 2],
-  ["Brazil", 1],
-  ["Canada", 2],
-  ["France", 1],
-  ["RU", 1],
-  ["Pakistan", 2],
-];
+ChartJS.register(ArcElement, Tooltip, Legend);
+export const data = {
+  labels: ["18-24", "25-34", "35-44", "45-54", "55+"],
+  datasets: [
+    {
+      data: [20, 30, 25, 15, 10],
+      backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#9966FF"],
+    },
+  ],
+};
 
 const Header = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
 
+  const { data: statsData, isLoading: statsLoading } = useGetStatsQuery();
   const { data: events, isLoading: eventsLoading } = useCalendarEventsQuery();
   const { data: userCount, isLoading: userCountLoading } =
     useGetAllUsersCountQuery();
   const { data: todoCount, isLoading: todoCountLoading } =
     useGetTodosCountQuery();
-
+  const { data: donationCount, isLoading: donationLoading } =
+    useGetDonationsCountQuery();
+  const { data: userCitiesStats } = useGetCityStatsQuery();
   return (
     <div>
       <div>
@@ -62,7 +70,7 @@ const Header = () => {
           <div className="container-fluid">
             {/* Small boxes (Stat box) */}
             <div className="row">
-              {user?.role !== "muawin" && (
+              {user?.role !== "muawin" && user.role !== "donor" && (
                 <div className="col-lg-3 col-6">
                   {/* small box */}
                   <div className="small-box bg-info">
@@ -93,14 +101,18 @@ const Header = () => {
                 <div className="small-box bg-success">
                   <div className="inner">
                     <h3>
-                      53<sup style={{ fontSize: 20 }}>%</sup>
+                      {donationLoading ? (
+                        <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                      ) : (
+                        donationCount
+                      )}
                     </h3>
-                    <p>My Reports</p>
+                    <p>Open Donations</p>
                   </div>
                   <div className="icon">
-                    <i className="ion ion-stats-bars" />
+                    <i className="fa fa-donate" />
                   </div>
-                  <Link to="/reports" className="small-box-footer">
+                  <Link to="/donations" className="small-box-footer">
                     More info <i className="fas fa-arrow-circle-right" />
                   </Link>
                 </div>
@@ -131,27 +143,29 @@ const Header = () => {
                 </div>
               </div>
               {/* ./col */}
-              <div className="col-lg-3 col-6">
-                {/* small box */}
-                <div className="small-box bg-danger">
-                  <div className="inner">
-                    <h3>
-                      {eventsLoading ? (
-                        <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
-                      ) : (
-                        events?.length
-                      )}
-                    </h3>
-                    <p>Events</p>
+              {user.role !== "donor" && (
+                <div className="col-lg-3 col-6">
+                  {/* small box */}
+                  <div className="small-box bg-danger">
+                    <div className="inner">
+                      <h3>
+                        {eventsLoading ? (
+                          <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                        ) : (
+                          events?.length
+                        )}
+                      </h3>
+                      <p>Events</p>
+                    </div>
+                    <div className="icon">
+                      <i className="ion ion-pie-graph" />
+                    </div>
+                    <Link to="/eventdirectory" className="small-box-footer">
+                      More info <i className="fas fa-arrow-circle-right" />
+                    </Link>
                   </div>
-                  <div className="icon">
-                    <i className="ion ion-pie-graph" />
-                  </div>
-                  <Link to="/eventdirectory" className="small-box-footer">
-                    More info <i className="fas fa-arrow-circle-right" />
-                  </Link>
                 </div>
-              </div>
+              )}
               {/* ./col */}
             </div>
             {/* /.row */}
@@ -175,10 +189,10 @@ const Header = () => {
                               href="#revenue-chart"
                               data-toggle="tab"
                             >
-                              Area
+                              Chart
                             </a>
                           </li>
-                          <li className="nav-item">
+                          {/* <li className="nav-item">
                             <a
                               className="nav-link"
                               href="#sales-chart"
@@ -186,40 +200,22 @@ const Header = () => {
                             >
                               Donut
                             </a>
-                          </li>
+                          </li> */}
                         </ul>
                       </div>
                     </div>
                     {/* /.card-header */}
-                    <div className="card-body">
-                      <div className="tab-content p-0">
-                        {/* Morris chart - Sales */}
-                        <div
-                          className="chart tab-pane active"
-                          id="revenue-chart"
-                          style={{
-                            position: "relative",
-                            height: 300,
-                            backgroundColor: "white",
-                          }}
-                        >
-                          <canvas
-                            id="revenue-chart-canvas"
-                            height={300}
-                            style={{ height: 300 }}
-                          />
-                        </div>
-                        <div
-                          className="chart tab-pane"
-                          id="sales-chart"
-                          style={{ position: "relative", height: 300 }}
-                        >
-                          <canvas
-                            id="sales-chart-canvas"
-                            height={300}
-                            style={{ height: 300 }}
-                          />
-                        </div>
+                    <div
+                      className="card-body"
+                      style={{ display: "flex", justifyContent: "center" }}
+                    >
+                      <div
+                        style={{
+                          width: "55vh",
+                          height: "55vh",
+                        }}
+                      >
+                        {userCitiesStats && <Pie data={userCitiesStats} />}
                       </div>
                     </div>
                     {/* /.card-body */}
@@ -514,7 +510,7 @@ const Header = () => {
                       id="world-map"
                       style={{ height: 250, width: "100%" }}
                     /> */}
-                      <Chart
+                      <GoogleChart
                         chartEvents={[
                           {
                             eventName: "select",
@@ -522,7 +518,9 @@ const Header = () => {
                               const chart = chartWrapper.getChart();
                               const selection = chart.getSelection();
                               if (selection.length === 0) return;
-                              const region = data[selection[0].row + 1];
+                              const region =
+                                statsData &&
+                                statsData?.chartData[selection[0].row + 1];
                               console.log("Selected : " + region);
                             },
                           },
@@ -530,7 +528,7 @@ const Header = () => {
                         chartType="GeoChart"
                         width="100%"
                         height="200px"
-                        data={data}
+                        data={statsData && statsData?.chartData}
                         style={{ backgroundColor: "white" }}
                       />
                     </div>
@@ -541,7 +539,9 @@ const Header = () => {
                           <div id="sparkline-1" />
                           <div className="">
                             Today Visitors{" "}
-                            <span style={{ fontWeight: 600 }}>2</span>
+                            <span style={{ fontWeight: 600 }}>
+                              {statsData && statsData.loginsCount.length}
+                            </span>
                           </div>
                         </div>
                         {/* ./col */}
@@ -626,7 +626,10 @@ const Header = () => {
                 </div> */}
                 {/* /.card */}
                 {/* Calendar */}
-                <EventsCalendar events={events} />
+                {user.role !== "donor" && <EventsCalendar events={events} />}
+                {user.role === "donor" && (
+                  <div style={{ height: "48vh" }}></div>
+                )}
                 {/* /.card */}
               </section>
               {/* right col */}

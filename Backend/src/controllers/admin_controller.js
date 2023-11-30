@@ -1,5 +1,6 @@
 import { Event } from "../models/event.js";
 import { User } from "../models/user.js";
+import randomColor from "randomcolor";
 
 export const getEvents = async (req, res) => {
   try {
@@ -27,7 +28,7 @@ export const eventsForCalender = async (req, res) => {
     filter.created_by = req.user.created_by;
   }
   try {
-    const events = await Event.find(filter).sort({
+    const events = await Event.find().sort({
       createdAt: -1,
     });
     res.status(200).json(events);
@@ -58,5 +59,38 @@ export const updateMember = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "something went wrong!" });
+  }
+};
+
+export const GetStats = async (req, res) => {
+  try {
+    const userData = await User.aggregate([
+      {
+        $group: {
+          _id: "$city",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const backgroundColor = userData.map(() => randomColor());
+
+    const labels = userData.map((entry) => entry._id);
+    const data = userData.map((entry) => entry.count);
+
+    const chartData = {
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor,
+        },
+      ],
+    };
+
+    res.json(chartData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

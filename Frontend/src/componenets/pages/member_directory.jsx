@@ -10,7 +10,6 @@ import {
 } from "../../api/api";
 import moment from "moment";
 import { useNavigate } from "react-router";
-import { isActive } from "../../utils";
 import { toast } from "sonner";
 import DeleteDialogue from "../DeleteDialogue";
 import { useSelector } from "react-redux";
@@ -19,24 +18,17 @@ import Loader from "../Loader";
 
 const Member_directory = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
-
-  const [adminSkip, setAdminSkip] = useState(true);
-  const [rukanSkip, setRukanSkip] = useState(true);
+  const permissions = useSelector((state) => state.authReducer.permissions);
 
   const [openDeleteDialogue, setOpenDeleteDialogue] = useState(false);
   const [update, updateResp] = useUpdateMemberMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [selectedItem, setSelectedItem] = useState({ column: "", id: "" });
+  const [search, setSearch] = useState("");
+  const [Members, setMembers] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
-  const { data: admin, isLoading } = useGetAllUsersQuery(null, {
-    skip: adminSkip,
-  });
-  const { data: rukan, isLoading: rukanLoading } = useGetRukanMuawinsQuery(
-    user?._id,
-    {
-      skip: rukanSkip,
-    }
-  );
+  const { data, isLoading: rukanLoading } = useGetRukanMuawinsQuery(user?._id);
   const [selectedId, setSelectedId] = useState("");
 
   const navigate = useNavigate();
@@ -59,13 +51,24 @@ const Member_directory = () => {
     });
   }
 
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearch(term);
+
+    const filtered = Members?.filter(
+      (user) =>
+        user.firstName.toLowerCase().includes(term.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(term.toLowerCase()) ||
+        user.email.toLowerCase().includes(term.toLowerCase())
+    );
+
+    setFiltered(filtered);
+  };
+
   useEffect(() => {
-    if (user?.role === "admin") {
-      setAdminSkip(false);
-    } else {
-      setRukanSkip(false);
-    }
-  }, []);
+    setMembers(data);
+    setFiltered(data);
+  }, [data]);
 
   return (
     <>
@@ -80,18 +83,14 @@ const Member_directory = () => {
             <div className="container-fluid">
               <div className="row mb-2">
                 <div className="col-sm-6">
-                  <h1>
-                    {user?.role === "admin" ? "Member" : "Muawin's"} Directory
-                  </h1>
+                  <h1>Muawin's Directory</h1>
                 </div>
                 <div className="col-sm-6">
                   <ol className="breadcrumb float-sm-right">
                     <li className="breadcrumb-item">
                       <a href="/dashboard">Home</a>
                     </li>
-                    <li className="breadcrumb-item ">
-                      {user?.role === "admin" ? "Member" : "Muawin's"} Directory
-                    </li>
+                    <li className="breadcrumb-item ">Muawin's Directory</li>
                   </ol>
                 </div>
               </div>
@@ -99,13 +98,19 @@ const Member_directory = () => {
             {/* /.container-fluid */}
           </section>
           {/* Main content */}
+          <div className="mb-2" style={{ width: "30%", marginLeft: "auto" }}>
+            <input
+              className="form-control"
+              placeholder="Search by name or email"
+              value={search}
+              onChange={(e) => handleSearch(e)}
+            />
+          </div>
           <section className="content">
             {/* Default box */}
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">
-                  {user?.role === "admin" ? "Member" : "Muawin's"} Directory
-                </h3>
+                <h3 className="card-title">Muawin's Directory</h3>
                 <div className="card-tools">
                   <button
                     type="button"
@@ -129,14 +134,12 @@ const Member_directory = () => {
               </div>
               <div className="card-body p-0">
                 <table className="table table-striped Events">
-                  {(admin && admin.length > 0) ||
-                  (rukan && rukan.length > 0) ? (
+                  {Members && Members.length > 0 ? (
                     <thead>
                       <tr>
                         <th style={{ width: "1%" }}>No.</th>
                         <th style={{ width: "15%" }}>Member Name</th>
                         <th style={{ width: "10%" }}>Role</th>
-                        <th style={{ width: "20%" }}>Member Progress</th>
                         <th style={{ width: "12%" }}>First Login</th>
                         <th style={{ width: "12%" }}>Last Login</th>
                         <th style={{ width: "10%" }}>Status</th>
@@ -146,15 +149,13 @@ const Member_directory = () => {
                   ) : (
                     <thead>
                       <th style={{ textAlign: "center" }}>
-                        {isLoading || rukanLoading
-                          ? "Loading..."
-                          : "No Members"}
+                        {rukanLoading ? "Loading..." : "No Muawins"}
                       </th>
                     </thead>
                   )}
                   <tbody>
-                    {(admin || rukan) &&
-                      (admin || rukan).map((user, index) => (
+                    {Members &&
+                      filtered.map((user, index) => (
                         <tr key={user._id}>
                           <td>{index + 1}</td>
                           <td>
@@ -175,20 +176,6 @@ const Member_directory = () => {
                             </a>
                           </td>
 
-                          <td className="Event_progress">
-                            <div className="progress progress-sm">
-                              <div
-                                className="progress-bar bg-green"
-                                role="progressbar"
-                                aria-volumenow={57}
-                                aria-volumemin={0}
-                                aria-volumemax={100}
-                                style={{ width: "57%" }}
-                              ></div>
-                            </div>
-                            <small>57% Complete</small>
-                          </td>
-
                           <td
                             style={{
                               fontSize: 14,
@@ -203,17 +190,7 @@ const Member_directory = () => {
                               ? "Nil"
                               : moment(user.last_login).fromNow()}
                           </td>
-                          {/* <td className="Event-state">
-                            {isActive(user.last_active) ? (
-                              <span className="badge badge-danger">
-                                Inactive
-                              </span>
-                            ) : (
-                              <span className="badge badge-success">
-                                Active
-                              </span>
-                            )}
-                          </td> */}
+
                           <td>
                             {selectedItem.id === user._id &&
                             selectedItem.column === "status" ? (
@@ -229,6 +206,9 @@ const Member_directory = () => {
                                   fontSize: 10,
                                   border: "none",
                                   outline: "none",
+                                  backgroundColor: user.is_active
+                                    ? " #bbf7d0"
+                                    : " #fecaca",
                                 }}
                                 value={user.is_active}
                                 onChange={(e) =>
@@ -245,7 +225,6 @@ const Member_directory = () => {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "center",
                                 gap: 5,
                               }}
                             >
@@ -260,27 +239,31 @@ const Member_directory = () => {
                                 <i className="fas fa-eye"></i>
                                 {/* View */}
                               </button>
-                              <button
-                                onClick={() =>
-                                  navigate("/updatemember", {
-                                    state: { user },
-                                  })
-                                }
-                                className="btn btn-info btn-sm"
-                              >
-                                <i className="fas fa-pencil-alt"></i>
-                                {/* Edit */}
-                              </button>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => {
-                                  setSelectedId(user._id);
-                                  setOpenDeleteDialogue(true);
-                                }}
-                              >
-                                <i className="fas fa-trash"></i>
-                                {/* Delete */}
-                              </button>
+                              {permissions.includes("update") && (
+                                <button
+                                  onClick={() =>
+                                    navigate("/updatemember", {
+                                      state: { user },
+                                    })
+                                  }
+                                  className="btn btn-info btn-sm"
+                                >
+                                  <i className="fas fa-pencil-alt"></i>
+                                  {/* Edit */}
+                                </button>
+                              )}
+                              {permissions.includes("delete") && (
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => {
+                                    setSelectedId(user._id);
+                                    setOpenDeleteDialogue(true);
+                                  }}
+                                >
+                                  <i className="fas fa-trash"></i>
+                                  {/* Delete */}
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -288,11 +271,8 @@ const Member_directory = () => {
                   </tbody>
                 </table>
               </div>
-              {/* /.card-body */}
             </div>
-            {/* /.card */}
           </section>
-          {/* /.content */}
         </div>
         <Footer />
       </div>
