@@ -1,16 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout, setPermissions } from "../../redux/reducers/auth";
 import CustomModal from "../Modal";
+import LogoutModal from "../Modal";
 import moment from "moment";
 import { toast } from "sonner";
 import { api, useGetNotificationsQuery } from "../../api/api";
 import { initSocket } from "../../socket";
+import { BiSupport } from "react-icons/bi";
 
 const Navbar = () => {
   const user = useSelector((state) => state.authReducer.activeUser);
   const isRemember = useSelector((state) => state.authReducer.isRemember);
+  const [openLogout, setOpenLogout] = useState(false);
 
   const { data, refetch } = useGetNotificationsQuery();
 
@@ -23,12 +26,17 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  function handleLogout() {
+  function confirmLogOut() {
+    setOpenLogout(false);
     sessionStorage.clear();
     localStorage.clear();
     dispatch(api.util.resetApiState());
     dispatch(logout());
     navigate("/");
+  }
+
+  function handleLogout() {
+    setOpenLogout(true);
   }
 
   useEffect(() => {
@@ -91,8 +99,10 @@ const Navbar = () => {
   function countUnreadDocuments() {
     noti?.forEach((notification) => {
       if (
-        !notification.isReadBy ||
-        notification.isReadBy.indexOf(user._id) === -1
+        (!notification.isReadBy ||
+          notification.isReadBy.indexOf(user._id) === -1) &&
+        (!notification.isClearBy ||
+          notification.isClearBy.indexOf(user._id) === -1)
       ) {
         unreadCount++;
       }
@@ -133,14 +143,25 @@ const Navbar = () => {
               {" "}
               Home{" "}
             </a>
-          </li>
-
-          <li className="nav-item d-none d-sm-inline-block">
-            <a href="/contact" className="nav-link">
-              {" "}
-              Contact{" "}
-            </a>
           </li> */}
+
+          {user.role !== "admin" && (
+            <li className="nav-item d-none d-sm-inline-block">
+              <Link
+                to="/contact"
+                className="nav-link"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 5,
+                }}
+              >
+                <BiSupport />
+                Support{" "}
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Right navbar links */}
@@ -317,10 +338,14 @@ const Navbar = () => {
                         backgroundColor: not.isReadBy.includes(user._id)
                           ? "white"
                           : "#f1f5f9",
+                        display: not?.isClearBy.includes(user._id)
+                          ? "none"
+                          : "block",
                         borderRadius: 5,
                         width: "40vw",
                       }}
                     >
+                      {console.log(not)}
                       <div className="d-flex">
                         <i className="fas fa-envelope mr-2" />
                         <div
@@ -410,6 +435,29 @@ const Navbar = () => {
           </button>
         </div>
       </CustomModal>
+      <LogoutModal open={openLogout} setOpen={setOpenLogout} width={300}>
+        <div className="form-group">
+          <label>Are you sure want to Logout ?</label>
+        </div>
+        <div
+          className="d-flex gap-5 justify-content-center align-items-center"
+          style={{ gap: 10 }}
+        >
+          <button
+            onClick={() => setOpenLogout(false)}
+            className="btn btn-sm btn-outline-secondary"
+          >
+            Cancel
+          </button>
+
+          <button
+            className="btn btn-sm btn-outline-primary"
+            onClick={confirmLogOut}
+          >
+            Confirm
+          </button>
+        </div>
+      </LogoutModal>
     </div>
   );
 };

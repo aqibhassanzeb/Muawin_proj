@@ -4,12 +4,20 @@ import randomColor from "randomcolor";
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await Event.find({ is_active: true })
-      .populate("created_by", "_id firstName lastName email image")
-      .sort({
-        createdAt: -1,
-      });
-    res.status(200).json(events);
+    const events = await Event.find({ is_active: true }).populate(
+      "created_by",
+      "_id firstName lastName email image"
+    );
+    const statusOrder = {
+      success: 1,
+      "in-progress": 2,
+      upcoming: 3,
+      canceled: 4,
+    };
+    const sortedEvents = events.sort(
+      (a, b) => statusOrder[a.status] - statusOrder[b.status]
+    );
+    res.status(200).json(sortedEvents);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -28,7 +36,7 @@ export const eventsForCalender = async (req, res) => {
     filter.created_by = req.user.created_by;
   }
   try {
-    const events = await Event.find().sort({
+    const events = await Event.find({ is_active: true }).sort({
       createdAt: -1,
     });
     res.status(200).json(events);

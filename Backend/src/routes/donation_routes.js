@@ -6,6 +6,7 @@ import {
   Donate,
   MarkDonate,
   createDonation,
+  deleteDonation,
   getAllDonations,
   updateDonation,
 } from "../controllers/donation_controller.js";
@@ -15,5 +16,5 @@ routes.get("/donations", getAllDonations);
 routes.post("/donate/:donationId", Donate);
 routes.put("/update-donation/:donationId", updateDonation);
 routes.put("/update-mark/:donationId/:donorId", MarkDonate);
-
+routes.delete("/delete-donation/:donationId", deleteDonation);
 export default routes;

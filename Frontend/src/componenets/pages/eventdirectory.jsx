@@ -133,113 +133,111 @@ const Eventdirectory = () => {
                   <tbody>
                     {Events &&
                       filtered.map((row, index) => {
-                        if (row.status !== "success") {
-                          return (
-                            <tr key={row._id}>
-                              <td>{index + 1}</td>
-                              <td>
-                                <a>{row.name}</a>
-                                <br />
-                                <small>
-                                  Created{" "}
-                                  {moment(row.createdAt).format("DD.MM.YYYY")}
-                                </small>
-                              </td>
-                              <td className="Event_progress">
-                                <div className="progress progress-sm">
-                                  <div
-                                    className="progress-bar bg-green"
-                                    role="progressbar"
-                                    aria-volumenow={57}
-                                    aria-volumemin={0}
-                                    aria-volumemax={100}
-                                    style={{
-                                      width: `${calculatePercentage(
-                                        row.ratings
-                                      )}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                                {row.status !== "success" ? (
-                                  <small className="mt-3">No ratings yet</small>
-                                ) : (
-                                  <>
-                                    <small className="d-block mt-2">
-                                      {calculatePercentage(row.ratings)}%
-                                      Success Rate
-                                    </small>
-                                    <small className="d-block">
-                                      Based on {row.ratings.length} reviews
-                                    </small>
-                                  </>
-                                )}
-                              </td>
-                              <td className="Event-state">
-                                <span
-                                  className={`badge ${
-                                    row.status === "success"
-                                      ? "badge-success"
-                                      : row.status === "in-progress"
-                                      ? "badge-primary"
-                                      : row.status === "canceled"
-                                      ? "badge-danger"
-                                      : row.status === "upcoming"
-                                      ? "badge-warning"
-                                      : ""
-                                  }`}
-                                  style={{ padding: "8px 12px", width: 100 }}
-                                >
-                                  {row.status}
-                                </span>
-                              </td>
-                              <td
-                                className="Event-actions text-right"
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 5,
-                                }}
+                        return (
+                          <tr key={row._id}>
+                            <td>{index + 1}</td>
+                            <td>
+                              <a>{row.name}</a>
+                              <br />
+                              <small>
+                                Created{" "}
+                                {moment(row.createdAt).format("DD.MM.YYYY")}
+                              </small>
+                            </td>
+                            <td className="Event_progress">
+                              <div className="progress progress-sm">
+                                <div
+                                  className="progress-bar bg-green"
+                                  role="progressbar"
+                                  aria-volumenow={57}
+                                  aria-volumemin={0}
+                                  aria-volumemax={100}
+                                  style={{
+                                    width: `${calculatePercentage(
+                                      row.ratings
+                                    )}%`,
+                                  }}
+                                ></div>
+                              </div>
+                              {row.status !== "success" ? (
+                                <small className="mt-3">No ratings yet</small>
+                              ) : (
+                                <>
+                                  <small className="d-block mt-2">
+                                    {calculatePercentage(row.ratings)}% Success
+                                    Rate
+                                  </small>
+                                  <small className="d-block">
+                                    Based on {row.ratings.length} reviews
+                                  </small>
+                                </>
+                              )}
+                            </td>
+                            <td className="Event-state">
+                              <span
+                                className={`badge ${
+                                  row.status === "success"
+                                    ? "badge-success"
+                                    : row.status === "in-progress"
+                                    ? "badge-primary"
+                                    : row.status === "canceled"
+                                    ? "badge-danger"
+                                    : row.status === "upcoming"
+                                    ? "badge-warning"
+                                    : ""
+                                }`}
+                                style={{ padding: "8px 12px", width: 100 }}
                               >
-                                <button
-                                  onClick={() =>
-                                    navigate("/eventdetails", {
-                                      state: { event: row },
-                                    })
-                                  }
-                                  className="btn btn-primary btn-sm"
-                                  href="/eventdetails"
-                                >
-                                  <i className="fas fa-folder"></i>
-                                </button>
-                                {user?._id === row.created_by._id &&
-                                  permissions.includes("update") && (
-                                    <button
-                                      onClick={() =>
-                                        navigate("/updateevent", {
-                                          state: { event: row },
-                                        })
-                                      }
-                                      className="btn btn-info btn-sm"
-                                    >
-                                      <i className="fas fa-pencil-alt"></i>
-                                    </button>
-                                  )}
-                                {user._id === row.created_by._id &&
-                                  permissions.includes("delete") && (
-                                    <button
-                                      className="btn btn-danger btn-sm"
-                                      onClick={() => {
-                                        setSelectedId(row._id);
-                                        setOpenDeleteDialogue(true);
-                                      }}
-                                    >
-                                      <i className="fas fa-trash"></i>
-                                    </button>
-                                  )}
-                              </td>
-                            </tr>
-                          );
-                        }
+                                {row.status}
+                              </span>
+                            </td>
+                            <td
+                              className="Event-actions text-right"
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                              }}
+                            >
+                              <button
+                                onClick={() =>
+                                  navigate("/eventdetails", {
+                                    state: { event: row },
+                                  })
+                                }
+                                className="btn btn-primary btn-sm"
+                                href="/eventdetails"
+                              >
+                                <i className="fas fa-folder"></i>
+                              </button>
+                              {user?._id === row.created_by._id &&
+                                permissions.includes("update") && (
+                                  <button
+                                    onClick={() =>
+                                      navigate("/updateevent", {
+                                        state: { event: row },
+                                      })
+                                    }
+                                    className="btn btn-info btn-sm"
+                                  >
+                                    <i className="fas fa-pencil-alt"></i>
+                                  </button>
+                                )}
+                              {user._id === row.created_by._id &&
+                                permissions.includes("delete") && (
+                                  <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => {
+                                      setSelectedId(row._id);
+                                      setOpenDeleteDialogue(true);
+                                    }}
+                                  >
+                                    <i className="fas fa-trash"></i>
+                                  </button>
+                                )}
+                            </td>
+                          </tr>
+                        );
                       })}
                   </tbody>
                 </table>

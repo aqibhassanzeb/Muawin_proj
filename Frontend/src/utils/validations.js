@@ -96,12 +96,22 @@ export const eventValidationSchema = z.object({
     .int()
     .positive(),
   spent: z
-    .number({
-      required_error: "Spent amount is required",
-      invalid_type_error: "Invalid Input",
-    })
-    .int()
-    .positive(),
+    .string()
+    .min(1, { message: "Spent Amount is required" })
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (value === null) {
+          return true;
+        }
+        const numericValue = Number(value);
+        return !isNaN(numericValue) && isFinite(numericValue);
+      },
+      {
+        message: "Spent Amount must be a number",
+      }
+    ),
   duration: z
     .number({
       required_error: "Duration is required",
@@ -158,9 +168,20 @@ export const personalInfoValidation = z.object({
   height: z
     .string()
     .min(1, { message: "Height is required" })
-    .refine(isNumericString, {
-      message: "Height must contain only numeric characters",
-    }),
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (value === null) {
+          return true;
+        }
+        const numericValue = Number(value);
+        return !isNaN(numericValue) && isFinite(numericValue);
+      },
+      {
+        message: "Height must be a number",
+      }
+    ),
   lastName: z
     .string()
     .min(1, { message: "Last name is required" })
@@ -181,9 +202,20 @@ export const personalInfoValidation = z.object({
   weight: z
     .string()
     .min(1, { message: "Weight is required" })
-    .refine(isNumericString, {
-      message: "Weight must contain only numeric characters",
-    }),
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (value === null) {
+          return true;
+        }
+        const numericValue = Number(value);
+        return !isNaN(numericValue) && isFinite(numericValue);
+      },
+      {
+        message: "Weight must be a number",
+      }
+    ),
   zip: z
     .string()
     .min(1, { message: "ZIP code is required" })

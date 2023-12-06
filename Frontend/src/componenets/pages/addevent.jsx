@@ -283,16 +283,16 @@ const Addevent = () => {
                       <div className="form-group">
                         <label htmlFor="inputSpentBudget">
                           Total amount spent
-                          <span style={{ color: "red" }}> *</span>
+                          <span style={{ fontSize: 12, fontWeight: "normal" }}>
+                            {" "}
+                            (optional)
+                          </span>
                         </label>
                         <input
                           type="number"
                           id="inputSpentBudget"
                           className="form-control"
-                          {...register("spent", {
-                            setValueAs: (v) =>
-                              v === "" ? undefined : parseInt(v, 10),
-                          })}
+                          {...register("spent")}
                         />
                         {errors.spent && (
                           <p className="validation-error">

@@ -139,7 +139,7 @@ const EventFeedback = () => {
                   <tbody>
                     {Events &&
                       filtered.map((row, index) => {
-                        if (row.status === "success") {
+                        if (row.status === "success" && !isRated(row.ratings)) {
                           return (
                             <tr key={row._id}>
                               <td>{index + 1}</td>
