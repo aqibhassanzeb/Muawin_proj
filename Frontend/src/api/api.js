@@ -15,7 +15,7 @@ export const api = createApi({
     },
   }),
   reducerPath: "muawin-api",
-  tagTypes: ["User", "Event", "Todo", "Donation"],
+  tagTypes: ["User", "Event", "Todo", "Donation", "Notifications"],
   endpoints: (build) => ({
     Register: build.mutation({
       query: (data) => {
@@ -239,7 +239,7 @@ export const api = createApi({
     }),
     getNotifications: build.query({
       query: () => "/notifications",
-      // providesTags: ["User"],
+      providesTags: ["Notifications"],
     }),
     addDonation: build.mutation({
       query: (data) => {
@@ -265,6 +265,15 @@ export const api = createApi({
           url: `/donate/${params.id}`,
           method: "POST",
           body: params.data,
+        };
+      },
+      invalidatesTags: ["Donation"],
+    }),
+    deleteDonation: build.mutation({
+      query: (params) => {
+        return {
+          url: `/delete-donation/${params}`,
+          method: "DELETE",
         };
       },
       invalidatesTags: ["Donation"],
@@ -306,6 +315,27 @@ export const api = createApi({
     }),
     getPermissions: build.query({
       query: (id) => `/permissions_check/${id}`,
+    }),
+    postContact: build.mutation({
+      query: (data) => {
+        return {
+          url: "/contact-us",
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    getContacts: build.query({
+      query: () => "/contact-us",
+    }),
+    clearNotifications: build.mutation({
+      query: (id) => {
+        return {
+          url: `/clear_notifications/${id}`,
+          method: "PUT",
+        };
+      },
+      invalidatesTags: ["Notifications"],
     }),
   }),
 });
@@ -350,6 +380,10 @@ export const {
   useGetStatsQuery,
   useGetCityStatsQuery,
   useLazyGetPermissionsQuery,
+  useDeleteDonationMutation,
+  usePostContactMutation,
+  useGetContactsQuery,
+  useClearNotificationsMutation,
 } = api;
 
 export function uploadImage(file) {

@@ -86,7 +86,15 @@ export const MarkDonate = async (req, res) => {
 
 export const updateDonation = async (req, res) => {
   const donationId = req.params.donationId;
-  const { collectedAmount, projectName, estimatedCost, isActive } = req.body;
+  const {
+    collectedAmount,
+    projectName,
+    estimatedCost,
+    isActive,
+    requiredCost,
+    location,
+    city,
+  } = req.body;
   try {
     const donationEvent = await Donation.findById(donationId);
 
@@ -104,6 +112,16 @@ export const updateDonation = async (req, res) => {
     if (collectedAmount) {
       donationEvent.collectedAmount = collectedAmount;
     }
+    if (requiredCost) {
+      donationEvent.requiredCost = requiredCost;
+    }
+    if (location) {
+      donationEvent.location = location;
+    }
+    if (city) {
+      donationEvent.city = city;
+    }
+
     if (isActive) {
       donationEvent.is_active = false;
     }
@@ -115,5 +133,16 @@ export const updateDonation = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const deleteDonation = async (req, res) => {
+  const { donationId } = req.params;
+  try {
+    await Donation.findByIdAndDelete(donationId);
+    res.json({ message: "Dontation delete successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

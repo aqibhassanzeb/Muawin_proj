@@ -70,32 +70,6 @@ const Header = () => {
           <div className="container-fluid">
             {/* Small boxes (Stat box) */}
             <div className="row">
-              {user?.role !== "muawin" && user.role !== "donor" && (
-                <div className="col-lg-3 col-6">
-                  {/* small box */}
-                  <div className="small-box bg-info">
-                    <div className="inner">
-                      <h3>
-                        {userCountLoading ? (
-                          <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
-                        ) : (
-                          userCount
-                        )}
-                      </h3>
-                      <p>
-                        Total {user?.role === "admin" ? "Users" : "Muawin's"}
-                      </p>
-                    </div>
-                    <div className="icon">
-                      <i className="ion ion-person-add" />
-                    </div>
-                    <Link to="/directory" className="small-box-footer">
-                      More info <i className="fas fa-arrow-circle-right" />
-                    </Link>
-                  </div>
-                </div>
-              )}
-              {/* ./col */}
               <div className="col-lg-3 col-6">
                 {/* small box */}
                 <div className="small-box bg-success">
@@ -117,7 +91,7 @@ const Header = () => {
                   </Link>
                 </div>
               </div>
-              {/* ./col */}
+
               <div className="col-lg-3 col-6">
                 {/* small box */}
                 <div className="small-box bg-warning">
@@ -142,8 +116,8 @@ const Header = () => {
                   </a>
                 </div>
               </div>
-              {/* ./col */}
-              {user.role !== "donor" && (
+
+              {user.role !== "donor" ? (
                 <div className="col-lg-3 col-6">
                   {/* small box */}
                   <div className="small-box bg-danger">
@@ -165,11 +139,76 @@ const Header = () => {
                     </Link>
                   </div>
                 </div>
+              ) : (
+                <div className="col-lg-3 col-6">
+                  <div className="small-box bg-danger">
+                    <div className="inner">
+                      <h3>
+                        <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                      </h3>
+                      <p>Coming Soon</p>
+                    </div>
+                    <div className="icon">
+                      <i className="fa fa-clock" />
+                    </div>
+                    <Link to="#" className="small-box-footer">
+                      <i className="fas fa-arrow-circle" />
+                    </Link>
+                  </div>
+                </div>
               )}
-              {/* ./col */}
+              {user?.role !== "muawin" && user.role !== "donor" ? (
+                <div className="col-lg-3 col-6">
+                  {/* small box */}
+                  <div className="small-box bg-info">
+                    <div className="inner">
+                      <h3>
+                        {userCountLoading ? (
+                          <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                        ) : (
+                          userCount
+                        )}
+                      </h3>
+                      <p>
+                        Total {user?.role === "admin" ? "Users" : "Muawin's"}
+                      </p>
+                    </div>
+                    <div className="icon">
+                      <i className="ion ion-person-add" />
+                    </div>
+                    <Link
+                      to={
+                        user?.role === "admin"
+                          ? "/admin-directory"
+                          : "/directory"
+                      }
+                      className="small-box-footer"
+                    >
+                      More info <i className="fas fa-arrow-circle-right" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="col-lg-3 col-6">
+                  {/* small box */}
+                  <div className="small-box bg-info">
+                    <div className="inner">
+                      <h3>
+                        <HourglassEmptyRoundedIcon style={{ fontSize: 30 }} />
+                      </h3>
+                      <p>Coming Soon</p>
+                    </div>
+                    <div className="icon">
+                      <i className="fa fa-clock" />
+                    </div>
+                    <Link to="#" className="small-box-footer">
+                      <i className="fas fa-arrow" />
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
-            {/* /.row */}
-            {/* Main row */}
+
             <div className="row">
               {/* Left col */}
               <section className="col-lg-7 connectedSortable">
@@ -181,28 +220,6 @@ const Header = () => {
                         <i className="fas fa-chart-pie mr-1" />
                         Demographics
                       </h3>
-                      <div className="card-tools">
-                        <ul className="nav nav-pills ml-auto">
-                          <li className="nav-item">
-                            <a
-                              className="nav-link active"
-                              href="#revenue-chart"
-                              data-toggle="tab"
-                            >
-                              Chart
-                            </a>
-                          </li>
-                          {/* <li className="nav-item">
-                            <a
-                              className="nav-link"
-                              href="#sales-chart"
-                              data-toggle="tab"
-                            >
-                              Donut
-                            </a>
-                          </li> */}
-                        </ul>
-                      </div>
                     </div>
                     {/* /.card-header */}
                     <div

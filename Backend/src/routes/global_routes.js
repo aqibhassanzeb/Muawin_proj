@@ -5,10 +5,13 @@ import {
   GetDonationCount,
   GetLogins,
   GetNotifications,
+  clearNotifications,
+  createMessage,
   createTodo,
   deleteTodo,
   getAllCities,
   getCities,
+  getContacts,
   getMuawins,
   getTodos,
   getTodosCount,
@@ -26,7 +29,10 @@ routes.delete("/todos/:_id", protect, deleteTodo);
 routes.get("/muawins/:_id", getMuawins);
 routes.get("/users_counts", protect, getUserCount);
 routes.get("/notifications", GetNotifications);
+routes.put("/clear_notifications/:userId", clearNotifications);
 routes.get("/donations_count", GetDonationCount);
 routes.get("/today_logins", GetLogins);
+routes.post("/contact-us", createMessage);
+routes.get("/contact-us", getContacts);
 
 export default routes;

@@ -5,6 +5,7 @@ import { Event } from "../models/event.js";
 import { Notification } from "../models/notification.js";
 import { City } from "../models/city.js";
 import { Donation } from "../models/donation.js";
+import { Contact } from "../models/contact.js";
 
 export const getCities = async (req, res) => {
   let { country, state } = req.params;
@@ -218,6 +219,53 @@ export const GetLogins = async (req, res) => {
     res.status(200).json({ loginsCount, chartData: output });
   } catch (error) {
     console.error(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const createMessage = async (req, res) => {
+  const { name, email, message } = req.body;
+  try {
+    const contact = new Contact({
+      name,
+      email,
+      message,
+    });
+    let created = await contact.save();
+    if (created) {
+      res.status(200).json({ message: "Message sent successfully" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const getContacts = async (req, res) => {
+  try {
+    const response = await Contact.find().sort({ createdAt: -1 });
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export const clearNotifications = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    try {
+      await Notification.updateMany(
+        { isClearBy: { $nin: [userId] } },
+        { $addToSet: { isClearBy: userId } }
+      );
+
+      res.status(200).json({ message: "Mark as clear successfully" });
+    } catch (error) {
+      console.log(error);
+    }
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };

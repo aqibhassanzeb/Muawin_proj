@@ -6,10 +6,12 @@ import { useNavigate } from "react-router";
 import {
   uploadImageToCloudinary,
   useAddDonationAmountMutation,
+  useDeleteDonationMutation,
   useGetDonationsQuery,
   useUpdateDonationMutation,
 } from "../../api/api";
 import CustomModal from "../Modal";
+import DeleteModal from "../Modal";
 import Loader from "../Loader";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -23,14 +25,23 @@ function Donations() {
   const [updateDonation, { isLoading: updateLoading }] =
     useUpdateDonationMutation();
 
+  const [deleteDonation, { isLoading: deleteLoading }] =
+    useDeleteDonationMutation();
   const [openDonation, setOpenDonation] = useState(false);
   const [amount, setAmount] = useState(0);
   const [file, setFile] = useState(null);
   const [selectedId, setSelectedId] = useState("");
   const [amountLoading, setAmountLoading] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
-  const [donationAmount, setDonationAmount] = useState("");
+  const [donationDetails, setDonationDetails] = useState({
+    projectName: "",
+    requiredCost: "",
+    location: "",
+    collectedAmount: "",
+    city: "",
+  });
   const [openMark, setOpenMark] = useState(false);
+  const [openDelete, setopenDelete] = useState(false);
 
   async function handleDonation(e) {
     e.preventDefault();
@@ -59,11 +70,11 @@ function Donations() {
     e.preventDefault();
     updateDonation({
       id: selectedId,
-      data: { collectedAmount: donationAmount },
+      data: donationDetails,
     })
       .then((res) => {
         if (res.data.message) {
-          toast.success("Donation Collected Amount Update");
+          toast.success("Donation Updated");
         }
         setOpenUpdate(false);
       })
@@ -88,6 +99,20 @@ function Donations() {
       })
       .catch((err) => {
         setOpenMark(false);
+        toast.error(err.message);
+      });
+  }
+
+  function handleDelete() {
+    deleteDonation(selectedId)
+      .then((res) => {
+        if (res.data.message) {
+          toast.success("Donation Deleted");
+        }
+        setopenDelete(false);
+      })
+      .catch((err) => {
+        setopenDelete(false);
         toast.error(err.message);
       });
   }
@@ -174,51 +199,6 @@ function Donations() {
                             <span>RS</span>{" "}
                             <span>{donation.collectedAmount}</span>
                           </div>
-                          {user.role === "admin" && (
-                            <button
-                              className="btn-sm"
-                              style={{ backgroundColor: "rgb(19, 132, 150)" }}
-                              onClick={() => {
-                                setSelectedId(donation._id);
-                                setDonationAmount(donation.collectedAmount);
-                                setOpenUpdate(true);
-                              }}
-                            >
-                              <i className="fas fa-pencil-alt"></i>
-                            </button>
-                          )}
-                          <CustomModal
-                            open={openUpdate}
-                            setOpen={setOpenUpdate}
-                          >
-                            <h6 className="mb-4">Update Collected Amount</h6>
-                            <input
-                              className="form-control"
-                              value={donationAmount}
-                              onChange={(e) =>
-                                setDonationAmount(e.target.value)
-                              }
-                            />
-                            <div className="d-flex mt-3 align-items-center">
-                              <button
-                                onClick={() => setOpenUpdate(false)}
-                                className="btn-secondary mr-2"
-                              >
-                                Cancel
-                              </button>
-                              {updateLoading ? (
-                                <div style={{ display: "inline" }}>
-                                  <Loader size={30} />
-                                </div>
-                              ) : (
-                                <button
-                                  onClick={(e) => handleUpdateDonation(e)}
-                                >
-                                  Update
-                                </button>
-                              )}
-                            </div>
-                          </CustomModal>
                         </div>
                       </td>
                       <td>
@@ -241,7 +221,10 @@ function Donations() {
                         <td>
                           <button
                             className="btn-sm"
-                            style={{ backgroundColor: "rgb(92, 99, 106)" }}
+                            style={{
+                              backgroundColor: "rgb(92, 99, 106)",
+                              width: 70,
+                            }}
                             onClick={() =>
                               navigation("/donorsdetail", {
                                 state: {
@@ -251,18 +234,165 @@ function Donations() {
                               })
                             }
                           >
-                            View Donors
+                            Donors
                           </button>
                           <button
                             onClick={() => {
                               setOpenMark(true);
                               setSelectedId(donation._id);
                             }}
-                            className="btn btn-info btn-sm ml-2"
+                            className="btn btn-info btn-sm ml-2 mr-2"
                             disabled={!donation.is_active}
                           >
                             <i className="fas fa-check"></i>
                           </button>
+                          <button
+                            className="btn-sm"
+                            style={{ backgroundColor: "rgb(19, 132, 150)" }}
+                            onClick={() => {
+                              setSelectedId(donation._id);
+                              setDonationDetails({
+                                projectName: donation.projectName,
+                                requiredCost: donation.requiredCost,
+                                location: donation.location,
+                                collectedAmount: donation.collectedAmount,
+                                city: donation.city,
+                              });
+                              setOpenUpdate(true);
+                            }}
+                          >
+                            <i className="fas fa-pencil-alt"></i>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setopenDelete(true);
+                              setSelectedId(donation._id);
+                            }}
+                            className="btn btn-info btn-sm ml-2"
+                            style={{ backgroundColor: "red" }}
+                          >
+                            <i
+                              className="fas fa-trash"
+                              style={{ color: "white" }}
+                            ></i>
+                          </button>
+                          <CustomModal
+                            open={openUpdate}
+                            setOpen={setOpenUpdate}
+                            textAlign={"start"}
+                          >
+                            <h4
+                              className="mb-4"
+                              style={{ textAlign: "center" }}
+                            >
+                              Update Donation
+                            </h4>
+                            <label>Project Name</label>
+                            <input
+                              className="form-control mb-2"
+                              value={donationDetails.projectName}
+                              onChange={(e) =>
+                                setDonationDetails({
+                                  ...donationDetails,
+                                  projectName: e.target.value,
+                                })
+                              }
+                            />
+                            <label>Required Cost</label>
+                            <input
+                              className="form-control mb-2"
+                              value={donationDetails.requiredCost}
+                              onChange={(e) =>
+                                setDonationDetails({
+                                  ...donationDetails,
+                                  requiredCost: e.target.value,
+                                })
+                              }
+                            />
+                            <label>Location</label>
+                            <input
+                              className="form-control mb-2"
+                              value={donationDetails.location}
+                              onChange={(e) =>
+                                setDonationDetails({
+                                  ...donationDetails,
+                                  location: e.target.value,
+                                })
+                              }
+                            />
+                            <label>Collected Amount</label>
+                            <input
+                              className="form-control mb-2"
+                              value={donationDetails.collectedAmount}
+                              onChange={(e) =>
+                                setDonationDetails({
+                                  ...donationDetails,
+                                  collectedAmount: e.target.value,
+                                })
+                              }
+                            />
+                            <label>City</label>
+                            <input
+                              className="form-control mb-2"
+                              value={donationDetails.city}
+                              onChange={(e) =>
+                                setDonationDetails({
+                                  ...donationDetails,
+                                  city: e.target.value,
+                                })
+                              }
+                            />
+                            <div className="d-flex mt-3 align-items-center justify-content-end ">
+                              <button
+                                onClick={() => setOpenUpdate(false)}
+                                className="btn-secondary mr-2"
+                              >
+                                Cancel
+                              </button>
+                              {updateLoading ? (
+                                <div style={{ display: "inline" }}>
+                                  <Loader size={30} />
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={(e) => handleUpdateDonation(e)}
+                                >
+                                  Update
+                                </button>
+                              )}
+                            </div>
+                          </CustomModal>
+                          <DeleteModal
+                            open={openDelete}
+                            setOpen={setopenDelete}
+                          >
+                            <h5
+                              className="mb-4"
+                              style={{ textAlign: "center" }}
+                            >
+                              Are you sure want to delete ?
+                            </h5>
+                            <div className="d-flex mt-3 align-items-center justify-content-end ">
+                              <button
+                                onClick={() => setopenDelete(false)}
+                                className="btn-secondary btn-sm mr-2"
+                              >
+                                Cancel
+                              </button>
+                              {deleteLoading ? (
+                                <div style={{ display: "inline" }}>
+                                  <Loader size={30} />
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleDelete()}
+                                  className="btn btn-sm btn-primary"
+                                >
+                                  Confirm
+                                </button>
+                              )}
+                            </div>
+                          </DeleteModal>
                         </td>
                       )}
                     </tr>
