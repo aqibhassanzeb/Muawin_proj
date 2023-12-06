@@ -10,7 +10,6 @@ export const createEvent = async (req, res) => {
     !venue ||
     !leader ||
     !budget ||
-    !spent ||
     !duration
   ) {
     return res.status(422).json({ error: "please fill all fields " });

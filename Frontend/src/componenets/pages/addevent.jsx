@@ -40,6 +40,7 @@ const Addevent = () => {
 
   async function onSubmit(data) {
     const isValid = await validateFiles(files, setError);
+    console.log(isValid);
     if (isValid) {
       setProgress(25);
       uploadFiles(files, setProgress)
