@@ -39,6 +39,7 @@ import EventFeedback from "./componenets/pages/eventfeedback";
 import AdminProtected from "./routes/AdminProtected";
 import CheckActiveUser from "./routes/CheckActiveUser";
 import CheckLogin from "./routes/CheckLogin";
+import Contacts from "./componenets/pages/contacts";
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
               <Route path="/eventfeedback" element={<EventFeedback />} />
               <Route path="/eventdetails" element={<Eventdetails />} />
               <Route path="/eventdirectory" element={<Eventdirectory />} />
+
               <Route
                 path="/muawin-event-directory"
                 element={<MuawinEventDirectory />}
@@ -94,6 +96,7 @@ function App() {
               <Route path="/config" element={<Configuration />} />
               <Route path="/adddonation" element={<AddDonation />} />
               <Route path="/donorsdetail" element={<DonorsDetail />} />
+              <Route path="/contacts" element={<Contacts />} />
             </Route>
           </Route>
           <Route element={<CheckLogin />}>

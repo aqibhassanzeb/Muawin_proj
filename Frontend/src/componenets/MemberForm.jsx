@@ -306,7 +306,6 @@ const MemberForm = () => {
                             <span style={{ fontSize: 12, fontWeight: 400 }}>
                               (cm){" "}
                             </span>{" "}
-                            <span style={{ color: "red" }}>*</span>
                           </label>
                           <input
                             type="text"
@@ -508,7 +507,6 @@ const MemberForm = () => {
                             <span style={{ fontSize: 12, fontWeight: 400 }}>
                               (kg){" "}
                             </span>{" "}
-                            <span style={{ color: "red" }}>*</span>
                           </label>
                           <input
                             type="text"
