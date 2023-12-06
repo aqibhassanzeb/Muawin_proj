@@ -185,7 +185,7 @@ const Report = () => {
               onChange={handleReportFormatChange}
             >
               <option value="pdf">PDF</option>
-              <option value="csv">CSV</option>
+              {/* <option value="csv">CSV</option> */}
             </select>
 
             {isLoading ? (

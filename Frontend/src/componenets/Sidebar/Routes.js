@@ -60,6 +60,11 @@ export const adminRoutes = [
     icon: <i class="nav-icon fas fa-file"></i>,
   },
   {
+    path: "/contacts",
+    name: "Contacts",
+    icon: <i class="nav-icon fas fa-envelope"></i>,
+  },
+  {
     path: "/config",
     name: "Configuration",
     icon: <i class="nav-icon far fa-plus-square"></i>,
